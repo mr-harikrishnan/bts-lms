@@ -1,0 +1,21 @@
+{
+  "id": "lesson-2-1",
+  "lessonNumber": "2.1",
+  "title": "Virtual DOM & Reconciliation",
+  "duration": "1h 15m",
+  "overview": [
+    "Understand React Fiber reconciler mechanics, diffing algorithms, and how to eliminate unnecessary renders.",
+    "Instrument component profilers to discover performance bottlenecks in deep component trees."
+  ],
+  "takeaways": [
+    {
+      "title": "Fiber Tree Allocation",
+      "desc": "Minimize intermediate object creations inside render loops to preserve garbage collector headroom."
+    },
+    {
+      "title": "Key Stability",
+      "desc": "Always assign deterministic identity keys rather than array indices to dynamic lists."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

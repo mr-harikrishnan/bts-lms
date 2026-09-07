@@ -1,0 +1,50 @@
+{
+  "id": "cv-3",
+  "moduleNumber": "Module 03",
+  "title": "Editorial Cadence & DaVinci Color Grading",
+  "lessons": [
+    {
+      "id": "cv-3-1",
+      "lessonNumber": "3.1",
+      "title": "J-Cuts, L-Cuts & Rhythmic Editing in Premiere",
+      "duration": "1h 20m",
+      "overview": [
+        "Pace dialogue cuts according to musical rhythm and speaker emotional shifts.",
+        "Assemble rough assemblies into razor-sharp final agency edits."
+      ],
+      "takeaways": [
+        {
+          "title": "Audio Overlaps",
+          "desc": "Introduce ambient audio before visual transitions to disguise cut points."
+        },
+        {
+          "title": "Micro-Trim Discipline",
+          "desc": "Eliminate empty frames and filler breathing pauses to maximize viewer retention."
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    },
+    {
+      "id": "cv-3-2",
+      "lessonNumber": "3.2",
+      "title": "DaVinci Resolve Node-Based Color Grading",
+      "duration": "1h 45m",
+      "overview": [
+        "Balance primary exposure, normalize contrast curves, and build stylized show-LUTs using ACES color management.",
+        "Isolate skin tones using qualified Hue vs Hue and Hue vs Sat vectors."
+      ],
+      "takeaways": [
+        {
+          "title": "Color Space Transforms",
+          "desc": "Convert camera-native Log into Rec.709 with mathematical precision."
+        },
+        {
+          "title": "Skin Tone Vector",
+          "desc": "Keep skin tones aligned strictly with the I-line on vectorscope."
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "cv-4-2",
+  "lessonNumber": "4.2",
+  "title": "Export Profiles, Master Codecs & Client Handoff",
+  "duration": "1h 00m",
+  "overview": [
+    "Export high-bitrate ProRes 422 HQ archival masters and web-optimized H.264/H.265 files.",
+    "Deliver project packages with clean timeline markers and consolidated source media."
+  ],
+  "takeaways": [
+    {
+      "title": "Master Archival",
+      "desc": "Preserve 10-bit color depth with uncompressed 48kHz 24-bit audio stems."
+    },
+    {
+      "title": "Clean Project Handoff",
+      "desc": "Organize bins with standardized numbered prefixes for agency handoff."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

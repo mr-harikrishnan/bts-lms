@@ -1,0 +1,21 @@
+{
+  "id": "pm-2-1",
+  "lessonNumber": "2.1",
+  "title": "Auction Theory & eCPM Optimization",
+  "duration": "1h 10m",
+  "overview": [
+    "Understand Facebook's auction formula: Total Value = Bid × Estimated Action Rate + User Value.",
+    "Structure broad-targeting campaigns that let the algorithm self-optimize efficiently."
+  ],
+  "takeaways": [
+    {
+      "title": "Creative as Targeting",
+      "desc": "Use specific hook formats to filter intent rather than micro-interest layering."
+    },
+    {
+      "title": "Bid Cap Tactics",
+      "desc": "Deploy manual bid caps during peak seasonal events to protect ROAS."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

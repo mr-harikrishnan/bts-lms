@@ -1,0 +1,21 @@
+{
+  "id": "cv-1-2",
+  "lessonNumber": "1.2",
+  "title": "Storyboarding & Cinematic Pre-visualization",
+  "duration": "50m",
+  "overview": [
+    "Translate written scripts into camera shot lists, lens selections, and lighting schematics.",
+    "Coordinate production call sheets, talent release forms, and location permits."
+  ],
+  "takeaways": [
+    {
+      "title": "Shot Variety",
+      "desc": "Ensure coverage with wide establishing, medium dialogue, and macro insert shots."
+    },
+    {
+      "title": "Spatial Continuity",
+      "desc": "Strictly adhere to the 180-degree rule across dialogue camera reversals."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "pm-3-1",
+  "lessonNumber": "3.1",
+  "title": "Intent Capture with Google Search Architecture",
+  "duration": "1h 05m",
+  "overview": [
+    "Structure single-theme ad groups (STAGs) with exact and phrase match intent layers.",
+    "Eliminate ad spend waste using exhaustive negative keyword lists and search term mining."
+  ],
+  "takeaways": [
+    {
+      "title": "Search Term Mining",
+      "desc": "Routinely convert high-converting search queries into isolated exact match keywords."
+    },
+    {
+      "title": "Quality Score Gains",
+      "desc": "Align landing page H1s with ad copy to lower cost per click by up to 35%."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

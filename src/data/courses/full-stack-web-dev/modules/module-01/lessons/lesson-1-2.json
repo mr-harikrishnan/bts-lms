@@ -1,0 +1,21 @@
+{
+  "id": "lesson-1-2",
+  "lessonNumber": "1.2",
+  "title": "Asynchronous JS & Promises",
+  "duration": "55m",
+  "overview": [
+    "Master the event loop, microtask queuing, and concurrency primitives in modern JavaScript runtimes.",
+    "Implement robust error recovery mechanisms and abortable fetch operations."
+  ],
+  "takeaways": [
+    {
+      "title": "AbortController Primitives",
+      "desc": "Cancel inflight requests to prevent memory leaks and race condition states."
+    },
+    {
+      "title": "Parallel vs Sequential Flows",
+      "desc": "Use Promise.allSettled for resilient non-blocking multi-resource hydrations."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

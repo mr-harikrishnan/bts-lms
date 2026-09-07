@@ -1,0 +1,50 @@
+{
+  "id": "pm-2",
+  "moduleNumber": "Module 02",
+  "title": "Meta Ads & Algorithmic Creative Strategy",
+  "lessons": [
+    {
+      "id": "pm-2-1",
+      "lessonNumber": "2.1",
+      "title": "Auction Theory & eCPM Optimization",
+      "duration": "1h 10m",
+      "overview": [
+        "Understand Facebook's auction formula: Total Value = Bid × Estimated Action Rate + User Value.",
+        "Structure broad-targeting campaigns that let the algorithm self-optimize efficiently."
+      ],
+      "takeaways": [
+        {
+          "title": "Creative as Targeting",
+          "desc": "Use specific hook formats to filter intent rather than micro-interest layering."
+        },
+        {
+          "title": "Bid Cap Tactics",
+          "desc": "Deploy manual bid caps during peak seasonal events to protect ROAS."
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    },
+    {
+      "id": "pm-2-2",
+      "lessonNumber": "2.2",
+      "title": "Creative Fatigue Cycling & Dynamic Testing",
+      "duration": "1h 25m",
+      "overview": [
+        "Implement 3:2:2 Dynamic Creative Testing frameworks to identify winning hooks, copy, and visual formats.",
+        "Rotate ad variants systematically before frequency saturation degrades conversion efficiency."
+      ],
+      "takeaways": [
+        {
+          "title": "Hook-Hold Ratios",
+          "desc": "Diagnose video creative using 3-second hook drop-off vs 50% watch time."
+        },
+        {
+          "title": "Scaling Horizontal",
+          "desc": "Scale winning post IDs into consolidated CBO campaigns without reset."
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

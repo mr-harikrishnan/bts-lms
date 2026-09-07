@@ -1,0 +1,21 @@
+{
+  "id": "pm-3-2",
+  "lessonNumber": "3.2",
+  "title": "Performance Max Campaign Orchestration",
+  "duration": "1h 15m",
+  "overview": [
+    "Feed high-quality asset groups, customer match signals, and final URL expansion rules to PMax.",
+    "Audit placement reports to prevent brand cannibalization."
+  ],
+  "takeaways": [
+    {
+      "title": "Audience Signals",
+      "desc": "Guide Google AI with custom intent segments and in-market buyer lists."
+    },
+    {
+      "title": "Brand Exclusions",
+      "desc": "Always apply brand exclusion lists to PMax to measure true incremental acquisition."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "lesson-4-1",
+  "lessonNumber": "4.1",
+  "title": "Microservice Architecture & Express / Fastify",
+  "duration": "1h 30m",
+  "overview": [
+    "Architect scalable Node.js microservices with dependency injection, connection pooling, and JWT authentication.",
+    "Implement rate limiting, structured JSON logging, and security headers."
+  ],
+  "takeaways": [
+    {
+      "title": "Connection Pooling",
+      "desc": "Manage database connection pools to survive sudden traffic surges without memory exhaustion."
+    },
+    {
+      "title": "Stateless Token Auth",
+      "desc": "Use cryptographically signed asymmetric JWTs for cross-service authentication."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

@@ -1,0 +1,330 @@
+{
+  "id": "full-stack-web-dev",
+  "title": "Full-Stack Web Development: From Modern Frontend to Production",
+  "category": "Web Development",
+  "level": "Intermediate",
+  "duration": "16 Weeks (52 Hrs)",
+  "durationWeeks": 16,
+  "hoursLive": 52,
+  "lessonCount": 12,
+  "rating": 4.95,
+  "reviewsCount": 2180,
+  "description": "Build real web applications from scratch: modern frontend with React, backend APIs with Node.js, and database integration step-by-step.",
+  "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuD_kOypCyKbuc5JR-Ebt65utMtZz-nFpjIZK88s2HjGbr6Y1qn8EUkKZfgTK_uGDYC87HwlPcBxmfgHiLNboNKhUha74yatlgl7iv6HWql5lhL2HJPItx0Z_74Ns5UgndvdPssrd6pOdGrkg8NEhXtTpG2dJlzv8yKT-7dUBvJMTUo8BrsKhc3pUvVwSUu5aqXFD6nxJggJW1U_VNlmM2bGRF8sdpYJvuGHcl5EDFao_2b1nPBznJo9",
+  "instructor": {
+    "name": "Rohit Sen",
+    "title": "Principal Engineer & Tech Architect",
+    "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuAgpOF8L6_BUBTccNgh4AYy6YAye_YSTuLGX1Fj7r_oWJvi9NsHY3UJ2wK77sWSrxjJQD0sIsAFKEzfudSykueDlcO7nu3pxSiX5ItW5BOi4Oz-x3Jv4RLsw3tLUFLIiGPQNH5fr7NX4m-frBEQiAKxrCvfEdTeJWiRu2xk2EHDDZ2G1TfN6UalCvTkY-GPbBR64DQaV5UyWoZsdVvlZOytlmQFtnMwW4g8YXH6vpi3wOeGlL1HDJsk"
+  },
+  "originalPrice": 9999,
+  "price": 2999,
+  "discountPercent": 70,
+  "capstoneTitle": "Verified Capstone Project",
+  "capstoneDesc": "Production-grade distributed SaaS with Stripe & Docker deploy",
+  "skills": [
+    "React 19",
+    "Next.js",
+    "TypeScript",
+    "Node.js",
+    "PostgreSQL",
+    "Docker"
+  ],
+  "featured": true,
+  "isUpcoming": true,
+  "modules": [
+    {
+      "id": "mod-1",
+      "moduleNumber": "Module 01",
+      "title": "Modern JS & TypeScript",
+      "lessons": [
+        {
+          "id": "lesson-1-1",
+          "lessonNumber": "1.1",
+          "title": "Strict Typing & Generics",
+          "duration": "45m",
+          "overview": [
+            "Deep dive into TypeScript strict mode, utility types, and generic constraints for enterprise application development.",
+            "Construct type-safe data transformations and avoid unsafe type assertions in production."
+          ],
+          "takeaways": [
+            {
+              "title": "Exhaustive Pattern Matching",
+              "desc": "Use discriminated unions to enforce handling of all component states at compile time."
+            },
+            {
+              "title": "Generic Constraints",
+              "desc": "Limit polymorphic types using extends to prevent unintended runtime failures."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-1-2",
+          "lessonNumber": "1.2",
+          "title": "Asynchronous JS & Promises",
+          "duration": "55m",
+          "overview": [
+            "Master the event loop, microtask queuing, and concurrency primitives in modern JavaScript runtimes.",
+            "Implement robust error recovery mechanisms and abortable fetch operations."
+          ],
+          "takeaways": [
+            {
+              "title": "AbortController Primitives",
+              "desc": "Cancel inflight requests to prevent memory leaks and race condition states."
+            },
+            {
+              "title": "Parallel vs Sequential Flows",
+              "desc": "Use Promise.allSettled for resilient non-blocking multi-resource hydrations."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-1-3",
+          "lessonNumber": "1.3",
+          "title": "TS Architecture in Scale",
+          "duration": "50m",
+          "overview": [
+            "Structure monorepo-ready folder topologies, path aliases, and shared schema contracts between client and server.",
+            "Establish strict type boundaries using runtime validation with Zod."
+          ],
+          "takeaways": [
+            {
+              "title": "Schema First Validation",
+              "desc": "Derive TypeScript interfaces directly from Zod schemas to ensure single-source truth."
+            },
+            {
+              "title": "Decoupled Domain Types",
+              "desc": "Isolate presentation layer types from raw backend network payload models."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    },
+    {
+      "id": "mod-2",
+      "moduleNumber": "Module 02",
+      "title": "Component Architecture",
+      "lessons": [
+        {
+          "id": "lesson-2-1",
+          "lessonNumber": "2.1",
+          "title": "Virtual DOM & Reconciliation",
+          "duration": "1h 15m",
+          "overview": [
+            "Understand React Fiber reconciler mechanics, diffing algorithms, and how to eliminate unnecessary renders.",
+            "Instrument component profilers to discover performance bottlenecks in deep component trees."
+          ],
+          "takeaways": [
+            {
+              "title": "Fiber Tree Allocation",
+              "desc": "Minimize intermediate object creations inside render loops to preserve garbage collector headroom."
+            },
+            {
+              "title": "Key Stability",
+              "desc": "Always assign deterministic identity keys rather than array indices to dynamic lists."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-2-2",
+          "lessonNumber": "2.2",
+          "title": "Context & Prop Drilling",
+          "duration": "1h 20m",
+          "overview": [
+            "Architect high-velocity React Contexts without inducing cascading subtree re-renders.",
+            "Compare context multiplexing versus localized composition inversion."
+          ],
+          "takeaways": [
+            {
+              "title": "Context Granularity",
+              "desc": "Split state and dispatch functions into distinct provider nodes."
+            },
+            {
+              "title": "Compound Components",
+              "desc": "Use composition patterns to share implicit context among coordinated sibling elements."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-2-3",
+          "lessonNumber": "2.3",
+          "title": "Custom Hooks Optimization",
+          "duration": "1h 40m",
+          "overview": [
+            "Build composable headless logic hooks that encapsulate state machines, local storage persistence, and network polling.",
+            "Properly utilize useCallback and useMemo with rigorous dependency arrays."
+          ],
+          "takeaways": [
+            {
+              "title": "Referential Equality",
+              "desc": "Stabilize memoized callback signatures passed to memo-wrapped child components."
+            },
+            {
+              "title": "Hook Composition",
+              "desc": "Assemble complex behavior from small, testable single-responsibility custom hooks."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    },
+    {
+      "id": "mod-3",
+      "moduleNumber": "Module 03",
+      "title": "Advanced React & Data Hydration",
+      "lessons": [
+        {
+          "id": "lesson-3-1",
+          "lessonNumber": "3.1",
+          "title": "Context Multiplexing & Reducers",
+          "duration": "1h 10m",
+          "overview": [
+            "Model complex UI workflows using deterministic state machines and pure reducer functions.",
+            "Implement time-travel debugging and action audit logs."
+          ],
+          "takeaways": [
+            {
+              "title": "Pure Reducer Contracts",
+              "desc": "Keep reducers synchronous and side-effect free; dispatch outcomes explicitly."
+            },
+            {
+              "title": "Action Namespacing",
+              "desc": "Prefix action types with feature domains to avoid cross-module collision."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-3-2",
+          "lessonNumber": "3.2",
+          "title": "Custom Hook Abstractions",
+          "duration": "1h 40m",
+          "overview": [
+            "Examine practical design patterns for hook-driven data fetching, cache invalidation, and optimistic mutations.",
+            "Construct custom event buses for cross-component broadcast communication."
+          ],
+          "takeaways": [
+            {
+              "title": "Optimistic UI Rollbacks",
+              "desc": "Snapshot prior cache state before applying optimistic UI transitions to allow clean rollbacks."
+            },
+            {
+              "title": "Stale-While-Revalidate",
+              "desc": "Serve local cache immediately while background revalidating to ensure zero interface latency."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-3-3",
+          "lessonNumber": "3.3",
+          "title": "Concurrency & Suspense",
+          "duration": "2h 00m",
+          "overview": [
+            "Harness React 19 concurrent features, transitions, and streaming Suspense boundaries for fluid UX.",
+            "Eliminate layout shifts during partial route hydration."
+          ],
+          "takeaways": [
+            {
+              "title": "useTransition Primitives",
+              "desc": "Mark state updates as non-urgent transitions so critical keystrokes never drop below 60fps."
+            },
+            {
+              "title": "Granular Suspense Boundaries",
+              "desc": "Nest Suspense boundaries around independent data blocks to allow progressive streaming."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-3-4",
+          "lessonNumber": "3.4",
+          "title": "Component State Management with React Hooks & Reducers",
+          "duration": "24m",
+          "overview": [
+            "In modern scalable React 19 architectures, managing high-velocity client updates without cascading re-renders requires distinguishing between localized component state and compound domain state. In this lesson, Rohit Sen dissects the trade-offs between atomic state hooks (useState) and deterministic action reducers (useReducer).",
+            "We examine practical implementation models for state lifting, action payload serialization, preventing memory leaks in asynchronous dispatchers, and pairing reducers with React 19 transition primitives for non-blocking UI rendering."
+          ],
+          "takeaways": [
+            {
+              "title": "Deterministic Reducer Contracts",
+              "desc": "Keep reducers pure with no asynchronous side effects. Route API triggers via customized hooks or middleware."
+            },
+            {
+              "title": "Granular Context Splitting",
+              "desc": "Separate State Context and Dispatch Context to safeguard non-dependent consumers from unwanted renders."
+            },
+            {
+              "title": "Non-blocking with useTransition",
+              "desc": "Wrap heavyweight state transitions so critical user gestures (e.g. typing, clicking) remain 60fps responsive."
+            },
+            {
+              "title": "Production Debugging with Redux DevTools",
+              "desc": "Integrate native browser telemetry for time-travel debugging across complex multi-step modal workflows."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    },
+    {
+      "id": "mod-4",
+      "moduleNumber": "Module 04",
+      "title": "Backend REST & GraphQL APIs with Node",
+      "lessons": [
+        {
+          "id": "lesson-4-1",
+          "lessonNumber": "4.1",
+          "title": "Microservice Architecture & Express / Fastify",
+          "duration": "1h 30m",
+          "overview": [
+            "Architect scalable Node.js microservices with dependency injection, connection pooling, and JWT authentication.",
+            "Implement rate limiting, structured JSON logging, and security headers."
+          ],
+          "takeaways": [
+            {
+              "title": "Connection Pooling",
+              "desc": "Manage database connection pools to survive sudden traffic surges without memory exhaustion."
+            },
+            {
+              "title": "Stateless Token Auth",
+              "desc": "Use cryptographically signed asymmetric JWTs for cross-service authentication."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        },
+        {
+          "id": "lesson-4-2",
+          "lessonNumber": "4.2",
+          "title": "API Observability, Docker Deployment & CI/CD",
+          "duration": "1h 45m",
+          "overview": [
+            "Containerize full-stack applications with multi-stage Docker builds and orchestrate automated GitHub Actions CI/CD workflows.",
+            "Monitor production health with distributed tracing and Prometheus metrics."
+          ],
+          "takeaways": [
+            {
+              "title": "Multi-stage Docker Builds",
+              "desc": "Exclude build tooling and development dependencies to yield minimal, secure production container images."
+            },
+            {
+              "title": "Zero-Downtime Rollouts",
+              "desc": "Configure health check endpoints and rolling container replacements for continuous deployment."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    }
+  ],
+  "previewVideoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

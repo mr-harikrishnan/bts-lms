@@ -1,0 +1,21 @@
+{
+  "id": "cv-2-1",
+  "lessonNumber": "2.1",
+  "title": "3-Point Commercial Lighting & Motivated Sources",
+  "duration": "1h 15m",
+  "overview": [
+    "Shape light using key, fill, and hair lights with softboxes, grids, and negative fill flags.",
+    "Match color temperatures (Kelvin) between artificial practicals and daylight ambient."
+  ],
+  "takeaways": [
+    {
+      "title": "Contrast Ratio",
+      "desc": "Master 4:1 and 8:1 lighting ratios to convey depth and premium editorial aesthetic."
+    },
+    {
+      "title": "Diffusion Mastery",
+      "desc": "Soften harsh LED emitters using 1/2 grid cloth for natural skin tones."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

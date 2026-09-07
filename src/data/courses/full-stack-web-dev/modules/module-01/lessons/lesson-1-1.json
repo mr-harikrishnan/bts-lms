@@ -1,0 +1,21 @@
+{
+  "id": "lesson-1-1",
+  "lessonNumber": "1.1",
+  "title": "Strict Typing & Generics",
+  "duration": "45m",
+  "overview": [
+    "Deep dive into TypeScript strict mode, utility types, and generic constraints for enterprise application development.",
+    "Construct type-safe data transformations and avoid unsafe type assertions in production."
+  ],
+  "takeaways": [
+    {
+      "title": "Exhaustive Pattern Matching",
+      "desc": "Use discriminated unions to enforce handling of all component states at compile time."
+    },
+    {
+      "title": "Generic Constraints",
+      "desc": "Limit polymorphic types using extends to prevent unintended runtime failures."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

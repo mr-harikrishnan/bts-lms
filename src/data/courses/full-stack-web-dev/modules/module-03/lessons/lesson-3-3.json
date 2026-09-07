@@ -1,0 +1,21 @@
+{
+  "id": "lesson-3-3",
+  "lessonNumber": "3.3",
+  "title": "Concurrency & Suspense",
+  "duration": "2h 00m",
+  "overview": [
+    "Harness React 19 concurrent features, transitions, and streaming Suspense boundaries for fluid UX.",
+    "Eliminate layout shifts during partial route hydration."
+  ],
+  "takeaways": [
+    {
+      "title": "useTransition Primitives",
+      "desc": "Mark state updates as non-urgent transitions so critical keystrokes never drop below 60fps."
+    },
+    {
+      "title": "Granular Suspense Boundaries",
+      "desc": "Nest Suspense boundaries around independent data blocks to allow progressive streaming."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

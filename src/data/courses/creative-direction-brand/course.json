@@ -1,0 +1,65 @@
+{
+  "id": "creative-direction-brand",
+  "title": "Creative Direction & Brand Identity Systems",
+  "category": "Content Creation",
+  "level": "Intermediate",
+  "duration": "8 Weeks (24 Hrs)",
+  "durationWeeks": 8,
+  "hoursLive": 24,
+  "lessonCount": 8,
+  "rating": 4.87,
+  "reviewsCount": 540,
+  "description": "Develop comprehensive visual brand guidelines, design systems, typographic scales, and digital design tokens in Figma.",
+  "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuAzNSmHQgtxzyYSwX_j_Nw9cV0CnIajPs_B5HzUav6bLjFKQ39SCrSfyXRlZPvP2XK2I2Eb4uYpj07_tF4eaM3ozOZ60nha1ZMzUoq_EPaek2WFJDHZ8lqpL0GvfGZ3AfHA4eGzxl0VkVFcMycfePkMn8M_4YipwWb-iG-BHv_QmQvAy5oipVZ_josPjXLI6Bqm75Akk3XehTsehoFOgouic4kqm7mBsNB_lIJZGyCU94rnvLoapBr8",
+  "instructor": {
+    "name": "Siddharth Rao",
+    "title": "Design Director & Typography Specialist",
+    "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuDWvRzPv4umPBs-EZvIRGoiO7_2N1t_15NqxOWD5wWrI_IceYxRho3H7p8vfVQBOOXT5SHMWSq15FnnqPukqePIasecXudzsvlHBSixC7yeiLg1QOYRYQV3Il61fsUeK1OPoLA8rAusN5DHf3I_zm90PgiHC7zTNsRM1GMSeoNaBQtSOkCTmtY2g7ux2xDKUIYUZ4yEmrQIovxdUporwkIFkiBN7N7e67Lm96rfI8Hr0e4WoEOklEII"
+  },
+  "originalPrice": 5999,
+  "price": 1999,
+  "discountPercent": 67,
+  "capstoneTitle": "Verified Capstone",
+  "capstoneDesc": "Multi-Brand Design Token System in Figma & Style Dictionary",
+  "skills": [
+    "Figma",
+    "Design Tokens",
+    "Typography",
+    "Brand Strategy",
+    "Design Systems"
+  ],
+  "isUpcoming": true,
+  "modules": [
+    {
+      "id": "cd-1",
+      "moduleNumber": "Module 01",
+      "title": "Design Tokens & Variable Typography",
+      "lessons": [
+        {
+          "id": "cd-1-1",
+          "lessonNumber": "1.1",
+          "title": "Semantic Token Hierarchies in Figma",
+          "duration": "50m",
+          "overview": [
+            "Map global color and typography scales into semantic aliases and component-level tokens.",
+            "Export tokens for automated consumption across Web, iOS, and Android codebases."
+          ],
+          "takeaways": [
+            {
+              "title": "Three-tier Tokens",
+              "desc": "Maintain Global -> Semantic -> Component token abstraction tiers."
+            },
+            {
+              "title": "Contrast Ratios",
+              "desc": "Automate WCAG AAA compliance checks inside token variables."
+            }
+          ],
+          "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    }
+  ],
+  "previewVideoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

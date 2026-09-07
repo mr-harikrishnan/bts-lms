@@ -1,0 +1,29 @@
+{
+  "id": "go-1",
+  "moduleNumber": "Module 01",
+  "title": "Go Concurrency & Memory Model",
+  "lessons": [
+    {
+      "id": "go-1-1",
+      "lessonNumber": "1.1",
+      "title": "Goroutines, Channels & CSP Paradigm",
+      "duration": "1h 10m",
+      "overview": [
+        "Deep dive into Go's M:N scheduler, channel buffering, and communicating sequential processes.",
+        "Prevent goroutine leaks and deadlocks using select statements with context deadlines."
+      ],
+      "takeaways": [
+        {
+          "title": "Goroutine Lifecycle",
+          "desc": "Always bind goroutine lifecycles to parent context cancellation."
+        },
+        {
+          "title": "Buffered Channels",
+          "desc": "Size channel buffers with strict backpressure to avoid unbounded heap growth."
+        }
+      ],
+      "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

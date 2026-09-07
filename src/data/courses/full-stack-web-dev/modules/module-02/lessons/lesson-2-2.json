@@ -1,0 +1,21 @@
+{
+  "id": "lesson-2-2",
+  "lessonNumber": "2.2",
+  "title": "Context & Prop Drilling",
+  "duration": "1h 20m",
+  "overview": [
+    "Architect high-velocity React Contexts without inducing cascading subtree re-renders.",
+    "Compare context multiplexing versus localized composition inversion."
+  ],
+  "takeaways": [
+    {
+      "title": "Context Granularity",
+      "desc": "Split state and dispatch functions into distinct provider nodes."
+    },
+    {
+      "title": "Compound Components",
+      "desc": "Use composition patterns to share implicit context among coordinated sibling elements."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "lesson-3-2",
+  "lessonNumber": "3.2",
+  "title": "Custom Hook Abstractions",
+  "duration": "1h 40m",
+  "overview": [
+    "Examine practical design patterns for hook-driven data fetching, cache invalidation, and optimistic mutations.",
+    "Construct custom event buses for cross-component broadcast communication."
+  ],
+  "takeaways": [
+    {
+      "title": "Optimistic UI Rollbacks",
+      "desc": "Snapshot prior cache state before applying optimistic UI transitions to allow clean rollbacks."
+    },
+    {
+      "title": "Stale-While-Revalidate",
+      "desc": "Serve local cache immediately while background revalidating to ensure zero interface latency."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

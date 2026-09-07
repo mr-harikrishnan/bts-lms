@@ -1,0 +1,29 @@
+{
+  "id": "lesson-3-4",
+  "lessonNumber": "3.4",
+  "title": "Component State Management with React Hooks & Reducers",
+  "duration": "24m",
+  "overview": [
+    "In modern scalable React 19 architectures, managing high-velocity client updates without cascading re-renders requires distinguishing between localized component state and compound domain state. In this lesson, Rohit Sen dissects the trade-offs between atomic state hooks (useState) and deterministic action reducers (useReducer).",
+    "We examine practical implementation models for state lifting, action payload serialization, preventing memory leaks in asynchronous dispatchers, and pairing reducers with React 19 transition primitives for non-blocking UI rendering."
+  ],
+  "takeaways": [
+    {
+      "title": "Deterministic Reducer Contracts",
+      "desc": "Keep reducers pure with no asynchronous side effects. Route API triggers via customized hooks or middleware."
+    },
+    {
+      "title": "Granular Context Splitting",
+      "desc": "Separate State Context and Dispatch Context to safeguard non-dependent consumers from unwanted renders."
+    },
+    {
+      "title": "Non-blocking with useTransition",
+      "desc": "Wrap heavyweight state transitions so critical user gestures (e.g. typing, clicking) remain 60fps responsive."
+    },
+    {
+      "title": "Production Debugging with Redux DevTools",
+      "desc": "Integrate native browser telemetry for time-travel debugging across complex multi-step modal workflows."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

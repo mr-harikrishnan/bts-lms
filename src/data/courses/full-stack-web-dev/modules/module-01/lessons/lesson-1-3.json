@@ -1,0 +1,21 @@
+{
+  "id": "lesson-1-3",
+  "lessonNumber": "1.3",
+  "title": "TS Architecture in Scale",
+  "duration": "50m",
+  "overview": [
+    "Structure monorepo-ready folder topologies, path aliases, and shared schema contracts between client and server.",
+    "Establish strict type boundaries using runtime validation with Zod."
+  ],
+  "takeaways": [
+    {
+      "title": "Schema First Validation",
+      "desc": "Derive TypeScript interfaces directly from Zod schemas to ensure single-source truth."
+    },
+    {
+      "title": "Decoupled Domain Types",
+      "desc": "Isolate presentation layer types from raw backend network payload models."
+    }
+  ],
+  "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
+}

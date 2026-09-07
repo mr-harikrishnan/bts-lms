@@ -1,0 +1,68 @@
+{
+  "courseId": "commercial-video-production",
+  "title": "Commercial Video Production & Storytelling Assessment",
+  "timeLimitMinutes": 20,
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to commercial cinematography standards, what is the standard 180-degree shutter rule when shooting at 24 frames per second (fps)?",
+      "options": [
+        "Set shutter speed to 1/24 second",
+        "Set shutter speed to 1/48 or 1/50 second to maintain natural motion blur",
+        "Set shutter speed to 1/200 second",
+        "Shutter speed is irrelevant when shooting in Log"
+      ],
+      "correctIndex": 1,
+      "explanation": "The 180-degree shutter rule specifies shutter speed should be double the frame rate (1/50s at 24fps) to reproduce natural human motion cadence."
+    },
+    {
+      "id": 2,
+      "question": "In DaVinci Resolve color grading, which node stage should come before applying a creative look-LUT?",
+      "options": [
+        "Export compression node",
+        "Primary balancing, exposure correction, and color space transform",
+        "Sharpening and grain overlay",
+        "Final audio normalization"
+      ],
+      "correctIndex": 1,
+      "explanation": "Primary color balance, exposure adjustments, and color space transforms must be normalized into a standard gamut before applying creative aesthetic LUTs."
+    },
+    {
+      "id": 3,
+      "question": "What is the difference between a J-cut and an L-cut in rhythmic video editing?",
+      "options": [
+        "In a J-cut, the audio of the next scene precedes the visual; in an L-cut, the audio of the current scene continues under the next visual",
+        "J-cuts are for YouTube, L-cuts are for television",
+        "J-cuts require 4K cameras, L-cuts require 1080p",
+        "There is no difference; they are synonymous"
+      ],
+      "correctIndex": 0,
+      "explanation": "A J-cut leads with incoming audio before the video cut; an L-cut lets trailing audio linger while cutting to the following visual shot."
+    },
+    {
+      "id": 4,
+      "question": "What is the target integrated loudness standard for commercial web video on YouTube and Spotify?",
+      "options": [
+        "0 LUFS",
+        "-6 LUFS",
+        "-14 LUFS (±1 LUFS)",
+        "-30 LUFS"
+      ],
+      "correctIndex": 2,
+      "explanation": "Standard web audio streaming targets -14 LUFS integrated loudness to prevent harsh digital clipping or automatic volume attenuation."
+    },
+    {
+      "id": 5,
+      "question": "When lighting a human subject with a 3-point setup, what is the function of the backlight (hair light)?",
+      "options": [
+        "To illuminate the camera lens",
+        "To separate the subject from the background by creating an edge rim on the hair and shoulders",
+        "To eliminate all shadows entirely",
+        "To blind the actor for dramatic effect"
+      ],
+      "correctIndex": 1,
+      "explanation": "The hair light creates specular edge definition, physically separating the subject from the backdrop and enhancing spatial depth."
+    }
+  ]
+}
