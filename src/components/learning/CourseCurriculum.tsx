@@ -8,9 +8,6 @@ interface CourseCurriculumProps {
   currentLessonId: string;
   completedLessonIds: string[];
   onSelectLesson: (lessonId: string) => void;
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
-  onSelectModule?: (moduleId: string) => void;
 }
 
 export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
@@ -18,9 +15,6 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   currentLessonId,
   completedLessonIds,
   onSelectLesson,
-  isCollapsed = false,
-  onToggleCollapse,
-  onSelectModule,
 }) => {
   // Determine which module contains currentLessonId
   const initialOpenModules: Record<string, boolean> = {};
@@ -53,91 +47,6 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  // CLOSED / COLLAPSED POSITION: ONLY SHOW ICONS FOR MODULES
-  if (isCollapsed) {
-    return (
-      <div className="bg-surface-container-lowest rounded-2xl p-2.5 shadow-sm border border-[#E5E7EB] flex flex-col items-center gap-3 w-16 mx-auto">
-        {/* Open / Expand Sidebar Toggle Button */}
-        <button
-          onClick={onToggleCollapse}
-          className="w-11 h-11 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-700 transition-colors group relative cursor-pointer"
-          title="Open Outline Sidebar"
-          aria-label="Open Sidebar"
-        >
-          <span className="material-symbols-outlined text-[22px]">
-            dock_to_right
-          </span>
-          <div className="absolute right-full mr-2.5 top-1/2 -translate-y-1/2 hidden group-hover:flex bg-slate-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
-            Open Outline Sidebar
-          </div>
-        </button>
-
-        <div className="w-8 h-[1px] bg-slate-200" />
-
-        {/* Vertical Module Icons Rail */}
-        <div className="flex flex-col gap-3 items-center w-full">
-          {course.modules.map((module, modIdx) => {
-            const isModuleActive = module.lessons.some((l) => l.id === currentLessonId);
-            const completedInModule = module.lessons.filter((l) =>
-              completedLessonIds.includes(l.id)
-            ).length;
-            const isModuleCompleted =
-              completedInModule === module.lessons.length && module.lessons.length > 0;
-
-            const modIcons = [
-              "menu_book",
-              "play_lesson",
-              "terminal",
-              "workspace_premium",
-              "deployed_code",
-            ];
-            const iconName = modIcons[modIdx % modIcons.length];
-
-            return (
-              <div
-                key={module.id}
-                className="relative group/mod flex flex-col items-center"
-              >
-                <button
-                  onClick={() => {
-                    setOpenModules((prev) => ({ ...prev, [module.id]: true }));
-                    if (onSelectModule) onSelectModule(module.id);
-                    if (onToggleCollapse) onToggleCollapse();
-                  }}
-                  className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer ${
-                    isModuleActive
-                      ? "bg-emerald-600 text-white shadow-md ring-2 ring-emerald-500/30"
-                      : isModuleCompleted
-                      ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
-                      : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                  aria-label={module.title}
-                >
-                  <span className="text-[10px] font-bold tracking-tight leading-none mb-0.5">
-                    M{modIdx + 1}
-                  </span>
-                  <span className="material-symbols-outlined text-[16px] leading-none">
-                    {isModuleCompleted ? "check_circle" : iconName}
-                  </span>
-                </button>
-
-                {/* Flyout Hover Tooltip */}
-                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover/mod:flex flex-col bg-slate-900 text-white text-xs px-3 py-2 rounded-xl shadow-xl whitespace-nowrap z-50 pointer-events-none">
-                  <div className="font-bold text-emerald-400">
-                    {module.moduleNumber}: {module.title}
-                  </div>
-                  <div className="text-slate-300 text-[11px] mt-0.5">
-                    {completedInModule}/{module.lessons.length} Lessons • Click to open
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4">
       {/* Curriculum Header & Filter Card */}
@@ -155,27 +64,12 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleExpandCollapseAll}
-              className="font-label-sm text-label-sm text-secondary font-semibold hover:underline cursor-pointer"
-            >
-              {Object.values(openModules).every(Boolean) ? "Collapse All" : "Expand All"}
-            </button>
-
-            {onToggleCollapse && (
-              <button
-                onClick={onToggleCollapse}
-                className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors flex items-center cursor-pointer"
-                title="Close Sidebar (Show Module Icons Only)"
-                aria-label="Close Sidebar"
-              >
-                <span className="material-symbols-outlined text-[20px]">
-                  dock_to_right
-                </span>
-              </button>
-            )}
-          </div>
+          <button
+            onClick={handleExpandCollapseAll}
+            className="font-label-sm text-label-sm text-secondary font-semibold hover:underline"
+          >
+            {Object.values(openModules).every(Boolean) ? "Collapse All" : "Expand All"}
+          </button>
         </div>
 
         {/* Filter Input */}
