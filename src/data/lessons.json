@@ -1,0 +1,754 @@
+[
+  {
+    "id": "go-1-1",
+    "courseId": "backend-architecture-go",
+    "moduleId": "go-1",
+    "lessonNumber": "1.1",
+    "title": "Goroutines, Channels & CSP Paradigm",
+    "duration": "1h 10m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Deep dive into Go's M:N scheduler, channel buffering, and communicating sequential processes.",
+      "Prevent goroutine leaks and deadlocks using select statements with context deadlines."
+    ],
+    "takeaways": [
+      {
+        "title": "Goroutine Lifecycle",
+        "desc": "Always bind goroutine lifecycles to parent context cancellation."
+      },
+      {
+        "title": "Buffered Channels",
+        "desc": "Size channel buffers with strict backpressure to avoid unbounded heap growth."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "cv-1-1",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-1",
+    "lessonNumber": "1.1",
+    "title": "The 3-Act Commercial Scriptwriting Framework",
+    "duration": "45m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Structure 30-second and 60-second commercial spots that hook viewers emotionally and motivate brand action.",
+      "Draft treatment documents and two-column AV scripts for agency client approval."
+    ],
+    "takeaways": [
+      {
+        "title": "Hook-Problem-Resolution",
+        "desc": "Anchor viewer attention in the first 2.5 seconds with cognitive dissonance."
+      },
+      {
+        "title": "Visual Beats",
+        "desc": "Write for the eyes first; dialogue should never explain what images can reveal."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "cv-1-2",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-1",
+    "lessonNumber": "1.2",
+    "title": "Storyboarding & Cinematic Pre-visualization",
+    "duration": "50m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Translate written scripts into camera shot lists, lens selections, and lighting schematics.",
+      "Coordinate production call sheets, talent release forms, and location permits."
+    ],
+    "takeaways": [
+      {
+        "title": "Shot Variety",
+        "desc": "Ensure coverage with wide establishing, medium dialogue, and macro insert shots."
+      },
+      {
+        "title": "Spatial Continuity",
+        "desc": "Strictly adhere to the 180-degree rule across dialogue camera reversals."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "cv-2-1",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-2",
+    "lessonNumber": "2.1",
+    "title": "3-Point Commercial Lighting & Motivated Sources",
+    "duration": "1h 15m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Shape light using key, fill, and hair lights with softboxes, grids, and negative fill flags.",
+      "Match color temperatures (Kelvin) between artificial practicals and daylight ambient."
+    ],
+    "takeaways": [
+      {
+        "title": "Contrast Ratio",
+        "desc": "Master 4:1 and 8:1 lighting ratios to convey depth and premium editorial aesthetic."
+      },
+      {
+        "title": "Diffusion Mastery",
+        "desc": "Soften harsh LED emitters using 1/2 grid cloth for natural skin tones."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "cv-2-2",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-2",
+    "lessonNumber": "2.2",
+    "title": "Camera Rigging, Lenses & Sensor Exposure",
+    "duration": "1h 30m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Expose log footage (S-Log3, C-Log, V-Log) using false color and waveform monitors rather than subjective EVF.",
+      "Choose between spherical and anamorphic lens characteristics for specific brand aesthetics."
+    ],
+    "takeaways": [
+      {
+        "title": "False Color Calibration",
+        "desc": "Pin Caucasian skin tones to 60-70 IRE and South Asian tones to 50-60 IRE in Log."
+      },
+      {
+        "title": "Shutter Angle Rule",
+        "desc": "Maintain 180-degree shutter angle (1/50s for 24fps) for cinematic motion blur."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "cv-3-1",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-3",
+    "lessonNumber": "3.1",
+    "title": "J-Cuts, L-Cuts & Rhythmic Editing in Premiere",
+    "duration": "1h 20m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Pace dialogue cuts according to musical rhythm and speaker emotional shifts.",
+      "Assemble rough assemblies into razor-sharp final agency edits."
+    ],
+    "takeaways": [
+      {
+        "title": "Audio Overlaps",
+        "desc": "Introduce ambient audio before visual transitions to disguise cut points."
+      },
+      {
+        "title": "Micro-Trim Discipline",
+        "desc": "Eliminate empty frames and filler breathing pauses to maximize viewer retention."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "cv-3-2",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-3",
+    "lessonNumber": "3.2",
+    "title": "DaVinci Resolve Node-Based Color Grading",
+    "duration": "1h 45m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Balance primary exposure, normalize contrast curves, and build stylized show-LUTs using ACES color management.",
+      "Isolate skin tones using qualified Hue vs Hue and Hue vs Sat vectors."
+    ],
+    "takeaways": [
+      {
+        "title": "Color Space Transforms",
+        "desc": "Convert camera-native Log into Rec.709 with mathematical precision."
+      },
+      {
+        "title": "Skin Tone Vector",
+        "desc": "Keep skin tones aligned strictly with the I-line on vectorscope."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "cv-4-1",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-4",
+    "lessonNumber": "4.1",
+    "title": "Dialogue Cleanup, Foley & Audio Layering",
+    "duration": "1h 10m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Clean noisy boom mic recordings with spectral de-noise and parametric dynamic equalization.",
+      "Layer ambient room tone, foley texture, and sub-bass risers for commercial impact."
+    ],
+    "takeaways": [
+      {
+        "title": "Dialogue Compression",
+        "desc": "Tame dialogue peaks with 3:1 opto-style compression and fast lookahead limiters."
+      },
+      {
+        "title": "LUFS Broadcast Standards",
+        "desc": "Master audio to -14 LUFS for YouTube/Spotify and -16 LUFS for Apple Podcasts."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "cv-4-2",
+    "courseId": "commercial-video-production",
+    "moduleId": "cv-4",
+    "lessonNumber": "4.2",
+    "title": "Export Profiles, Master Codecs & Client Handoff",
+    "duration": "1h 00m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Export high-bitrate ProRes 422 HQ archival masters and web-optimized H.264/H.265 files.",
+      "Deliver project packages with clean timeline markers and consolidated source media."
+    ],
+    "takeaways": [
+      {
+        "title": "Master Archival",
+        "desc": "Preserve 10-bit color depth with uncompressed 48kHz 24-bit audio stems."
+      },
+      {
+        "title": "Clean Project Handoff",
+        "desc": "Organize bins with standardized numbered prefixes for agency handoff."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "cd-1-1",
+    "courseId": "creative-direction-brand",
+    "moduleId": "cd-1",
+    "lessonNumber": "1.1",
+    "title": "Semantic Token Hierarchies in Figma",
+    "duration": "50m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Map global color and typography scales into semantic aliases and component-level tokens.",
+      "Export tokens for automated consumption across Web, iOS, and Android codebases."
+    ],
+    "takeaways": [
+      {
+        "title": "Three-tier Tokens",
+        "desc": "Maintain Global -> Semantic -> Component token abstraction tiers."
+      },
+      {
+        "title": "Contrast Ratios",
+        "desc": "Automate WCAG AAA compliance checks inside token variables."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "de-1-1",
+    "courseId": "data-engineering-python",
+    "moduleId": "de-1",
+    "lessonNumber": "1.1",
+    "title": "Data Lake vs Lakehouse Paradigms",
+    "duration": "55m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Compare Medallion lakehouse tiers (Bronze, Silver, Gold) with legacy ETL data warehouses.",
+      "Implement idempotent data ingestion scripts with schema evolution."
+    ],
+    "takeaways": [
+      {
+        "title": "Idempotency",
+        "desc": "Design data loaders that produce consistent states regardless of retries."
+      },
+      {
+        "title": "Schema Evolution",
+        "desc": "Handle upstream API changes without pipeline crashes using Parquet formats."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson-1-1",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-1",
+    "lessonNumber": "1.1",
+    "title": "Strict Typing & Generics",
+    "duration": "45m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Deep dive into TypeScript strict mode, utility types, and generic constraints for enterprise application development.",
+      "Construct type-safe data transformations and avoid unsafe type assertions in production."
+    ],
+    "takeaways": [
+      {
+        "title": "Exhaustive Pattern Matching",
+        "desc": "Use discriminated unions to enforce handling of all component states at compile time."
+      },
+      {
+        "title": "Generic Constraints",
+        "desc": "Limit polymorphic types using extends to prevent unintended runtime failures."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson-1-2",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-1",
+    "lessonNumber": "1.2",
+    "title": "Asynchronous JS & Promises",
+    "duration": "55m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Master the event loop, microtask queuing, and concurrency primitives in modern JavaScript runtimes.",
+      "Implement robust error recovery mechanisms and abortable fetch operations."
+    ],
+    "takeaways": [
+      {
+        "title": "AbortController Primitives",
+        "desc": "Cancel inflight requests to prevent memory leaks and race condition states."
+      },
+      {
+        "title": "Parallel vs Sequential Flows",
+        "desc": "Use Promise.allSettled for resilient non-blocking multi-resource hydrations."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "lesson-1-3",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-1",
+    "lessonNumber": "1.3",
+    "title": "TS Architecture in Scale",
+    "duration": "50m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Structure monorepo-ready folder topologies, path aliases, and shared schema contracts between client and server.",
+      "Establish strict type boundaries using runtime validation with Zod."
+    ],
+    "takeaways": [
+      {
+        "title": "Schema First Validation",
+        "desc": "Derive TypeScript interfaces directly from Zod schemas to ensure single-source truth."
+      },
+      {
+        "title": "Decoupled Domain Types",
+        "desc": "Isolate presentation layer types from raw backend network payload models."
+      }
+    ],
+    "order": 3
+  },
+  {
+    "id": "lesson-2-1",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-2",
+    "lessonNumber": "2.1",
+    "title": "Virtual DOM & Reconciliation",
+    "duration": "1h 15m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Understand React Fiber reconciler mechanics, diffing algorithms, and how to eliminate unnecessary renders.",
+      "Instrument component profilers to discover performance bottlenecks in deep component trees."
+    ],
+    "takeaways": [
+      {
+        "title": "Fiber Tree Allocation",
+        "desc": "Minimize intermediate object creations inside render loops to preserve garbage collector headroom."
+      },
+      {
+        "title": "Key Stability",
+        "desc": "Always assign deterministic identity keys rather than array indices to dynamic lists."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson-2-2",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-2",
+    "lessonNumber": "2.2",
+    "title": "Context & Prop Drilling",
+    "duration": "1h 20m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Architect high-velocity React Contexts without inducing cascading subtree re-renders.",
+      "Compare context multiplexing versus localized composition inversion."
+    ],
+    "takeaways": [
+      {
+        "title": "Context Granularity",
+        "desc": "Split state and dispatch functions into distinct provider nodes."
+      },
+      {
+        "title": "Compound Components",
+        "desc": "Use composition patterns to share implicit context among coordinated sibling elements."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "lesson-2-3",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-2",
+    "lessonNumber": "2.3",
+    "title": "Custom Hooks Optimization",
+    "duration": "1h 40m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Build composable headless logic hooks that encapsulate state machines, local storage persistence, and network polling.",
+      "Properly utilize useCallback and useMemo with rigorous dependency arrays."
+    ],
+    "takeaways": [
+      {
+        "title": "Referential Equality",
+        "desc": "Stabilize memoized callback signatures passed to memo-wrapped child components."
+      },
+      {
+        "title": "Hook Composition",
+        "desc": "Assemble complex behavior from small, testable single-responsibility custom hooks."
+      }
+    ],
+    "order": 3
+  },
+  {
+    "id": "lesson-3-1",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-3",
+    "lessonNumber": "3.1",
+    "title": "Context Multiplexing & Reducers",
+    "duration": "1h 10m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Model complex UI workflows using deterministic state machines and pure reducer functions.",
+      "Implement time-travel debugging and action audit logs."
+    ],
+    "takeaways": [
+      {
+        "title": "Pure Reducer Contracts",
+        "desc": "Keep reducers synchronous and side-effect free; dispatch outcomes explicitly."
+      },
+      {
+        "title": "Action Namespacing",
+        "desc": "Prefix action types with feature domains to avoid cross-module collision."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson-3-2",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-3",
+    "lessonNumber": "3.2",
+    "title": "Custom Hook Abstractions",
+    "duration": "1h 40m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Examine practical design patterns for hook-driven data fetching, cache invalidation, and optimistic mutations.",
+      "Construct custom event buses for cross-component broadcast communication."
+    ],
+    "takeaways": [
+      {
+        "title": "Optimistic UI Rollbacks",
+        "desc": "Snapshot prior cache state before applying optimistic UI transitions to allow clean rollbacks."
+      },
+      {
+        "title": "Stale-While-Revalidate",
+        "desc": "Serve local cache immediately while background revalidating to ensure zero interface latency."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "lesson-3-3",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-3",
+    "lessonNumber": "3.3",
+    "title": "Concurrency & Suspense",
+    "duration": "2h 00m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Harness React 19 concurrent features, transitions, and streaming Suspense boundaries for fluid UX.",
+      "Eliminate layout shifts during partial route hydration."
+    ],
+    "takeaways": [
+      {
+        "title": "useTransition Primitives",
+        "desc": "Mark state updates as non-urgent transitions so critical keystrokes never drop below 60fps."
+      },
+      {
+        "title": "Granular Suspense Boundaries",
+        "desc": "Nest Suspense boundaries around independent data blocks to allow progressive streaming."
+      }
+    ],
+    "order": 3
+  },
+  {
+    "id": "lesson-3-4",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-3",
+    "lessonNumber": "3.4",
+    "title": "Component State Management with React Hooks & Reducers",
+    "duration": "24m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "In modern scalable React 19 architectures, managing high-velocity client updates without cascading re-renders requires distinguishing between localized component state and compound domain state. In this lesson, Rohit Sen dissects the trade-offs between atomic state hooks (useState) and deterministic action reducers (useReducer).",
+      "We examine practical implementation models for state lifting, action payload serialization, preventing memory leaks in asynchronous dispatchers, and pairing reducers with React 19 transition primitives for non-blocking UI rendering."
+    ],
+    "takeaways": [
+      {
+        "title": "Deterministic Reducer Contracts",
+        "desc": "Keep reducers pure with no asynchronous side effects. Route API triggers via customized hooks or middleware."
+      },
+      {
+        "title": "Granular Context Splitting",
+        "desc": "Separate State Context and Dispatch Context to safeguard non-dependent consumers from unwanted renders."
+      },
+      {
+        "title": "Non-blocking with useTransition",
+        "desc": "Wrap heavyweight state transitions so critical user gestures (e.g. typing, clicking) remain 60fps responsive."
+      },
+      {
+        "title": "Production Debugging with Redux DevTools",
+        "desc": "Integrate native browser telemetry for time-travel debugging across complex multi-step modal workflows."
+      }
+    ],
+    "order": 4
+  },
+  {
+    "id": "lesson-4-1",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-4",
+    "lessonNumber": "4.1",
+    "title": "Microservice Architecture & Express / Fastify",
+    "duration": "1h 30m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Architect scalable Node.js microservices with dependency injection, connection pooling, and JWT authentication.",
+      "Implement rate limiting, structured JSON logging, and security headers."
+    ],
+    "takeaways": [
+      {
+        "title": "Connection Pooling",
+        "desc": "Manage database connection pools to survive sudden traffic surges without memory exhaustion."
+      },
+      {
+        "title": "Stateless Token Auth",
+        "desc": "Use cryptographically signed asymmetric JWTs for cross-service authentication."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson-4-2",
+    "courseId": "full-stack-web-dev",
+    "moduleId": "mod-4",
+    "lessonNumber": "4.2",
+    "title": "API Observability, Docker Deployment & CI/CD",
+    "duration": "1h 45m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Containerize full-stack applications with multi-stage Docker builds and orchestrate automated GitHub Actions CI/CD workflows.",
+      "Monitor production health with distributed tracing and Prometheus metrics."
+    ],
+    "takeaways": [
+      {
+        "title": "Multi-stage Docker Builds",
+        "desc": "Exclude build tooling and development dependencies to yield minimal, secure production container images."
+      },
+      {
+        "title": "Zero-Downtime Rollouts",
+        "desc": "Configure health check endpoints and rolling container replacements for continuous deployment."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "pm-1-1",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-1",
+    "lessonNumber": "1.1",
+    "title": "Funnel Economics & CAC/LTV Mechanics",
+    "duration": "40m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Master customer acquisition economics, payback periods, and margin calculations across B2B and D2C funnels.",
+      "Analyze customer retention data to establish profitable ad spend thresholds."
+    ],
+    "takeaways": [
+      {
+        "title": "Unit Economics",
+        "desc": "Calculate Blended vs Paid CAC accurately across multi-touch touchpoints."
+      },
+      {
+        "title": "Payback Velocity",
+        "desc": "Optimize ad spend based on 30, 60, and 90-day cash recovery cycles."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "pm-1-2",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-1",
+    "lessonNumber": "1.2",
+    "title": "Audience Segmentation & Persona Engineering",
+    "duration": "50m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Build granular customer ICP profiles and map emotional triggers to specific advertising angles.",
+      "Leverage first-party data exports for high-precision seed lists."
+    ],
+    "takeaways": [
+      {
+        "title": "Psychographic Modeling",
+        "desc": "Identify the top 3 friction points preventing customer purchase."
+      },
+      {
+        "title": "Seed List Cleansing",
+        "desc": "Filter high-LTV customer records to prevent lookalike dilution."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "pm-2-1",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-2",
+    "lessonNumber": "2.1",
+    "title": "Auction Theory & eCPM Optimization",
+    "duration": "1h 10m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Understand Facebook's auction formula: Total Value = Bid × Estimated Action Rate + User Value.",
+      "Structure broad-targeting campaigns that let the algorithm self-optimize efficiently."
+    ],
+    "takeaways": [
+      {
+        "title": "Creative as Targeting",
+        "desc": "Use specific hook formats to filter intent rather than micro-interest layering."
+      },
+      {
+        "title": "Bid Cap Tactics",
+        "desc": "Deploy manual bid caps during peak seasonal events to protect ROAS."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "pm-2-2",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-2",
+    "lessonNumber": "2.2",
+    "title": "Creative Fatigue Cycling & Dynamic Testing",
+    "duration": "1h 25m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Implement 3:2:2 Dynamic Creative Testing frameworks to identify winning hooks, copy, and visual formats.",
+      "Rotate ad variants systematically before frequency saturation degrades conversion efficiency."
+    ],
+    "takeaways": [
+      {
+        "title": "Hook-Hold Ratios",
+        "desc": "Diagnose video creative using 3-second hook drop-off vs 50% watch time."
+      },
+      {
+        "title": "Scaling Horizontal",
+        "desc": "Scale winning post IDs into consolidated CBO campaigns without reset."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "pm-3-1",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-3",
+    "lessonNumber": "3.1",
+    "title": "Intent Capture with Google Search Architecture",
+    "duration": "1h 05m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Structure single-theme ad groups (STAGs) with exact and phrase match intent layers.",
+      "Eliminate ad spend waste using exhaustive negative keyword lists and search term mining."
+    ],
+    "takeaways": [
+      {
+        "title": "Search Term Mining",
+        "desc": "Routinely convert high-converting search queries into isolated exact match keywords."
+      },
+      {
+        "title": "Quality Score Gains",
+        "desc": "Align landing page H1s with ad copy to lower cost per click by up to 35%."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "pm-3-2",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-3",
+    "lessonNumber": "3.2",
+    "title": "Performance Max Campaign Orchestration",
+    "duration": "1h 15m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Feed high-quality asset groups, customer match signals, and final URL expansion rules to PMax.",
+      "Audit placement reports to prevent brand cannibalization."
+    ],
+    "takeaways": [
+      {
+        "title": "Audience Signals",
+        "desc": "Guide Google AI with custom intent segments and in-market buyer lists."
+      },
+      {
+        "title": "Brand Exclusions",
+        "desc": "Always apply brand exclusion lists to PMax to measure true incremental acquisition."
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "pm-4-1",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-4",
+    "lessonNumber": "4.1",
+    "title": "Server-Side Tagging & Conversions API (CAPI)",
+    "duration": "1h 20m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Bypass browser ad-blockers and iOS privacy restrictions with Google Tag Manager Server-Side setup.",
+      "Transmit hashed user parameters to achieve Event Match Quality scores above 8.5."
+    ],
+    "takeaways": [
+      {
+        "title": "Event Match Quality",
+        "desc": "Send external_id, fbp, and fbc cookies alongside email hashes."
+      },
+      {
+        "title": "Deduplication Rules",
+        "desc": "Coordinate event_id across browser pixel and server CAPI events."
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "pm-4-2",
+    "courseId": "performance-marketing",
+    "moduleId": "pm-4",
+    "lessonNumber": "4.2",
+    "title": "Marketing Mix Modeling & Incremental Testing",
+    "duration": "1h 30m",
+    "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4",
+    "overview": [
+      "Conduct geo-split lift tests to measure true incrementality over baseline organic sales.",
+      "Build automated SQL dashboards to reconcile CRM revenue with ad platform metrics."
+    ],
+    "takeaways": [
+      {
+        "title": "Holdout Groups",
+        "desc": "Blackout advertising in specific target regions to calculate genuine ROAS lift."
+      },
+      {
+        "title": "Attribution Blending",
+        "desc": "Combine first-touch, last-touch, and Shapley data-driven models."
+      }
+    ],
+    "order": 2
+  }
+]

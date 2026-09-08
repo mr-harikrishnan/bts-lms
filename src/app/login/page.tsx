@@ -17,7 +17,7 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
@@ -38,18 +38,28 @@ function LoginForm() {
     setIsSubmitting(true);
     setError("");
 
-    setTimeout(() => {
-      login(trimmedEmail, trimmedPassword);
-      router.replace(redirectTarget);
-    }, 400);
-  };
+    const success = await login(trimmedEmail, trimmedPassword);
+    if (!success) {
+      setError("Invalid credentials. Please verify your email and password.");
+      setIsSubmitting(false);
+      return;
+    }
 
-  const handleQuickDemo = () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    login("hari.prasath@example.com");
     router.replace(redirectTarget);
   };
+
+  const handleQuickDemo = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    const success = await login("hari.prasath@example.com", "password123");
+    if (!success) {
+      setError("Unable to authenticate demo account. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+    router.replace(redirectTarget);
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100/60 flex flex-col justify-between selection:bg-emerald-100 selection:text-emerald-900">

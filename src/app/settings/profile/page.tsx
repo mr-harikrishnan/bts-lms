@@ -28,7 +28,7 @@ export default function EditProfilePage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
@@ -52,19 +52,26 @@ export default function EditProfilePage() {
     setIsSubmitting(true);
     setError("");
 
-    updateProfile({
-      name: trimmedName,
-      email: trimmedEmail,
-      college: trimmedCollege,
-      district: trimmedDistrict,
-      state: trimmedState,
-      avatar: selectedAvatar,
-    });
-    setSavedSuccess(true);
-    setTimeout(() => {
-      router.replace("/settings");
-    }, 600);
+    try {
+      await updateProfile({
+        name: trimmedName,
+        email: trimmedEmail,
+        college: trimmedCollege,
+        district: trimmedDistrict,
+        state: trimmedState,
+        avatar: selectedAvatar,
+      });
+      setSavedSuccess(true);
+      setTimeout(() => {
+        router.replace("/settings");
+      }, 600);
+    } catch (err) {
+      console.error("Profile save error:", err);
+      setError("Unable to save profile updates. Please try again.");
+      setIsSubmitting(false);
+    }
   };
+
 
   const customBreadcrumb = (
     <div className="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">

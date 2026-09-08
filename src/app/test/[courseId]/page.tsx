@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
-import { COURSE_TESTS } from "@/data/tests";
+import { courseService } from "@/services/apiClient";
+import { PublicCourseTest } from "@/types";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function FinalTestPage({
@@ -19,41 +20,71 @@ export default function FinalTestPage({
   const { courses, recordTestResult } = useBstorm();
 
   const course = courses.find((c) => c.id === courseId);
-  const testData = course ? (COURSE_TESTS[course.id] || COURSE_TESTS["full-stack-web-dev"]) : null;
+  const [testData, setTestData] = useState<PublicCourseTest | null>(null);
+  const [isLoadingTest, setIsLoadingTest] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
-  const [timeLeft, setTimeLeft] = useState(testData ? testData.timeLimitMinutes * 60 : 15 * 60);
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
+
+  // Load test from API
+  useEffect(() => {
+    let isMounted = true;
+    async function loadTest() {
+      setIsLoadingTest(true);
+      setLoadError("");
+      try {
+        const data = await courseService.getTest(courseId);
+        if (isMounted) {
+          setTestData(data);
+          setTimeLeft(data.timeLimitMinutes * 60);
+        }
+      } catch (err: unknown) {
+        if (isMounted) {
+          console.error("Test loading error:", err);
+          setLoadError("Unable to load test assessment. Please try again.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingTest(false);
+        }
+      }
+    }
+    loadTest();
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId]);
 
   const answeredCount = Object.keys(selectedAnswers).length;
   const totalQuestions = testData ? testData.questions.length : 0;
 
-  const handleSubmit = (force = false) => {
+  const handleSubmit = async (force = false) => {
     if (isSubmitting || !course || !testData) return;
     if (!force && answeredCount < totalQuestions) {
       setShowWarning(true);
       return;
     }
+
     setIsSubmitting(true);
     setShowWarning(false);
+    setSubmissionError("");
 
-    // Calculate score
-    let correctCount = 0;
-    testData.questions.forEach((q) => {
-      if (selectedAnswers[q.id] === q.correctIndex) {
-        correctCount += 1;
-      }
-    });
-
-    const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
-    const passed = scorePercentage >= testData.passingScore;
-
-    setTimeout(() => {
-      recordTestResult(course.id, scorePercentage, passed);
-      router.replace(`/test/${course.id}/result?score=${scorePercentage}&passed=${passed}`);
-    }, 600);
+    try {
+      const result = await courseService.submitTest(course.id, selectedAnswers);
+      recordTestResult(course.id, result.score, result.passed, result.certificate);
+      router.replace(
+        `/test/${course.id}/result?score=${result.score}&passed=${result.passed}`
+      );
+    } catch (err: unknown) {
+      console.error("Test submission failed:", err);
+      setSubmissionError("Unable to submit test. Please check your connection and try again.");
+      setIsSubmitting(false);
+    }
   };
 
   // Timer countdown
@@ -85,10 +116,39 @@ export default function FinalTestPage({
     }));
   };
 
-  if (!course || !testData) {
+  const customBreadcrumb = (
+    <div className="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+      <Link
+        href={`/courses/${courseId}/learn`}
+        className="hover:text-primary transition-colors flex items-center gap-1"
+      >
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        <span>Learning Workspace</span>
+      </Link>
+      <span className="material-symbols-outlined text-[16px] text-outline">
+        chevron_right
+      </span>
+      <span className="text-primary font-semibold">Final Course Test</span>
+    </div>
+  );
+
+  if (isLoadingTest) {
     return (
       <AuthGuard>
-        <AppShell>
+        <AppShell customBreadcrumb={customBreadcrumb}>
+          <div className="max-w-4xl mx-auto flex flex-col gap-6 animate-pulse">
+            <div className="h-28 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="h-96 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
+  if (!course || !testData || loadError) {
+    return (
+      <AuthGuard>
+        <AppShell customBreadcrumb={customBreadcrumb}>
           <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-[#E5E7EB] flex flex-col items-center justify-center gap-3">
             <span className="material-symbols-outlined text-[48px] text-outline">
               search_off
@@ -97,7 +157,7 @@ export default function FinalTestPage({
               Course Test Not Found
             </h3>
             <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md">
-              The test you are trying to access could not be found.
+              {loadError || "The assessment you are trying to access could not be located."}
             </p>
             <Link
               href="/courses"
@@ -112,17 +172,6 @@ export default function FinalTestPage({
   }
 
   const currentQuestion = testData.questions[currentQuestionIdx];
-
-  const customBreadcrumb = (
-    <div className="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
-      <Link href={`/courses/${course.id}/learn`} className="hover:text-primary transition-colors flex items-center gap-1">
-        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-        <span>Learning Workspace</span>
-      </Link>
-      <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
-      <span className="text-primary font-semibold">Final Course Test</span>
-    </div>
-  );
 
   return (
     <AuthGuard>
@@ -139,62 +188,57 @@ export default function FinalTestPage({
                   Passing Score: {testData.passingScore}%
                 </span>
               </div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-xl font-bold text-primary tracking-tight">
                 {testData.title}
               </h1>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Answer the questions below. Score 70% or higher to receive your verified completion certificate.
+              <p className="text-xs text-on-surface-variant">
+                {course.title} • {totalQuestions} Questions
               </p>
             </div>
 
-            {/* Live Timer Card */}
-            <div className="flex items-center gap-3 bg-surface-container-low px-4 py-2.5 rounded-xl border border-surface-container shrink-0 self-end md:self-auto">
-              <span className="material-symbols-outlined text-secondary text-[22px]">
-                timer
-              </span>
-              <div className="flex flex-col">
-                <span className="font-caption text-[11px] text-on-surface-variant font-medium uppercase tracking-wider">
-                  Time Remaining
-                </span>
-                <span className="font-mono text-lg font-bold text-primary">
-                  {formatTime(timeLeft)}
+            {/* Timer & Progress pill */}
+            <div className="flex items-center gap-3">
+              <div
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-mono font-bold text-sm ${
+                  timeLeft < 300
+                    ? "bg-red-50 text-red-700 border-red-200 animate-pulse"
+                    : "bg-surface-container-low text-primary border-surface-container"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">timer</span>
+                <span>{formatTime(timeLeft)}</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-low border border-surface-container text-xs font-semibold text-on-surface-variant">
+                <span>
+                  {answeredCount} of {totalQuestions} answered
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Stepper Progress Bar */}
-          <div className="bg-surface-container-lowest rounded-xl border border-[#E5E7EB] p-4 shadow-sm flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-label-md text-label-md text-primary font-semibold">
-                Question {currentQuestionIdx + 1} of {totalQuestions}
-              </span>
-              <span className="text-on-surface-variant">
-                {answeredCount} of {totalQuestions} Answered
-              </span>
+          {/* Submission Error Alert */}
+          {submissionError && (
+            <div className="bg-red-50 text-red-800 p-4 rounded-xl border border-red-200 text-sm flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">error</span>
+              <span>{submissionError}</span>
             </div>
-            <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-secondary h-full transition-all duration-300"
-                style={{
-                  width: `${((currentQuestionIdx + 1) / totalQuestions) * 100}%`,
-                }}
-              />
-            </div>
-            {/* Question Quick Jump Badges */}
-            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-surface-container">
+          )}
+
+          {/* Question Navigation Bubbles */}
+          <div className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-4 shadow-sm flex items-center justify-between gap-4 overflow-x-auto">
+            <div className="flex items-center gap-2">
               {testData.questions.map((q, idx) => {
-                const isAnswered = selectedAnswers[q.id] !== undefined;
                 const isCurrent = idx === currentQuestionIdx;
+                const isAnswered = selectedAnswers[q.id] !== undefined;
                 return (
                   <button
                     key={q.id}
                     onClick={() => setCurrentQuestionIdx(idx)}
-                    className={`w-7 h-7 rounded-lg text-xs font-semibold flex items-center justify-center transition-all ${
+                    className={`w-9 h-9 rounded-xl font-label-md text-xs font-bold transition-all shrink-0 ${
                       isCurrent
-                        ? "bg-primary text-on-primary ring-2 ring-primary/30"
+                        ? "bg-primary text-on-primary ring-2 ring-primary/40 shadow-sm"
                         : isAnswered
-                        ? "bg-secondary-container text-on-secondary-fixed font-bold"
+                        ? "bg-secondary text-on-secondary"
                         : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                     }`}
                   >
@@ -203,148 +247,138 @@ export default function FinalTestPage({
                 );
               })}
             </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                disabled={currentQuestionIdx === 0}
+                onClick={() => setCurrentQuestionIdx((prev) => Math.max(0, prev - 1))}
+                className="px-3 py-1.5 rounded-lg border border-surface-container bg-surface-container-lowest text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low disabled:opacity-40 transition-all"
+              >
+                Prev
+              </button>
+              <button
+                disabled={currentQuestionIdx === totalQuestions - 1}
+                onClick={() =>
+                  setCurrentQuestionIdx((prev) => Math.min(totalQuestions - 1, prev + 1))
+                }
+                className="px-3 py-1.5 rounded-lg border border-surface-container bg-surface-container-lowest text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low disabled:opacity-40 transition-all"
+              >
+                Next
+              </button>
+            </div>
           </div>
 
-          {/* Unanswered Questions Warning Modal / Banner */}
-          {showWarning && (
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-              <div className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-amber-700 text-[22px]">
-                  warning
+          {/* Question Content Box */}
+          {currentQuestion && (
+            <div className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-6 sm:p-8 shadow-sm flex flex-col gap-6">
+              <div className="flex items-center justify-between gap-2 border-b border-surface-container pb-4">
+                <span className="font-caption text-caption text-secondary font-bold uppercase tracking-wider">
+                  Question {currentQuestionIdx + 1} of {totalQuestions}
                 </span>
-                <span className="text-sm font-medium">
-                  You have only answered {answeredCount} of {totalQuestions} questions. Are you sure you want to finish?
-                </span>
+                <span className="text-xs text-outline font-medium">Multiple Choice</span>
               </div>
-              <div className="flex items-center gap-2 self-end sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => setShowWarning(false)}
-                  className="px-3 py-1.5 text-xs font-semibold bg-white border border-amber-300 rounded-lg hover:bg-amber-100/50"
-                >
-                  Review Questions
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSubmit(true)}
-                  className="px-3 py-1.5 text-xs font-semibold bg-amber-700 text-white rounded-lg hover:bg-amber-800"
-                >
-                  Submit Anyway
-                </button>
+
+              <h2 className="text-lg sm:text-xl font-bold text-primary leading-relaxed">
+                {currentQuestion.question}
+              </h2>
+
+              {currentQuestion.codeSnippet && (
+                <div className="rounded-xl bg-slate-900 text-slate-100 p-4 font-mono text-xs overflow-x-auto border border-slate-800">
+                  <pre>{currentQuestion.codeSnippet}</pre>
+                </div>
+              )}
+
+              {/* Options */}
+              <div className="flex flex-col gap-3 pt-2">
+                {currentQuestion.options.map((opt, optIdx) => {
+                  const isSelected = selectedAnswers[currentQuestion.id] === optIdx;
+                  return (
+                    <button
+                      key={optIdx}
+                      type="button"
+                      onClick={() => handleSelectOption(currentQuestion.id, optIdx)}
+                      className={`text-left p-4 rounded-xl border transition-all flex items-start gap-3.5 group ${
+                        isSelected
+                          ? "bg-secondary-container/40 border-secondary text-primary font-medium ring-1 ring-secondary/50"
+                          : "bg-surface-container-lowest border-surface-container hover:border-outline-variant hover:bg-surface-container-low/50 text-on-surface"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                          isSelected
+                            ? "border-secondary bg-secondary text-on-secondary"
+                            : "border-outline group-hover:border-primary"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <span className="font-body-md text-sm leading-relaxed">
+                        {opt}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Navigation & Submit Bar */}
+              <div className="pt-6 border-t border-surface-container flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={currentQuestionIdx === 0}
+                    onClick={() => setCurrentQuestionIdx((prev) => Math.max(0, prev - 1))}
+                    className="px-4 py-2 rounded-xl border border-surface-container bg-surface-container-lowest text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low disabled:opacity-40 transition-all flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      arrow_back
+                    </span>
+                    <span>Previous Question</span>
+                  </button>
+                  {currentQuestionIdx < totalQuestions - 1 && (
+                    <button
+                      onClick={() => setCurrentQuestionIdx((prev) => prev + 1)}
+                      className="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-xs font-semibold text-primary transition-all flex items-center gap-1"
+                    >
+                      <span>Next Question</span>
+                      <span className="material-symbols-outlined text-[16px]">
+                        arrow_forward
+                      </span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {showWarning && answeredCount < totalQuestions && (
+                    <span className="text-xs text-amber-700 font-medium">
+                      You have unanswered questions ({totalQuestions - answeredCount} left).
+                    </span>
+                  )}
+                  <button
+                    disabled={isSubmitting}
+                    onClick={() => handleSubmit(false)}
+                    className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-sm font-semibold hover:bg-primary-container transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="material-symbols-outlined text-[18px] animate-spin">
+                          progress_activity
+                        </span>
+                        <span>Grading Test...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-[18px]">
+                          check_circle
+                        </span>
+                        <span>Submit Final Test</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           )}
-
-          {/* Active Question Card */}
-          <div className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-6 sm:p-8 shadow-sm flex flex-col gap-6">
-            <div className="flex items-start gap-3">
-              <span className="w-8 h-8 rounded-xl bg-secondary-container text-on-secondary-fixed font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
-                Q{currentQuestionIdx + 1}
-              </span>
-              <div className="flex flex-col gap-1">
-                <span className="font-caption text-caption text-secondary font-semibold uppercase tracking-wider">
-                  Select the best practical answer
-                </span>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
-                  {currentQuestion.question}
-                </h2>
-              </div>
-            </div>
-
-            {/* Answer Options Radio Group */}
-            <div className="flex flex-col gap-3">
-              {currentQuestion.options.map((opt, optIdx) => {
-                const isSelected = selectedAnswers[currentQuestion.id] === optIdx;
-                return (
-                  <label
-                    key={optIdx}
-                    onClick={() => handleSelectOption(currentQuestion.id, optIdx)}
-                    className={`p-4 rounded-xl border flex items-center gap-3.5 cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-secondary-container/30 border-secondary ring-1 ring-secondary"
-                        : "bg-surface-container-low border-[#E5E7EB] hover:bg-surface-container"
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                        isSelected
-                          ? "border-secondary bg-secondary text-on-secondary"
-                          : "border-outline bg-surface-container-lowest"
-                      }`}
-                    >
-                      {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-on-secondary" />
-                      )}
-                    </div>
-                    <span
-                      className={`text-sm ${
-                        isSelected
-                          ? "font-semibold text-primary"
-                          : "text-on-surface"
-                      }`}
-                    >
-                      {opt}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-
-            {/* Stepper Footer Controls */}
-            <div className="flex items-center justify-between pt-4 border-t border-surface-container">
-              <button
-                type="button"
-                onClick={() => setCurrentQuestionIdx((p) => Math.max(0, p - 1))}
-                disabled={currentQuestionIdx === 0}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#E5E7EB] bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  arrow_back
-                </span>
-                <span>Previous</span>
-              </button>
-
-              {currentQuestionIdx < totalQuestions - 1 ? (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCurrentQuestionIdx((p) =>
-                      Math.min(totalQuestions - 1, p + 1)
-                    )
-                  }
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
-                >
-                  <span>Next Question</span>
-                  <span className="material-symbols-outlined text-[18px]">
-                    arrow_forward
-                  </span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handleSubmit(false)}
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-bold hover:bg-secondary/90 transition-all shadow-md cursor-pointer disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="material-symbols-outlined text-[18px] animate-spin">
-                        sync
-                      </span>
-                      <span>Grading Assessment...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Submit Test</span>
-                      <span className="material-symbols-outlined text-[18px]">
-                        verified
-                      </span>
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       </AppShell>
     </AuthGuard>

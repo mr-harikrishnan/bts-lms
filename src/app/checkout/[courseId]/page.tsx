@@ -1,12 +1,14 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { PaymentGateway } from "@/components/checkout/PaymentGateway";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { courseService } from "@/services/apiClient";
+import { Course } from "@/types";
 
 export default function CheckoutPage({
   params,
@@ -15,9 +17,41 @@ export default function CheckoutPage({
 }) {
   const resolvedParams = use(params);
   const courseId = resolvedParams.courseId;
-  const { courses, user, isEnrolled } = useBstorm();
+  const { courses, user, isEnrolled, isLoading: isContextLoading } = useBstorm();
 
-  const course = courses.find((c) => c.id === courseId);
+  const [apiCourse, setApiCourse] = useState<Course | null>(null);
+  const [isLoadingApi, setIsLoadingApi] = useState(true);
+
+  const contextCourse = courses.find((c) => c.id === courseId);
+  const course = contextCourse || apiCourse;
+
+  useEffect(() => {
+    let isMounted = true;
+    if (contextCourse) {
+      setIsLoadingApi(false);
+      return;
+    }
+
+    async function loadCourse() {
+      setIsLoadingApi(true);
+      try {
+        const data = await courseService.getById(courseId);
+        if (isMounted) {
+          setApiCourse(data);
+        }
+      } catch (err) {
+        console.error("Failed to load course for checkout:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingApi(false);
+        }
+      }
+    }
+    loadCourse();
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId, contextCourse]);
 
   const customBreadcrumb = (
     <div className="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
@@ -31,6 +65,19 @@ export default function CheckoutPage({
       <span className="text-primary font-semibold">Checkout & Verification</span>
     </div>
   );
+
+  if (isContextLoading || isLoadingApi) {
+    return (
+      <AuthGuard>
+        <AppShell customBreadcrumb={customBreadcrumb}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+            <div className="lg:col-span-8 h-96 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="lg:col-span-4 h-96 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   if (!course) {
     return (
@@ -57,6 +104,7 @@ export default function CheckoutPage({
       </AuthGuard>
     );
   }
+
 
   const alreadyEnrolled = isEnrolled(course.id);
 

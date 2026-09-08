@@ -1,14 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { CourseFilters } from "@/components/courses/CourseFilters";
-import { CourseCategory } from "@/types";
+import { CourseCategory, Course } from "@/types";
+import { courseService } from "@/services/apiClient";
 
 export default function CoursesCatalogPage() {
-  const { courses } = useBstorm();
+  const { courses: initialCourses } = useBstorm();
+
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [isInitialLoad, setIsInitialLoad] = useState(initialCourses.length === 0);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CourseCategory>("All Tracks");
@@ -16,71 +21,56 @@ export default function CoursesCatalogPage() {
   const [selectedDuration, setSelectedDuration] = useState("");
   const [selectedSort, setSelectedSort] = useState("popular");
 
-  // Category counts
+  // Keep track of active fetch requests to avoid race conditions
+  const latestRequestId = useRef(0);
+
+  useEffect(() => {
+    if (initialCourses.length > 0 && courses.length === 0) {
+      setCourses(initialCourses);
+      setIsInitialLoad(false);
+    }
+  }, [initialCourses, courses.length]);
+
+  useEffect(() => {
+    const requestId = ++latestRequestId.current;
+    setIsFiltering(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const data = await courseService.getAll({
+          category: selectedCategory !== "All Tracks" ? selectedCategory : undefined,
+          level: selectedLevel || undefined,
+          duration: selectedDuration || undefined,
+          search: searchQuery || undefined,
+          sort: selectedSort || undefined,
+        });
+
+        if (requestId === latestRequestId.current) {
+          setCourses(data);
+          setIsInitialLoad(false);
+        }
+      } catch (err) {
+        console.error("Failed to load courses from API:", err);
+      } finally {
+        if (requestId === latestRequestId.current) {
+          setIsFiltering(false);
+        }
+      }
+    }, searchQuery ? 250 : 0); // Debounce search queries
+
+    return () => clearTimeout(timer);
+  }, [selectedCategory, selectedLevel, selectedDuration, searchQuery, selectedSort]);
+
+  // Category counts from currently loaded catalog
   const counts = useMemo(() => {
+    const totalSource = initialCourses.length > 0 ? initialCourses : courses;
     return {
-      all: courses.length,
-      marketing: courses.filter((c) => c.category === "Digital Marketing").length,
-      content: courses.filter((c) => c.category === "Content Creation").length,
-      web: courses.filter((c) => c.category === "Web Development").length,
+      all: totalSource.length,
+      marketing: totalSource.filter((c) => c.category === "Digital Marketing").length,
+      content: totalSource.filter((c) => c.category === "Content Creation").length,
+      web: totalSource.filter((c) => c.category === "Web Development").length,
     };
-  }, [courses]);
-
-  // Filtered & Sorted courses
-  const filteredCourses = useMemo(() => {
-    return courses
-      .filter((course) => {
-        // Category filter
-        if (
-          selectedCategory !== "All Tracks" &&
-          course.category !== selectedCategory
-        ) {
-          return false;
-        }
-
-        // Skill level filter
-        if (selectedLevel && course.level !== selectedLevel) {
-          return false;
-        }
-
-        // Duration filter
-        if (selectedDuration === "short" && course.durationWeeks > 8) return false;
-        if (
-          selectedDuration === "medium" &&
-          (course.durationWeeks < 8 || course.durationWeeks > 12)
-        )
-          return false;
-        if (selectedDuration === "long" && course.durationWeeks < 13) return false;
-
-        // Search filter
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase();
-          const matchesTitle = course.title.toLowerCase().includes(q);
-          const matchesDesc = course.description.toLowerCase().includes(q);
-          const matchesSkills = course.skills.some((s) =>
-            s.toLowerCase().includes(q)
-          );
-          if (!matchesTitle && !matchesDesc && !matchesSkills) {
-            return false;
-          }
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        if (selectedSort === "rating") return b.rating - a.rating;
-        if (selectedSort === "newest") return b.originalPrice - a.originalPrice;
-        // Default most popular (reviewsCount)
-        return b.reviewsCount - a.reviewsCount;
-      });
-  }, [
-    courses,
-    selectedCategory,
-    selectedLevel,
-    selectedDuration,
-    searchQuery,
-    selectedSort,
-  ]);
+  }, [initialCourses, courses]);
 
   return (
     <AppShell maxWidth="max-w-[1280px]">
@@ -98,25 +88,26 @@ export default function CoursesCatalogPage() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold tracking-wider uppercase text-emerald-300">
-                    Self-Paced Tracks
+                    Industry Program
                   </span>
-                  <span className="text-slate-400 text-xs">•</span>
-                  <span className="font-caption text-caption text-secondary-fixed-dim">
-                    Beginner Friendly · Instant Access
-                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-xs text-stone-300">Self-Paced Learning</span>
                 </div>
-                <p className="font-body-md text-body-md text-surface-container-lowest mt-0.5">
-                  Learn practical digital skills step-by-step with hands-on practice projects.
+                <h3 className="font-title-md text-base md:text-lg font-bold text-white mt-0.5">
+                  100% Practical Skills • Real Industry Capstones
+                </h3>
+                <p className="font-body-sm text-xs md:text-sm text-stone-300 max-w-xl">
+                  Structured learning tracks with live capstone projects, personalized code reviews, and industry certificates.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0 z-10">
+            <div className="flex items-center gap-3 shrink-0 z-10 w-full md:w-auto">
               <a
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container-lowest text-primary font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm font-semibold"
                 href="#catalog"
+                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary font-label-md text-label-md font-bold hover:bg-stone-100 transition-all shadow-sm"
               >
-                <span>Browse Courses</span>
+                <span>Browse Tracks</span>
                 <span className="material-symbols-outlined text-[18px]">
                   arrow_forward
                 </span>
@@ -143,7 +134,7 @@ export default function CoursesCatalogPage() {
             </div>
           </div>
 
-          {/* Search & Filter Component */}
+          {/* Search & Filter Component - Stays mounted to retain focus */}
           <CourseFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -161,9 +152,24 @@ export default function CoursesCatalogPage() {
 
         {/* 3-Column Course Grid */}
         <main className="mb-12">
-          {filteredCourses.length > 0 ? (
+          {isInitialLoad ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-pulse">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <div
+                  key={n}
+                  className="h-80 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]"
+                />
+              ))}
+            </div>
+          ) : isFiltering ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 opacity-60 transition-opacity">
+              {courses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          ) : courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
+              {courses.map((course) => (
                 <CourseCard key={course.id} course={course} />
               ))}
             </div>

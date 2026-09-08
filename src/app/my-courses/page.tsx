@@ -8,8 +8,25 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function MyCoursesPage() {
-  const { enrolledCourses, courses, getCourseProgress, certificates } = useBstorm();
+  const { enrolledCourses, courses, getCourseProgress, certificates, isLoading } = useBstorm();
   const [activeTab, setActiveTab] = useState<"in-progress" | "completed">("in-progress");
+
+  if (isLoading) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="flex flex-col gap-6 animate-pulse">
+            <div className="h-20 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="h-12 w-64 bg-surface-container-lowest rounded-xl border border-[#E5E7EB]" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-64 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+              <div className="h-64 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            </div>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   // Map enrolled progress with course data
   const enrolledWithData = enrolledCourses.map((enr) => {
@@ -25,7 +42,7 @@ export default function MyCoursesPage() {
       cert,
       isCompleted,
     };
-  });
+  }).filter((item) => !!item.course);
 
   const inProgressList = enrolledWithData.filter((item) => !item.isCompleted);
   const completedList = enrolledWithData.filter((item) => item.isCompleted);
@@ -36,6 +53,7 @@ export default function MyCoursesPage() {
     <AuthGuard>
       <AppShell>
         <div className="flex flex-col gap-6">
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
           <div>

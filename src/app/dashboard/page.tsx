@@ -9,7 +9,25 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function DashboardPage() {
-  const { user, courses, enrolledCourses, getCourseProgress, certificates } = useBstorm();
+  const { user, courses, enrolledCourses, getCourseProgress, certificates, isLoading } = useBstorm();
+
+  if (isLoading) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="flex flex-col gap-8 animate-pulse">
+            <div className="h-16 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div className="h-32 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+              <div className="h-32 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+              <div className="h-32 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            </div>
+            <div className="h-64 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   // Primary active course for Continue Learning hero
   const activeEnrollment = enrolledCourses[0];
@@ -32,6 +50,7 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-8">
         {/* Welcome Header & Stats */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
+
           <div>
             <div className="mb-1">
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">

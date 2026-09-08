@@ -20,7 +20,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
@@ -57,19 +57,26 @@ export default function SignupPage() {
     setIsSubmitting(true);
     setError("");
 
-    setTimeout(() => {
-      signup({
-        name: trimmedName,
-        email: trimmedEmail,
-        college: trimmedCollege,
-        district: trimmedDistrict,
-        state: trimmedState,
-        rollNumber: "21" + Math.random().toString().substring(2, 8).toUpperCase(),
-        grantName: "Student Academic Grant",
-      });
-      router.replace("/dashboard");
-    }, 500);
+    const success = await signup({
+      name: trimmedName,
+      email: trimmedEmail,
+      college: trimmedCollege,
+      district: trimmedDistrict,
+      state: trimmedState,
+      rollNumber: "21" + Math.random().toString().substring(2, 8).toUpperCase(),
+      grantName: "Student Academic Grant",
+      password,
+    });
+
+    if (!success) {
+      setError("Registration failed. An account with this email may already exist.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    router.replace("/dashboard");
   };
+
 
   return (
     <GuestGuard>

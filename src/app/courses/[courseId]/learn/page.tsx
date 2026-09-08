@@ -7,8 +7,9 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { VideoPlayer } from "@/components/learning/VideoPlayer";
 import { CourseCurriculum } from "@/components/learning/CourseCurriculum";
-import { Lesson } from "@/types";
+import { Lesson, Course } from "@/types";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { courseService } from "@/services/apiClient";
 
 export default function CourseLearningPage({
   params,
@@ -28,9 +29,44 @@ export default function CourseLearningPage({
     setCurrentLesson,
     getCourseProgress,
     user,
+    isLoading: isContextLoading,
   } = useBstorm();
 
-  const course = courses.find((c) => c.id === courseId);
+  const [apiCourse, setApiCourse] = useState<Course | null>(null);
+  const [isLoadingApi, setIsLoadingApi] = useState(true);
+
+  // Find course from context or fetch from API
+  const contextCourse = courses.find((c) => c.id === courseId);
+  const course = contextCourse || apiCourse;
+
+  React.useEffect(() => {
+    let isMounted = true;
+    if (contextCourse) {
+      setIsLoadingApi(false);
+      return;
+    }
+
+    async function fetchCourse() {
+      setIsLoadingApi(true);
+      try {
+        const data = await courseService.getById(courseId);
+        if (isMounted) {
+          setApiCourse(data);
+        }
+      } catch (err) {
+        console.error("Course fetch error:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingApi(false);
+        }
+      }
+    }
+    fetchCourse();
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId, contextCourse]);
+
   const enrolled = course ? isEnrolled(course.id) : false;
   const enrollment = course ? getEnrolledCourse(course.id) : undefined;
 
@@ -40,6 +76,22 @@ export default function CourseLearningPage({
       enrollCourse(course.id);
     }
   }, [user.isLoggedIn, enrolled, course, enrollCourse]);
+
+  if (isContextLoading || isLoadingApi) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              <div className="aspect-video bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+              <div className="h-32 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            </div>
+            <div className="lg:col-span-4 h-[600px] bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   // Check course existence
   if (!course) {
@@ -67,6 +119,7 @@ export default function CourseLearningPage({
       </AuthGuard>
     );
   }
+
 
   // Flatten all lessons
   const allLessons: { moduleNumber: string; moduleTitle: string; lesson: Lesson }[] = [];

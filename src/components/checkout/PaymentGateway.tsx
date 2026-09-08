@@ -34,15 +34,18 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const handleCompletePayment = () => {
+  const handleCompletePayment = async () => {
     if (isProcessing) return;
     setIsProcessing(true);
-    // Simulate instant payment gateway success
-    setTimeout(() => {
-      enrollCourse(course.id);
+    try {
+      await enrollCourse(course.id);
       router.replace(`/courses/${course.id}/learn`);
-    }, 800);
+    } catch (err) {
+      console.error("Enrollment failed:", err);
+      setIsProcessing(false);
+    }
   };
+
 
   return (
     <div className="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-8 flex flex-col gap-6 border border-[#E5E7EB]">

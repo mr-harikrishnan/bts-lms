@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { FeaturedCoursesGrid } from "@/components/courses/FeaturedCoursesGrid";
 
 export default function LandingPage() {
   return (
@@ -239,152 +240,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Exactly 3 Primary Categories Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Category 1: Digital Marketing */}
-              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
-                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
-                  <Image
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzNSmHQgtxzyYSwX_j_Nw9cV0CnIajPs_B5HzUav6bLjFKQ39SCrSfyXRlZPvP2XK2I2Eb4uYpj07_tF4eaM3ozOZ60nha1ZMzUoq_EPaek2WFJDHZ8lqpL0GvfGZ3AfHA4eGzxl0VkVFcMycfePkMn8M_4YipwWb-iG-BHv_QmQvAy5oipVZ_josPjXLI6Bqm75Akk3XehTsehoFOgouic4kqm7mBsNB_lIJZGyCU94rnvLoapBr8"
-                    alt="Digital Marketing Analytics Dashboard"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    className="object-cover group-hover:scale-103 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span>Digital Marketing</span>
-                  </div>
-                </div>
+            {/* Dynamic 3 Primary Categories Grid */}
+            <FeaturedCoursesGrid />
 
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
-                      Performance Marketing & Growth Systems
-                    </h3>
-                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
-                      Master Meta Ads Manager, Google Search ads, conversion tracking, and campaign budgeting to drive real ROI.
-                    </p>
-
-                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
-                      <span>10 Lessons • 6 Projects</span>
-                      <span className="w-1 h-1 rounded-full bg-stone-300" />
-                      <span>14 Weeks</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-5 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-stone-400 block">Tuition</span>
-                      <span className="text-lg font-bold text-[#2D3536]">₹2,499</span>
-                    </div>
-                    <Link
-                      href="/checkout/performance-marketing"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-xs"
-                    >
-                      <span>Enroll Now</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-
-              {/* Category 2: Content Creation */}
-              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
-                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
-                  <Image
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIgAUTxz_lmURMIDfE6NW0gn5w1beNTNliIZZpJBSzTsGnVLlnPKN4_7OPkeRFe6WSykNMaRRHKS20xdXxtxmxS1TwKbVt3MmjlofuAQ5VBB4Z8AVquFwR0iZt8-EPMxyF_WVDuh_tRM-uOvL0RO3ukpENrxAcsyeomFIw27hjvojEnLLQt4OOXP5aasDQvp3Res0lxHSNHsdv2sa8kZg0UYLSsUzDYtQI1ELLWDCxHFEW0sjrE51A"
-                    alt="Content Creation & Video Production Studio"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    className="object-cover group-hover:scale-103 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
-                    <Video className="w-3.5 h-3.5" />
-                    <span>Content Creation</span>
-                  </div>
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
-                      Commercial Video & Social Storytelling
-                    </h3>
-                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
-                      Learn camera lighting, video shooting, Premiere Pro & DaVinci editing, and short-form storytelling for YouTube & Reels.
-                    </p>
-
-                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
-                      <span>8 Lessons • 4 Projects</span>
-                      <span className="w-1 h-1 rounded-full bg-stone-300" />
-                      <span>10 Weeks</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-5 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-stone-400 block">Tuition</span>
-                      <span className="text-lg font-bold text-[#2D3536]">₹2,199</span>
-                    </div>
-                    <Link
-                      href="/courses"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-100 text-[#2D3536] text-xs sm:text-sm font-medium hover:bg-stone-200 transition-colors"
-                    >
-                      <span>View Course</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-
-              {/* Category 3: Web Development */}
-              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
-                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
-                  <Image
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgFZ_j0XbOEi8BsaYJ7yne4y1Ws4qC8ARomJcHIhfYTT4S-wJgsugDQSA5udzqVEDdO5zESAhdQBXM2vYA-UjIZkULD4Emhv_V7fLDK696FEJdb26H_DkPE3ChIoA_dAdn15alAboS-22_0MCE3NmAUssuHyo5Mshb99p0zEQVrMMOvGrE8Su9_Ddr5CDNf-9WNVIGD-bpViPbEbvmPf2GSbP2jLZLwthzr-cxHqvG6vvxMc6wuDt1"
-                    alt="Web Development Code Workspace"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    className="object-cover group-hover:scale-103 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
-                    <Code2 className="w-3.5 h-3.5" />
-                    <span>Web Development</span>
-                  </div>
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
-                      Full-Stack Web Development
-                    </h3>
-                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
-                      Build modern web applications from scratch with HTML, CSS, JavaScript, React, Node.js, and database fundamentals.
-                    </p>
-
-                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
-                      <span>12 Lessons • 5 Projects</span>
-                      <span className="w-1 h-1 rounded-full bg-stone-300" />
-                      <span>16 Weeks</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-5 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-stone-400 block">Tuition</span>
-                      <span className="text-lg font-bold text-[#2D3536]">₹2,999</span>
-                    </div>
-                    <Link
-                      href="/courses"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-100 text-[#2D3536] text-xs sm:text-sm font-medium hover:bg-stone-200 transition-colors"
-                    >
-                      <span>View Course</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            </div>
           </div>
         </section>
 

@@ -1,16 +1,41 @@
 "use client";
 
-import React, { use, Suspense } from "react";
+import React, { use, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { userService } from "@/services/apiClient";
+import { Certificate } from "@/types";
 
 function TestResultContent({ courseId }: { courseId: string }) {
   const searchParams = useSearchParams();
   const { courses, getCertificateByCourseId, user } = useBstorm();
   const course = courses.find((c) => c.id === courseId);
+
+  const [apiCert, setApiCert] = useState<Certificate | null>(null);
+
+  const score = searchParams.get("score") ? Number(searchParams.get("score")) : 94;
+  const passed =
+    searchParams.get("passed") !== null
+      ? searchParams.get("passed") === "true"
+      : score >= 70;
+
+  const contextCert = course ? getCertificateByCourseId(course.id) : undefined;
+  const certificate = contextCert || apiCert;
+
+  useEffect(() => {
+    if (!contextCert && passed && course) {
+      userService
+        .getCertificates()
+        .then((certs) => {
+          const match = certs.find((c) => c.courseId === course.id);
+          if (match) setApiCert(match);
+        })
+        .catch(console.error);
+    }
+  }, [course, contextCert, passed]);
 
   if (!course) {
     return (
@@ -34,9 +59,6 @@ function TestResultContent({ courseId }: { courseId: string }) {
     );
   }
 
-  const score = searchParams.get("score") ? Number(searchParams.get("score")) : 94;
-  const passed = searchParams.get("passed") !== null ? searchParams.get("passed") === "true" : score >= 70;
-  const certificate = getCertificateByCourseId(course.id);
 
   return (
     <div className="flex flex-col items-center justify-center py-6 max-w-2xl mx-auto">

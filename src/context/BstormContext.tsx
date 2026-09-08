@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { User, EnrolledCourseProgress, Certificate, Course } from "@/types";
-import { COURSES, DEFAULT_ENROLLED_COURSES } from "@/data/courses";
+import { authService, courseService, userService } from "@/services/apiClient";
 
 interface BstormContextType {
   user: User;
@@ -10,16 +10,22 @@ interface BstormContextType {
   enrolledCourses: EnrolledCourseProgress[];
   certificates: Certificate[];
   isHydrated: boolean;
-  login: (email: string, password?: string) => boolean;
-  signup: (userData: Partial<User>) => boolean;
-  logout: () => void;
-  updateProfile: (data: Partial<User>) => void;
-  enrollCourse: (courseId: string) => void;
+  isLoading: boolean;
+  login: (email: string, password?: string) => Promise<boolean>;
+  signup: (userData: Partial<User>) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  enrollCourse: (courseId: string) => Promise<void>;
   isEnrolled: (courseId: string) => boolean;
   getEnrolledCourse: (courseId: string) => EnrolledCourseProgress | undefined;
-  markLessonComplete: (courseId: string, lessonId: string) => void;
-  setCurrentLesson: (courseId: string, lessonId: string) => void;
-  recordTestResult: (courseId: string, score: number, passed: boolean) => Certificate | null;
+  markLessonComplete: (courseId: string, lessonId: string) => Promise<void>;
+  setCurrentLesson: (courseId: string, lessonId: string) => Promise<void>;
+  recordTestResult: (
+    courseId: string,
+    score: number,
+    passed: boolean,
+    cert?: Certificate
+  ) => Certificate | null;
   getCourseProgress: (courseId: string) => {
     completedCount: number;
     totalCount: number;
@@ -27,206 +33,177 @@ interface BstormContextType {
   };
   getCertificateByCourseId: (courseId: string) => Certificate | undefined;
   getCertificateById: (certId: string) => Certificate | undefined;
+  refreshData: () => Promise<void>;
 }
 
-import defaultUserData from "@/data/users/default-user.json";
-import defaultCertificatesData from "@/data/certificates/default-certificates.json";
-
-const DEFAULT_USER: User = defaultUserData as unknown as User;
-
-const DEFAULT_CERTIFICATES: Certificate[] = defaultCertificatesData as unknown as Certificate[];
+const GUEST_USER: User = {
+  name: "Guest",
+  email: "",
+  college: "Institution Partner",
+  district: "Coimbatore",
+  state: "Tamil Nadu",
+  rollNumber: "BST-0000",
+  grantName: "Academic Talent Grant",
+  avatar:
+    "https://lh3.googleusercontent.com/aida/AEtjO1U9TCa559VGVPXEorXaOd4-4F3-_yxTRkDiN4yL_rHscfc61Dv4oR6rF-Q5Q4SMHc2OiVKW4ppUavOEPI0k5rbfijrF1pDp1QYAUDcOnaN9BVLxBtRq47v7eMcqWE7eGAv5AK-_2-vhabqlwssRcL7ZzhHYRFQg21fjuWJbAUwIiCuxxGKHOITP3QvhqfDi6cdJfeH5tDbP6RoKeD5zNznQitsO7Rh6xF-n0IR0V8a4IS3RYSu34w6dLQQ",
+  isLoggedIn: false,
+};
 
 const BstormContext = createContext<BstormContextType | null>(null);
-
-const STORAGE_KEYS = {
-  USER: "bstorm_user_v2",
-  ENROLLMENTS: "bstorm_enrollments_v2",
-  CERTIFICATES: "bstorm_certificates_v2",
-};
 
 export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User>(DEFAULT_USER);
-  const [enrolledCourses, setEnrolledCourses] =
-    useState<EnrolledCourseProgress[]>(DEFAULT_ENROLLED_COURSES);
-  const [certificates, setCertificates] =
-    useState<Certificate[]>(DEFAULT_CERTIFICATES);
+  const [user, setUser] = useState<User>(GUEST_USER);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseProgress[]>([]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Hydrate from localStorage once mounted
-  useEffect(() => {
+  const fetchUserData = useCallback(async () => {
     try {
-      const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-
-      const savedEnrollments = localStorage.getItem(STORAGE_KEYS.ENROLLMENTS);
-      if (savedEnrollments) {
-        setEnrolledCourses(JSON.parse(savedEnrollments));
-      }
-
-      const savedCerts = localStorage.getItem(STORAGE_KEYS.CERTIFICATES);
-      if (savedCerts) {
-        setCertificates(JSON.parse(savedCerts));
-      }
+      const [enrollmentList, certList] = await Promise.all([
+        userService.getCourses().catch(() => []),
+        userService.getCertificates().catch(() => []),
+      ]);
+      setEnrolledCourses(enrollmentList);
+      setCertificates(certList);
     } catch (e) {
-      console.warn("Could not read from localStorage:", e);
-    } finally {
-      setIsHydrated(true);
+      console.error("Failed to load user progress and credentials:", e);
     }
   }, []);
 
-  // Sync to localStorage
-  useEffect(() => {
-    if (!isHydrated) return;
+  const refreshData = useCallback(async () => {
+    setIsLoading(true);
     try {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [user, isHydrated]);
+      const [coursesList, authStatus] = await Promise.all([
+        courseService.getAll().catch(() => []),
+        authService.getMe().catch(() => ({ user: null })),
+      ]);
 
-  useEffect(() => {
-    if (!isHydrated) return;
-    try {
-      localStorage.setItem(
-        STORAGE_KEYS.ENROLLMENTS,
-        JSON.stringify(enrolledCourses)
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }, [enrolledCourses, isHydrated]);
+      setCourses(coursesList);
 
-  useEffect(() => {
-    if (!isHydrated) return;
-    try {
-      localStorage.setItem(
-        STORAGE_KEYS.CERTIFICATES,
-        JSON.stringify(certificates)
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }, [certificates, isHydrated]);
-
-  const login = (email: string) => {
-    const updatedUser: User = {
-      ...user,
-      email: email || user.email,
-      isLoggedIn: true,
-    };
-    setUser(updatedUser);
-    // Ensure default enrollments are populated on login if currently empty
-    if (enrolledCourses.length === 0) {
-      setEnrolledCourses(DEFAULT_ENROLLED_COURSES);
-    }
-    if (certificates.length === 0) {
-      setCertificates(DEFAULT_CERTIFICATES);
-    }
-    return true;
-  };
-
-  const signup = (data: Partial<User>) => {
-    const updatedUser: User = {
-      ...DEFAULT_USER,
-      ...data,
-      isLoggedIn: true,
-    };
-    setUser(updatedUser);
-    setEnrolledCourses([]);
-    setCertificates([]);
-    return true;
-  };
-
-  const logout = () => {
-    setUser((prev) => {
-      const updated = { ...prev, isLoggedIn: false };
-      try {
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updated));
-      } catch (e) {
-        console.error(e);
+      if (authStatus.user) {
+        setUser({ ...authStatus.user, isLoggedIn: true });
+        await fetchUserData();
+      } else {
+        setUser(GUEST_USER);
+        setEnrolledCourses([]);
+        setCertificates([]);
       }
-      return updated;
-    });
+    } catch (e) {
+      console.error("Refresh data error:", e);
+    } finally {
+      setIsLoading(false);
+      setIsHydrated(true);
+    }
+  }, [fetchUserData]);
+
+  // Initial API fetch on mount
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  const login = async (email: string, password?: string): Promise<boolean> => {
+    try {
+      const result = await authService.login(email, password);
+      setUser({ ...result.user, isLoggedIn: true });
+      await fetchUserData();
+      return true;
+    } catch (e) {
+      console.error("Login API request failed:", e);
+      return false;
+    }
   };
 
-  const updateProfile = (data: Partial<User>) => {
-    setUser((prev) => ({
-      ...prev,
-      ...data,
-    }));
+  const signup = async (userData: Partial<User>): Promise<boolean> => {
+    try {
+      const result = await authService.signup(userData);
+      setUser({ ...result.user, isLoggedIn: true });
+      setEnrolledCourses([]);
+      setCertificates([]);
+      return true;
+    } catch (e) {
+      console.error("Signup API request failed:", e);
+      return false;
+    }
   };
 
-  const isEnrolled = (courseId: string) => {
+  const logout = async (): Promise<void> => {
+    try {
+      await authService.logout();
+    } catch (e) {
+      console.error("Logout API request failed:", e);
+    } finally {
+      setUser(GUEST_USER);
+      setEnrolledCourses([]);
+      setCertificates([]);
+    }
+  };
+
+  const updateProfile = async (data: Partial<User>): Promise<void> => {
+    try {
+      const updated = await userService.updateProfile(data);
+      setUser(updated);
+    } catch (e) {
+      console.error("Profile update API request failed:", e);
+    }
+  };
+
+  const isEnrolled = (courseId: string): boolean => {
     if (!user.isLoggedIn) return false;
     return enrolledCourses.some((item) => item.courseId === courseId);
   };
 
-  const getEnrolledCourse = (courseId: string) => {
+  const getEnrolledCourse = (courseId: string): EnrolledCourseProgress | undefined => {
     if (!user.isLoggedIn) return undefined;
     return enrolledCourses.find((item) => item.courseId === courseId);
   };
 
-  const enrollCourse = (courseId: string) => {
-    if (!user.isLoggedIn) return;
-    if (isEnrolled(courseId)) return;
-    const course = COURSES.find((c) => c.id === courseId);
-    const firstLessonId = course?.modules[0]?.lessons[0]?.id || "lesson-1-1";
-
-    const newEnrollment: EnrolledCourseProgress = {
-      courseId,
-      enrolledAt: new Date().toISOString().split("T")[0],
-      completedLessonIds: [],
-      currentLessonId: firstLessonId,
-      isCompleted: false,
-    };
-
-    setEnrolledCourses((prev) => [...prev, newEnrollment]);
+  const enrollCourse = async (courseId: string): Promise<void> => {
+    if (!user.isLoggedIn || isEnrolled(courseId)) return;
+    try {
+      const newEnrollment = await courseService.enroll(courseId);
+      setEnrolledCourses((prev) => {
+        const filtered = prev.filter((e) => e.courseId !== courseId);
+        return [...filtered, newEnrollment];
+      });
+    } catch (e) {
+      console.error("Course enrollment API request failed:", e);
+    }
   };
 
-  const markLessonComplete = (courseId: string, lessonId: string) => {
-    setEnrolledCourses((prev) =>
-      prev.map((enrollment) => {
-        if (enrollment.courseId !== courseId) return enrollment;
-
-        const updatedSet = new Set(enrollment.completedLessonIds);
-        updatedSet.add(lessonId);
-        const completedLessonIds = Array.from(updatedSet);
-
-        // Find course total lessons
-        const course = COURSES.find((c) => c.id === courseId);
-        const totalLessons =
-          course?.modules.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
-        const isCompleted = completedLessonIds.length >= totalLessons;
-
-        return {
-          ...enrollment,
-          completedLessonIds,
-          isCompleted,
-        };
-      })
-    );
+  const markLessonComplete = async (courseId: string, lessonId: string): Promise<void> => {
+    try {
+      const updated = await userService.markLessonComplete(courseId, lessonId);
+      setEnrolledCourses((prev) =>
+        prev.map((enrollment) =>
+          enrollment.courseId === courseId ? updated : enrollment
+        )
+      );
+    } catch (e) {
+      console.error("Mark lesson complete API request failed:", e);
+    }
   };
 
-  const setCurrentLesson = (courseId: string, lessonId: string) => {
-    setEnrolledCourses((prev) =>
-      prev.map((enrollment) => {
-        if (enrollment.courseId !== courseId) return enrollment;
-        return {
-          ...enrollment,
-          currentLessonId: lessonId,
-        };
-      })
-    );
+  const setCurrentLesson = async (courseId: string, lessonId: string): Promise<void> => {
+    try {
+      const updated = await userService.updateCurrentLesson(courseId, lessonId);
+      setEnrolledCourses((prev) =>
+        prev.map((enrollment) =>
+          enrollment.courseId === courseId ? updated : enrollment
+        )
+      );
+    } catch (e) {
+      console.error("Update current lesson API request failed:", e);
+    }
   };
 
   const getCourseProgress = (courseId: string) => {
-    const course = COURSES.find((c) => c.id === courseId);
+    const course = courses.find((c) => c.id === courseId);
     const totalCount =
-      course?.modules.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
+      course?.modules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
     if (!user.isLoggedIn) {
       return { completedCount: 0, totalCount, percentage: 0 };
     }
@@ -241,45 +218,13 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   const recordTestResult = (
     courseId: string,
     score: number,
-    passed: boolean
+    passed: boolean,
+    cert?: Certificate
   ): Certificate | null => {
-    if (!user.isLoggedIn) return null;
-    const course = COURSES.find((c) => c.id === courseId);
-    if (!course) return null;
-
-    let generatedCert: Certificate | null = null;
-
-    if (passed) {
-      const certId = `cert-${courseId}-${Date.now()}`;
-      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-      const hexKey =
-        "0x" +
-        Math.floor(Math.random() * 0xffffffffffff)
-          .toString(16)
-          .toUpperCase();
-
-      generatedCert = {
-        id: certId,
-        courseId,
-        courseTitle: course.title,
-        category: course.category,
-        studentName: user.name || "Hari",
-        issueDate: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        credentialId: `BST-2025-${randomSuffix}-01B`,
-        score,
-        grade: score >= 90 ? "Honors" : "Pass",
-        verificationKey: hexKey,
-        instructorName: course.instructor.name,
-        directorName: "Dr. Arvind Swaminathan",
-      };
-
+    if (cert) {
       setCertificates((prev) => {
         const filtered = prev.filter((c) => c.courseId !== courseId);
-        return [generatedCert!, ...filtered];
+        return [cert, ...filtered];
       });
     }
 
@@ -291,30 +236,31 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
           testScore: score,
           testPassed: passed,
           isCompleted: passed ? true : enrollment.isCompleted,
-          certificateId: generatedCert ? generatedCert.id : enrollment.certificateId,
+          certificateId: cert ? cert.id : enrollment.certificateId,
         };
       })
     );
 
-    return generatedCert;
+    return cert || null;
   };
 
-  const getCertificateByCourseId = (courseId: string) => {
+  const getCertificateByCourseId = (courseId: string): Certificate | undefined => {
     if (!user.isLoggedIn) return undefined;
     return certificates.find((c) => c.courseId === courseId);
   };
 
-  const getCertificateById = (certId: string) => {
-    return certificates.find((c) => c.id === certId);
+  const getCertificateById = (certId: string): Certificate | undefined => {
+    return certificates.find((c) => c.id === certId || c.credentialId === certId);
   };
 
   const value = useMemo(
     () => ({
       user,
-      courses: COURSES,
+      courses,
       enrolledCourses: user.isLoggedIn ? enrolledCourses : [],
       certificates: user.isLoggedIn ? certificates : [],
       isHydrated,
+      isLoading,
       login,
       signup,
       logout,
@@ -328,8 +274,9 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       getCourseProgress,
       getCertificateByCourseId,
       getCertificateById,
+      refreshData,
     }),
-    [user, enrolledCourses, certificates, isHydrated]
+    [user, courses, enrolledCourses, certificates, isHydrated, isLoading, refreshData]
   );
 
   return (

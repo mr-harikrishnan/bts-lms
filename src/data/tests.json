@@ -1,0 +1,350 @@
+[
+  {
+    "courseId": "commercial-video-production",
+    "title": "Commercial Video Production & Storytelling Assessment",
+    "timeLimitMinutes": 20,
+    "passingScore": 70,
+    "questions": [
+      {
+        "id": 1,
+        "question": "According to commercial cinematography standards, what is the standard 180-degree shutter rule when shooting at 24 frames per second (fps)?",
+        "options": [
+          "Set shutter speed to 1/24 second",
+          "Set shutter speed to 1/48 or 1/50 second to maintain natural motion blur",
+          "Set shutter speed to 1/200 second",
+          "Shutter speed is irrelevant when shooting in Log"
+        ],
+        "correctIndex": 1,
+        "explanation": "The 180-degree shutter rule specifies shutter speed should be double the frame rate (1/50s at 24fps) to reproduce natural human motion cadence."
+      },
+      {
+        "id": 2,
+        "question": "In DaVinci Resolve color grading, which node stage should come before applying a creative look-LUT?",
+        "options": [
+          "Export compression node",
+          "Primary balancing, exposure correction, and color space transform",
+          "Sharpening and grain overlay",
+          "Final audio normalization"
+        ],
+        "correctIndex": 1,
+        "explanation": "Primary color balance, exposure adjustments, and color space transforms must be normalized into a standard gamut before applying creative aesthetic LUTs."
+      },
+      {
+        "id": 3,
+        "question": "What is the difference between a J-cut and an L-cut in rhythmic video editing?",
+        "options": [
+          "In a J-cut, the audio of the next scene precedes the visual; in an L-cut, the audio of the current scene continues under the next visual",
+          "J-cuts are for YouTube, L-cuts are for television",
+          "J-cuts require 4K cameras, L-cuts require 1080p",
+          "There is no difference; they are synonymous"
+        ],
+        "correctIndex": 0,
+        "explanation": "A J-cut leads with incoming audio before the video cut; an L-cut lets trailing audio linger while cutting to the following visual shot."
+      },
+      {
+        "id": 4,
+        "question": "What is the target integrated loudness standard for commercial web video on YouTube and Spotify?",
+        "options": [
+          "0 LUFS",
+          "-6 LUFS",
+          "-14 LUFS (±1 LUFS)",
+          "-30 LUFS"
+        ],
+        "correctIndex": 2,
+        "explanation": "Standard web audio streaming targets -14 LUFS integrated loudness to prevent harsh digital clipping or automatic volume attenuation."
+      },
+      {
+        "id": 5,
+        "question": "When lighting a human subject with a 3-point setup, what is the function of the backlight (hair light)?",
+        "options": [
+          "To illuminate the camera lens",
+          "To separate the subject from the background by creating an edge rim on the hair and shoulders",
+          "To eliminate all shadows entirely",
+          "To blind the actor for dramatic effect"
+        ],
+        "correctIndex": 1,
+        "explanation": "The hair light creates specular edge definition, physically separating the subject from the backdrop and enhancing spatial depth."
+      }
+    ]
+  },
+  {
+    "courseId": "full-stack-web-dev",
+    "title": "Full-Stack Web Engineering Certification Assessment",
+    "timeLimitMinutes": 30,
+    "passingScore": 70,
+    "questions": [
+      {
+        "id": 1,
+        "question": "In React 19, which hook is best suited for wrapping expensive state updates so that user typing and clicking interactions remain non-blocking at 60fps?",
+        "options": [
+          "useEffect",
+          "useMemo",
+          "useTransition",
+          "useLayoutEffect"
+        ],
+        "correctIndex": 2,
+        "explanation": "useTransition allows marking state updates as non-blocking transitions, prioritizing critical user gestures while deferring heavyweight tree updates."
+      },
+      {
+        "id": 2,
+        "question": "When designing a reducer function in modern React or Redux, which of the following is a mandatory contract?",
+        "options": [
+          "It must make asynchronous fetch calls directly",
+          "It must be a pure function with no side effects and deterministic return value",
+          "It must mutate the incoming state directly to save allocations",
+          "It must store state in window.localStorage automatically"
+        ],
+        "correctIndex": 1,
+        "explanation": "Reducers must always be pure functions: given the same state and action payload, they must return the exact same output with zero side effects."
+      },
+      {
+        "id": 3,
+        "question": "What is the primary advantage of Context multiplexing (splitting State Context from Dispatch Context)?",
+        "options": [
+          "It increases the bundle size for better compression",
+          "Components that only trigger dispatch actions will not re-render when state values update",
+          "It automatically saves state to cookies",
+          "It converts React components into web components"
+        ],
+        "correctIndex": 1,
+        "explanation": "By separating State Context from Dispatch Context, child components that only dispatch actions never re-render when state changes."
+      },
+      {
+        "id": 4,
+        "question": "Why should array indices generally be avoided as keys in dynamic React lists?",
+        "options": [
+          "React throws a compile error if an index is used",
+          "Indices cause reconciliation bugs and state leakage when items are reordered, inserted, or removed",
+          "Index keys disable CSS styles",
+          "Index keys make the page reload on click"
+        ],
+        "correctIndex": 1,
+        "explanation": "Reusing array indices across list mutations breaks React Fiber's identity tracking, causing DOM nodes and local state to bind to the wrong items."
+      },
+      {
+        "id": 5,
+        "question": "In a production Docker container deployment for a Next.js application, why are multi-stage builds recommended?",
+        "options": [
+          "They enable multiple operating systems in one container",
+          "They exclude development dependencies and compiler artifacts, minimizing image size and attack surface",
+          "They automatically register the domain with DNS",
+          "They run unit tests faster in the browser"
+        ],
+        "correctIndex": 1,
+        "explanation": "Multi-stage Docker builds discard build tools, devDependencies, and raw source files, shipping only the optimized runtime bundle in a secure, compact image."
+      }
+    ]
+  },
+  {
+    "courseId": "performance-marketing",
+    "title": "Performance Marketing & Growth Systems Assessment",
+    "timeLimitMinutes": 25,
+    "passingScore": 70,
+    "questions": [
+      {
+        "id": 1,
+        "question": "In Meta Ads auction theory, what is the core formula used to determine ad delivery priority?",
+        "options": [
+          "Total Value = Maximum Bid × Account Balance",
+          "Total Value = Bid × Estimated Action Rate + User Value (Ad Quality)",
+          "Total Value = Daily Budget × Follower Count",
+          "Total Value = Click-Through Rate × Website Page Views"
+        ],
+        "correctIndex": 1,
+        "explanation": "Meta calculates Total Value = Bid × Estimated Action Rate + User Value, rewarding high-relevance creative with lower effective clearing costs."
+      },
+      {
+        "id": 2,
+        "question": "What is the key purpose of Google Tag Manager Server-Side Conversions API (CAPI)?",
+        "options": [
+          "To automatically generate AI marketing videos",
+          "To bypass client-side ad blockers and transmission drop-offs by routing conversion events from the cloud server",
+          "To increase organic search engine rankings directly",
+          "To provide free Google Ad credits"
+        ],
+        "correctIndex": 1,
+        "explanation": "Server-side CAPI sends hashed user conversion events directly from cloud infrastructure to advertising endpoints, recovering up to 25% of blocked browser events."
+      },
+      {
+        "id": 3,
+        "question": "When scaling dynamic creative testing (DCT), what does the 3:2:2 framework typically refer to?",
+        "options": [
+          "3 campaigns, 2 ad sets, 2 audiences",
+          "3 creatives/videos, 2 primary texts, 2 headlines within one dynamic asset set",
+          "3 budgets, 2 conversion goals, 2 pixel IDs",
+          "3 days of testing, 2 hours of review, 2 scaling stages"
+        ],
+        "correctIndex": 1,
+        "explanation": "The 3:2:2 dynamic creative testing methodology pairs 3 videos/visuals with 2 body copy options and 2 headlines to identify algorithmic winners."
+      },
+      {
+        "id": 4,
+        "question": "Why is Blended CAC often preferred alongside Channel-Specific CAC when evaluating omnichannel growth?",
+        "options": [
+          "Blended CAC accounts for cross-channel halo effects and baseline organic conversion velocity",
+          "Blended CAC always makes marketing look cheaper",
+          "It is required by taxation laws",
+          "It eliminates the need to track Google Analytics"
+        ],
+        "correctIndex": 0,
+        "explanation": "Blended CAC looks at total marketing investment divided by total acquired customers, capturing cross-channel synergy and word-of-mouth effects."
+      },
+      {
+        "id": 5,
+        "question": "What action should be taken when Google Search ad search term reports reveal high spend on irrelevant queries?",
+        "options": [
+          "Increase the daily budget",
+          "Add the irrelevant terms to the campaign Negative Keyword list as exact or phrase match",
+          "Delete the ad group entirely",
+          "Switch to broad match keywords only"
+        ],
+        "correctIndex": 1,
+        "explanation": "Adding negative keywords eliminates non-converting query traffic and stops wasted ad spend."
+      }
+    ]
+  },
+  {
+    "courseId": "backend-architecture-go",
+    "title": "Distributed Systems & Go Architecture Assessment",
+    "timeLimitMinutes": 30,
+    "passingScore": 75,
+    "questions": [
+      {
+        "id": 1,
+        "question": "In Go, what occurs if multiple goroutines send to an unbuffered channel when no receiver is ready?",
+        "options": [
+          "The channel expands dynamically in heap memory",
+          "The sending goroutines block until a receiver reads from the channel",
+          "A runtime panic is thrown immediately",
+          "Messages are dropped silently"
+        ],
+        "correctIndex": 1,
+        "explanation": "Unbuffered channels have zero capacity; sends block until a corresponding receive is ready."
+      },
+      {
+        "id": 2,
+        "question": "Which Go primitive should be used to wait for a collection of concurrently executed goroutines to finish?",
+        "options": [
+          "sync.Mutex",
+          "sync.WaitGroup",
+          "atomic.Value",
+          "channel select"
+        ],
+        "correctIndex": 1,
+        "explanation": "sync.WaitGroup provides Add, Done, and Wait methods for coordinating goroutine completion."
+      },
+      {
+        "id": 3,
+        "question": "How should context cancellation be propagated down a call hierarchy in Go microservices?",
+        "options": [
+          "Pass the context.Context as the first parameter to functions",
+          "Store context in a package-level global variable",
+          "Use OS process signals",
+          "Write context to disk"
+        ],
+        "correctIndex": 0,
+        "explanation": "Idiomatic Go requires passing context.Context explicitly as the first function parameter."
+      },
+      {
+        "id": 4,
+        "question": "In gRPC over HTTP/2, what enables multiplexing multiple concurrent RPC calls over a single TCP connection?",
+        "options": [
+          "HTTP/2 Binary Framing & Streams",
+          "TLS Session Tickets",
+          "Gzip Compression",
+          "Chunked Transfer Encoding"
+        ],
+        "correctIndex": 0,
+        "explanation": "HTTP/2 breaks messages into binary frames interleaved across independent bidirectional streams on one connection."
+      }
+    ]
+  },
+  {
+    "courseId": "creative-direction-brand",
+    "title": "Creative Direction & Brand Identity Systems Assessment",
+    "timeLimitMinutes": 20,
+    "passingScore": 70,
+    "questions": [
+      {
+        "id": 1,
+        "question": "In modern design systems, what is the primary distinction between a global token and an alias/semantic token?",
+        "options": [
+          "Global tokens store raw values (e.g. blue-500); alias tokens assign contextual meaning (e.g. color-primary)",
+          "Global tokens only work in CSS; alias tokens only work in Figma",
+          "Global tokens cannot be used in dark mode",
+          "Alias tokens must always be numbers"
+        ],
+        "correctIndex": 0,
+        "explanation": "Global tokens define the raw design palette; semantic alias tokens reference global tokens with context and intent."
+      },
+      {
+        "id": 2,
+        "question": "What is the WCAG AA minimum contrast ratio requirement for normal body text against its background?",
+        "options": [
+          "2:1",
+          "3:1",
+          "4.5:1",
+          "7:1"
+        ],
+        "correctIndex": 2,
+        "explanation": "WCAG 2.1 AA mandates a minimum contrast ratio of 4.5:1 for regular text."
+      },
+      {
+        "id": 3,
+        "question": "Why is a modular typographic scale (e.g. 1.25 Major Third) preferred in scalable brand systems?",
+        "options": [
+          "It provides harmonious, mathematically consistent proportions across all device viewports",
+          "It reduces web font download sizes",
+          "It eliminates font rendering differences across operating systems",
+          "It replaces CSS flexbox"
+        ],
+        "correctIndex": 0,
+        "explanation": "A modular scale ensures visual harmony and deliberate visual hierarchy across all font sizes."
+      }
+    ]
+  },
+  {
+    "courseId": "data-engineering-python",
+    "title": "Data Engineering & Stream Processing Assessment",
+    "timeLimitMinutes": 25,
+    "passingScore": 70,
+    "questions": [
+      {
+        "id": 1,
+        "question": "What is the main advantage of columnar storage formats (like Apache Parquet) for analytical queries (OLAP)?",
+        "options": [
+          "Fast random single-row inserts",
+          "Column projection and compression skip irrelevant columns, drastically reducing I/O",
+          "Automatic human-readable plain text formatting",
+          "No schema definition needed"
+        ],
+        "correctIndex": 1,
+        "explanation": "Columnar storage reads only the columns referenced in the query and yields high compression ratios."
+      },
+      {
+        "id": 2,
+        "question": "In Apache Kafka, how is consumer group horizontal scaling bounded for a given topic?",
+        "options": [
+          "By the number of partitions in the topic",
+          "By the number of brokers in the cluster",
+          "By CPU core count on the producer",
+          "Kafka topics allow unlimited active consumers per partition"
+        ],
+        "correctIndex": 0,
+        "explanation": "Each partition in a Kafka topic is consumed by at most one consumer instance in a consumer group."
+      },
+      {
+        "id": 3,
+        "question": "What guarantees idempotency in ETL data pipeline stages?",
+        "options": [
+          "Re-running the pipeline on identical input data produces identical results without duplicates or side-effects",
+          "The pipeline runs 10x faster on re-execution",
+          "The database automatically caches queries",
+          "The pipeline requires zero CPU"
+        ],
+        "correctIndex": 0,
+        "explanation": "Idempotence ensures that retrying failed batches results in the exact same output without data corruption."
+      }
+    ]
+  }
+]

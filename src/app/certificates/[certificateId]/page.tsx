@@ -1,10 +1,12 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { userService } from "@/services/apiClient";
+import { Certificate } from "@/types";
 
 export default function CertificateViewPage({
   params,
@@ -13,11 +15,53 @@ export default function CertificateViewPage({
 }) {
   const resolvedParams = use(params);
   const certificateId = resolvedParams.certificateId;
-  const { certificates, getCertificateById, user } = useBstorm();
+  const { certificates, getCertificateById, user, isLoading: isContextLoading } = useBstorm();
 
-  const cert =
+  const [apiCert, setApiCert] = useState<Certificate | null>(null);
+  const [isLoadingApi, setIsLoadingApi] = useState(true);
+
+  const contextCert =
     getCertificateById(certificateId) ||
-    certificates.find((c) => c.id === certificateId);
+    certificates.find((c) => c.id === certificateId || c.credentialId === certificateId);
+  const cert = contextCert || apiCert;
+
+  useEffect(() => {
+    let isMounted = true;
+    if (contextCert) {
+      setIsLoadingApi(false);
+      return;
+    }
+
+    async function loadCert() {
+      setIsLoadingApi(true);
+      try {
+        const data = await userService.getCertificateById(certificateId);
+        if (isMounted) {
+          setApiCert(data);
+        }
+      } catch (err) {
+        console.error("Failed to load certificate from API:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingApi(false);
+        }
+      }
+    }
+    loadCert();
+    return () => {
+      isMounted = false;
+    };
+  }, [certificateId, contextCert]);
+
+  if (isContextLoading || isLoadingApi) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="max-w-4xl mx-auto h-[500px] bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] animate-pulse" />
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   if (!cert) {
     return (
@@ -44,6 +88,7 @@ export default function CertificateViewPage({
       </AuthGuard>
     );
   }
+
 
   const handlePrint = () => {
     window.print();

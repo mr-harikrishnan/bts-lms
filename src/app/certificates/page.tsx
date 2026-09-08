@@ -7,7 +7,28 @@ import { useBstorm } from "@/context/BstormContext";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function CertificatesPage() {
-  const { certificates, user } = useBstorm();
+  const { certificates, user, isLoading } = useBstorm();
+
+  if (isLoading) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="flex flex-col gap-6 animate-pulse">
+            <div className="h-20 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="h-64 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]"
+                />
+              ))}
+            </div>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
 
   return (
     <AuthGuard>

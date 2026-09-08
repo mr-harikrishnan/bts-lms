@@ -1,0 +1,34 @@
+[
+  {
+    "id": "cert-full-stack-web-dev-1788852989890",
+    "userId": "usr-default-1",
+    "userEmail": "hari.prasath@example.com",
+    "courseId": "full-stack-web-dev",
+    "courseTitle": "Full-Stack Web Development: From Modern Frontend to Production",
+    "category": "Web Development",
+    "studentName": "Hari",
+    "issueDate": "Sep 8, 2026",
+    "credentialId": "BST-2025-3635-01B",
+    "score": 100,
+    "grade": "Honors",
+    "verificationKey": "0xFC2225F350B2",
+    "instructorName": "Rohit Sen",
+    "directorName": "Dr. Arvind Swaminathan"
+  },
+  {
+    "userId": "usr-default-1",
+    "userEmail": "hari.prasath@example.com",
+    "id": "cert-default-1",
+    "courseId": "performance-marketing",
+    "courseTitle": "Advanced Performance Marketing & Growth Systems",
+    "category": "Digital Marketing",
+    "studentName": "Hari",
+    "issueDate": "Feb 14, 2025",
+    "credentialId": "BST-2025-8849-01B",
+    "score": 96.4,
+    "grade": "Honors",
+    "verificationKey": "0x4F91A82C3D77E4",
+    "instructorName": "Pooja Venkatesh",
+    "directorName": "Dr. Arvind Swaminathan"
+  }
+]

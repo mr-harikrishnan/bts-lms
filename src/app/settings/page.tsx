@@ -7,7 +7,22 @@ import { useBstorm } from "@/context/BstormContext";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function SettingsPage() {
-  const { user } = useBstorm();
+  const { user, isLoading } = useBstorm();
+
+  if (isLoading) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="flex flex-col gap-6 max-w-4xl mx-auto animate-pulse">
+            <div className="h-20 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="h-44 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+            <div className="h-96 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB]" />
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
 
   return (
     <AuthGuard>

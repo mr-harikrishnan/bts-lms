@@ -57,6 +57,7 @@ export interface Course {
 }
 
 export interface User {
+  id?: string;
   name: string;
   email: string;
   college: string;
@@ -66,9 +67,12 @@ export interface User {
   grantName: string;
   avatar: string;
   isLoggedIn: boolean;
+  password?: string;
 }
 
 export interface EnrolledCourseProgress {
+  userId?: string;
+  userEmail?: string;
   courseId: string;
   enrolledAt: string;
   completedLessonIds: string[];
@@ -81,6 +85,8 @@ export interface EnrolledCourseProgress {
 
 export interface Certificate {
   id: string;
+  userId?: string;
+  userEmail?: string;
   courseId: string;
   courseTitle: string;
   category: string;
@@ -103,6 +109,8 @@ export interface TestQuestion {
   explanation: string;
 }
 
+export type PublicTestQuestion = Omit<TestQuestion, "correctIndex" | "explanation">;
+
 export interface CourseTest {
   courseId: string;
   title: string;
@@ -110,3 +118,46 @@ export interface CourseTest {
   passingScore: number; // e.g. 70
   questions: TestQuestion[];
 }
+
+export interface PublicCourseTest {
+  courseId: string;
+  title: string;
+  timeLimitMinutes: number;
+  passingScore: number;
+  questions: PublicTestQuestion[];
+}
+
+export interface CourseProgressSummary {
+  completedCount: number;
+  totalCount: number;
+  percentage: number;
+}
+
+export interface TestSubmissionRequest {
+  answers: Record<number, number>; // questionId -> selectedOptionIndex
+}
+
+export interface TestSubmissionResult {
+  score: number;
+  passed: boolean;
+  passingScore: number;
+  correctCount: number;
+  totalQuestions: number;
+  certificate?: Certificate;
+}
+
+export interface ApiResponse<T = unknown> {
+  success: true;
+  data: T;
+}
+
+export interface ApiErrorResponse {
+  success: false;
+  error: {
+    message: string;
+    code?: string;
+  };
+}
+
+export type ApiResult<T> = ApiResponse<T> | ApiErrorResponse;
+
