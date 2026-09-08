@@ -20,24 +20,6 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     }
   }, [isHydrated, user.isLoggedIn, router, pathname]);
 
-  // Loading skeleton while hydrating or redirecting
-  if (!isHydrated || !user.isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center p-6">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-3 border-stone-200 border-t-[#697C70] rounded-full animate-spin" />
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-sm font-semibold text-[#2D3536]">
-              Verifying Session
-            </span>
-            <span className="text-xs text-stone-500">
-              Please wait while we prepare your learning workspace...
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // Always render children — pages handle their own loading skeletons via isLoading
   return <>{children}</>;
 };

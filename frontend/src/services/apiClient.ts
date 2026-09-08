@@ -69,11 +69,15 @@ async function request<T>(endpoint: string, options: CustomRequestInit = {}): Pr
     headers.set("Authorization", `Bearer ${memoryAccessToken}`);
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
   const response = await fetch(url, {
     ...options,
     headers,
     credentials: "include", // Ensure session and refresh cookies are included
-  });
+    signal: options.signal ?? controller.signal,
+  }).finally(() => clearTimeout(timeoutId));
 
   // Handle Token Expiry & Automatic Silent Refresh on HTTP 401
   if (response.status === 401 && !options._isRetry) {

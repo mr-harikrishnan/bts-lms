@@ -203,7 +203,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   const getCourseProgress = (courseId: string) => {
     const course = courses.find((c) => c._id === courseId);
     const totalCount =
-      course?.modules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
+      course?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
     if (!user.isLoggedIn) {
       return { completedCount: 0, totalCount, percentage: 0 };
     }
