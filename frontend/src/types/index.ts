@@ -167,3 +167,13 @@ export interface ApiErrorResponse {
 }
 
 export type ApiResult<T> = ApiResponse<T> | ApiErrorResponse;
+
+export interface CourseFilterParams {
+  category?: string;
+  level?: string;
+  duration?: string;
+  search?: string;
+  sort?: string;
+  featured?: boolean;
+}
+

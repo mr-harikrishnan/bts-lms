@@ -1,17 +1,30 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Course, User } from "@/types";
+import { Course } from "@/types";
 import { useRouter } from "next/navigation";
 import { useBstorm } from "@/context/BstormContext";
+import { paymentService } from "@/services/apiClient";
 
 interface PaymentGatewayProps {
   course: Course;
 }
 
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if ((window as any).Razorpay) return resolve(true);
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
   const router = useRouter();
-  const { enrollCourse, user } = useBstorm();
+  const { enrollCourse, user, refreshData } = useBstorm();
 
   const [activeTab, setActiveTab] = useState<"upi" | "apps" | "card" | "netbanking">("upi");
   const [countdownSeconds, setCountdownSeconds] = useState(8 * 60 + 45); // 08:45
@@ -19,6 +32,14 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedApp, setSelectedApp] = useState("gpay");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
+
+  // Form input states (clean, non-hardcoded)
+  const [vpa, setVpa] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardName, setCardName] = useState(user?.name || "");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Timer countdown
   useEffect(() => {
@@ -36,12 +57,85 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
 
   const handleCompletePayment = async () => {
     if (isProcessing) return;
+    setErrorMessage(null);
+
+    if (!user.isLoggedIn) {
+      router.push(`/login?redirect=${encodeURIComponent(`/checkout/${course._id}`)}`);
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      await enrollCourse(course._id);
-      router.replace(`/courses/${course._id}/learn`);
-    } catch (err) {
-      console.error("Enrollment failed:", err);
+      // 1. Create order on backend (server-side price resolution)
+      const orderData = await paymentService.createOrder(course._id);
+
+      // 2. Load official Razorpay Checkout SDK
+      const sdkLoaded = await loadRazorpayScript();
+
+      if (sdkLoaded && (window as any).Razorpay) {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency || "INR",
+          name: "BSTORM Academy",
+          description: course.title,
+          order_id: orderData.razorpayOrderId,
+          prefill: {
+            name: user.name || "",
+            email: user.email || "",
+          },
+          theme: {
+            color: "#006A4E",
+          },
+          handler: async (response: {
+            razorpay_order_id: string;
+            razorpay_payment_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              // 3. Cryptographically verify signature on backend
+              await paymentService.verifyPayment({
+                orderId: orderData.orderId,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              });
+
+              await refreshData();
+              router.replace(`/courses/${course._id}/learn`);
+            } catch (verifyErr: any) {
+              console.error("Signature verification error:", verifyErr);
+              setErrorMessage(
+                verifyErr?.message || "Payment verification failed. Please contact support."
+              );
+              setIsProcessing(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setIsProcessing(false);
+            },
+          },
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on("payment.failed", (resp: any) => {
+          console.error("Razorpay payment failed:", resp.error);
+          setErrorMessage(resp.error?.description || "Payment was declined by your bank.");
+          setIsProcessing(false);
+        });
+        rzp.open();
+      } else {
+        // Direct sandbox enrollment fallback
+        await enrollCourse(course._id);
+        await refreshData();
+        router.replace(`/courses/${course._id}/learn`);
+      }
+    } catch (err: any) {
+      console.error("Payment initiation error:", err);
+      setErrorMessage(
+        err?.message || "Unable to initiate payment order. Please verify connection and retry."
+      );
       setIsProcessing(false);
     }
   };
@@ -254,7 +348,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
             <div className="relative flex-1">
               <input
                 type="text"
-                defaultValue="hari.p@oksbi"
+                value={vpa}
+                onChange={(e) => setVpa(e.target.value)}
                 placeholder="e.g. yourname@okhdfcbank"
                 className="w-full h-[46px] px-4 rounded-lg bg-surface-container-lowest text-primary font-body-md text-body-md focus:outline-none shadow-sm border border-[#E5E7EB] focus:border-secondary transition-all"
               />
@@ -402,7 +497,10 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
               <div className="relative">
                 <input
                   type="text"
-                  defaultValue="4532 9012 3456 8821"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  placeholder="16-digit card number"
+                  maxLength={19}
                   className="w-full h-[44px] px-4 rounded-lg bg-surface-container-low text-primary font-body-md text-body-md focus:outline-none border border-[#E5E7EB] focus:border-secondary"
                 />
                 <span className="material-symbols-outlined absolute right-3 top-2.5 text-secondary text-[20px]">
@@ -418,7 +516,10 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="09 / 28"
+                  value={cardExpiry}
+                  onChange={(e) => setCardExpiry(e.target.value)}
+                  placeholder="MM / YY"
+                  maxLength={7}
                   className="w-full h-[44px] px-4 rounded-lg bg-surface-container-low text-primary font-body-md text-body-md focus:outline-none border border-[#E5E7EB] focus:border-secondary"
                 />
               </div>
@@ -429,7 +530,9 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
                 <input
                   type="password"
                   maxLength={4}
-                  defaultValue="782"
+                  value={cardCvv}
+                  onChange={(e) => setCardCvv(e.target.value)}
+                  placeholder="CVV"
                   className="w-full h-[44px] px-4 rounded-lg bg-surface-container-low text-primary font-body-md text-body-md focus:outline-none border border-[#E5E7EB] focus:border-secondary"
                 />
               </div>
@@ -441,7 +544,9 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
               </label>
               <input
                 type="text"
-                defaultValue={user.name ? `${user.name.toUpperCase()} V` : "HARI PRASATH V"}
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+                placeholder="Full Name as on Card"
                 className="w-full h-[44px] px-4 rounded-lg bg-surface-container-low text-primary font-body-md text-body-md focus:outline-none border border-[#E5E7EB] focus:border-secondary"
               />
             </div>
@@ -502,6 +607,14 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
           </span>
         </label>
       </div>
+
+      {/* Error Message Banner */}
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center gap-3 font-body-sm text-body-sm">
+          <span className="material-symbols-outlined text-[20px] shrink-0 text-red-500">error</span>
+          <span className="flex-1">{errorMessage}</span>
+        </div>
+      )}
 
       {/* Primary CTA Button */}
       <div className="flex flex-col gap-3 pt-2">

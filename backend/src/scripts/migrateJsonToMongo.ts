@@ -16,7 +16,7 @@ import { ROLES } from '../constants/roles.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.resolve(__dirname, '../../../frontend/src/data');
+const DATA_DIR = path.resolve(__dirname, '../seed/data');
 
 function readJsonFile(filename: string): any[] {
   const filePath = path.join(DATA_DIR, filename);
