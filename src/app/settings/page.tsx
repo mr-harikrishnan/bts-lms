@@ -4,13 +4,15 @@ import React from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function SettingsPage() {
   const { user } = useBstorm();
 
   return (
-    <AppShell>
-      <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+    <AuthGuard>
+      <AppShell>
+        <div className="flex flex-col gap-6 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
           <div>
@@ -167,5 +169,6 @@ export default function SettingsPage() {
         </div>
       </div>
     </AppShell>
+    </AuthGuard>
   );
 }

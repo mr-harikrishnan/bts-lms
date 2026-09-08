@@ -173,7 +173,9 @@ export default function CoursesCatalogPage() {
                 search_off
               </span>
               <h3 className="font-headline-sm text-headline-sm text-primary font-bold">
-                No courses found matching &ldquo;{searchQuery}&rdquo;
+                {searchQuery.trim()
+                  ? `No courses found matching "${searchQuery}"`
+                  : "No courses found matching selected filters"}
               </h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md">
                 Try adjusting your search terms or clearing category filters to view all available tracks.

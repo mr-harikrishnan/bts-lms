@@ -35,11 +35,12 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
   };
 
   const handleCompletePayment = () => {
+    if (isProcessing) return;
     setIsProcessing(true);
     // Simulate instant payment gateway success
     setTimeout(() => {
       enrollCourse(course.id);
-      router.push(`/courses/${course.id}/learn`);
+      router.replace(`/courses/${course.id}/learn`);
     }, 800);
   };
 

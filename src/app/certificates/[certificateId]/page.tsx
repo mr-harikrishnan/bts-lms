@@ -4,6 +4,7 @@ import React, { use } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function CertificateViewPage({
   params,
@@ -16,8 +17,33 @@ export default function CertificateViewPage({
 
   const cert =
     getCertificateById(certificateId) ||
-    certificates.find((c) => c.id === certificateId) ||
-    certificates[0];
+    certificates.find((c) => c.id === certificateId);
+
+  if (!cert) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-[#E5E7EB] flex flex-col items-center justify-center gap-3 max-w-lg mx-auto my-8">
+            <span className="material-symbols-outlined text-[48px] text-outline">
+              search_off
+            </span>
+            <h3 className="font-headline-sm text-headline-sm text-primary font-bold">
+              Certificate Not Found
+            </h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md">
+              The requested credential could not be found or has not been issued to your account.
+            </p>
+            <Link
+              href="/certificates"
+              className="mt-2 px-5 py-2.5 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold"
+            >
+              View My Certificates
+            </Link>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   const handlePrint = () => {
     window.print();
@@ -30,13 +56,14 @@ export default function CertificateViewPage({
         <span>Certificates</span>
       </Link>
       <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
-      <span className="text-primary font-semibold">{cert ? cert.credentialId : "Certificate"}</span>
+      <span className="text-primary font-semibold">{cert.credentialId}</span>
     </div>
   );
 
   return (
-    <AppShell customBreadcrumb={customBreadcrumb} maxWidth="max-w-[1100px]">
-      <div className="flex flex-col gap-6">
+    <AuthGuard>
+      <AppShell customBreadcrumb={customBreadcrumb} maxWidth="max-w-[1100px]">
+        <div className="flex flex-col gap-6">
         {/* Action Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
           <div className="flex items-center gap-3">
@@ -187,5 +214,6 @@ export default function CertificateViewPage({
         </div>
       </div>
     </AppShell>
+    </AuthGuard>
   );
 }

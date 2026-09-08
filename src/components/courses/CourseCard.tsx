@@ -12,7 +12,7 @@ interface CourseCardProps {
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const { isEnrolled, getCourseProgress, user } = useBstorm();
-  const enrolled = isEnrolled(course.id);
+  const enrolled = user.isLoggedIn && isEnrolled(course.id);
   const { completedCount, totalCount, percentage } = getCourseProgress(course.id);
 
   // Category badge styling
@@ -178,7 +178,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
               </div>
               <Link
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shadow-sm hover:shadow-md transition-all group/btn"
-                href={`/checkout/${course.id}`}
+                href={user.isLoggedIn ? `/checkout/${course.id}` : `/login?redirect=/checkout/${course.id}`}
               >
                 <span>View & Enroll</span>
                 <span className="material-symbols-outlined text-[15px] group-hover/btn:translate-x-0.5 transition-transform">

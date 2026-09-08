@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function DashboardPage() {
   const { user, courses, enrolledCourses, getCourseProgress, certificates } = useBstorm();
@@ -26,8 +27,9 @@ export default function DashboardPage() {
     .slice(0, 2);
 
   return (
-    <AppShell>
-      <div className="flex flex-col gap-8">
+    <AuthGuard>
+      <AppShell>
+        <div className="flex flex-col gap-8">
         {/* Welcome Header & Stats */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
           <div>
@@ -218,5 +220,6 @@ export default function DashboardPage() {
         </section>
       </div>
     </AppShell>
+    </AuthGuard>
   );
 }

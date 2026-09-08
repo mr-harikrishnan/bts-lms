@@ -119,6 +119,13 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       isLoggedIn: true,
     };
     setUser(updatedUser);
+    // Ensure default enrollments are populated on login if currently empty
+    if (enrolledCourses.length === 0) {
+      setEnrolledCourses(DEFAULT_ENROLLED_COURSES);
+    }
+    if (certificates.length === 0) {
+      setCertificates(DEFAULT_CERTIFICATES);
+    }
     return true;
   };
 
@@ -129,14 +136,21 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       isLoggedIn: true,
     };
     setUser(updatedUser);
+    setEnrolledCourses([]);
+    setCertificates([]);
     return true;
   };
 
   const logout = () => {
-    setUser((prev) => ({
-      ...prev,
-      isLoggedIn: false,
-    }));
+    setUser((prev) => {
+      const updated = { ...prev, isLoggedIn: false };
+      try {
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
   };
 
   const updateProfile = (data: Partial<User>) => {
@@ -147,14 +161,17 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const isEnrolled = (courseId: string) => {
+    if (!user.isLoggedIn) return false;
     return enrolledCourses.some((item) => item.courseId === courseId);
   };
 
   const getEnrolledCourse = (courseId: string) => {
+    if (!user.isLoggedIn) return undefined;
     return enrolledCourses.find((item) => item.courseId === courseId);
   };
 
   const enrollCourse = (courseId: string) => {
+    if (!user.isLoggedIn) return;
     if (isEnrolled(courseId)) return;
     const course = COURSES.find((c) => c.id === courseId);
     const firstLessonId = course?.modules[0]?.lessons[0]?.id || "lesson-1-1";
@@ -210,6 +227,9 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     const course = COURSES.find((c) => c.id === courseId);
     const totalCount =
       course?.modules.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
+    if (!user.isLoggedIn) {
+      return { completedCount: 0, totalCount, percentage: 0 };
+    }
     const enrollment = enrolledCourses.find((e) => e.courseId === courseId);
     const completedCount = enrollment?.completedLessonIds.length || 0;
     const percentage =
@@ -223,6 +243,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     score: number,
     passed: boolean
   ): Certificate | null => {
+    if (!user.isLoggedIn) return null;
     const course = COURSES.find((c) => c.id === courseId);
     if (!course) return null;
 
@@ -279,6 +300,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getCertificateByCourseId = (courseId: string) => {
+    if (!user.isLoggedIn) return undefined;
     return certificates.find((c) => c.courseId === courseId);
   };
 
@@ -290,8 +312,8 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       user,
       courses: COURSES,
-      enrolledCourses,
-      certificates,
+      enrolledCourses: user.isLoggedIn ? enrolledCourses : [],
+      certificates: user.isLoggedIn ? certificates : [],
       isHydrated,
       login,
       signup,

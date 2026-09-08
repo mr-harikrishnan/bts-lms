@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 const AVAILABLE_AVATARS = [
   "https://lh3.googleusercontent.com/aida/AEtjO1U9TCa559VGVPXEorXaOd4-4F3-_yxTRkDiN4yL_rHscfc61Dv4oR6rF-Q5Q4SMHc2OiVKW4ppUavOEPI0k5rbfijrF1pDp1QYAUDcOnaN9BVLxBtRq47v7eMcqWE7eGAv5AK-_2-vhabqlwssRcL7ZzhHYRFQg21fjuWJbAUwIiCuxxGKHOITP3QvhqfDi6cdJfeH5tDbP6RoKeD5zNznQitsO7Rh6xF-n0IR0V8a4IS3RYSu34w6dLQQ",
@@ -24,20 +25,44 @@ export default function EditProfilePage() {
   const [state, setState] = useState(user.state || "Tamil Nadu");
   const [selectedAvatar, setSelectedAvatar] = useState(user.avatar || AVAILABLE_AVATARS[0]);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedCollege = college.trim();
+    const trimmedDistrict = district.trim();
+    const trimmedState = state.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedCollege || !trimmedDistrict || !trimmedState) {
+      setError("All profile fields are required.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Please provide a valid email address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
     updateProfile({
-      name,
-      email,
-      college,
-      district,
-      state,
+      name: trimmedName,
+      email: trimmedEmail,
+      college: trimmedCollege,
+      district: trimmedDistrict,
+      state: trimmedState,
       avatar: selectedAvatar,
     });
     setSavedSuccess(true);
     setTimeout(() => {
-      router.push("/settings");
+      router.replace("/settings");
     }, 600);
   };
 
@@ -53,8 +78,9 @@ export default function EditProfilePage() {
   );
 
   return (
-    <AppShell customBreadcrumb={customBreadcrumb}>
-      <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+    <AuthGuard>
+      <AppShell customBreadcrumb={customBreadcrumb}>
+        <div className="flex flex-col gap-6 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
           <div>
@@ -66,6 +92,15 @@ export default function EditProfilePage() {
             </p>
           </div>
         </div>
+
+        {error && (
+          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2.5 shadow-xs">
+            <span className="material-symbols-outlined text-[18px] text-rose-600">
+              error
+            </span>
+            <span>{error}</span>
+          </div>
+        )}
 
         {savedSuccess && (
           <div className="p-4 rounded-xl bg-secondary-container text-on-secondary-fixed text-sm font-semibold flex items-center gap-2 shadow-sm animate-fadeIn">
@@ -186,13 +221,24 @@ export default function EditProfilePage() {
 
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
+              disabled={isSubmitting}
+              className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm disabled:opacity-60 flex items-center gap-2"
             >
-              Save Changes
+              {isSubmitting ? (
+                <>
+                  <span className="material-symbols-outlined text-[18px] animate-spin">
+                    sync
+                  </span>
+                  <span>Saving Changes...</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
             </button>
           </div>
         </form>
       </div>
     </AppShell>
+    </AuthGuard>
   );
 }

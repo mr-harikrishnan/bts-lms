@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useBstorm } from "@/context/BstormContext";
+import { GuestGuard } from "@/components/auth/GuestGuard";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/dashboard";
   const { login } = useBstorm();
 
   const [email, setEmail] = useState("hari.prasath@example.com");
@@ -16,22 +19,36 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError("Please fill in both email and password.");
+    if (isSubmitting) return;
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      setError("Please enter both your email address and password.");
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Please enter a valid email address format (e.g. name@domain.com).");
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
     setTimeout(() => {
-      login(email, password);
-      router.push("/dashboard");
+      login(trimmedEmail, trimmedPassword);
+      router.replace(redirectTarget);
     }, 400);
   };
 
   const handleQuickDemo = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     login("hari.prasath@example.com");
-    router.push("/dashboard");
+    router.replace(redirectTarget);
   };
 
   return (
@@ -126,7 +143,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-md hover:shadow-lg hover:shadow-slate-900/10 active:scale-[0.99] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="mt-2 w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-md hover:shadow-lg hover:shadow-slate-900/10 active:scale-[0.99] transition-all flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? (
                 <>
@@ -157,8 +174,9 @@ export default function LoginPage() {
 
           <button
             type="button"
+            disabled={isSubmitting}
             onClick={handleQuickDemo}
-            className="w-full h-11 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 text-emerald-800 border border-emerald-200/80 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            className="w-full h-11 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 text-emerald-800 border border-emerald-200/80 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs disabled:opacity-60"
           >
             <span className="material-symbols-outlined text-[18px] text-emerald-700">
               bolt
@@ -173,5 +191,15 @@ export default function LoginPage() {
         Provided by Brainstorm Creators • Designed for College Students & Beginners
       </footer>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <GuestGuard>
+      <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-sm text-slate-500">Loading...</div>}>
+        <LoginForm />
+      </Suspense>
+    </GuestGuard>
   );
 }

@@ -8,6 +8,7 @@ import { useBstorm } from "@/context/BstormContext";
 import { VideoPlayer } from "@/components/learning/VideoPlayer";
 import { CourseCurriculum } from "@/components/learning/CourseCurriculum";
 import { Lesson } from "@/types";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function CourseLearningPage({
   params,
@@ -26,18 +27,46 @@ export default function CourseLearningPage({
     markLessonComplete,
     setCurrentLesson,
     getCourseProgress,
+    user,
   } = useBstorm();
 
-  const course = courses.find((c) => c.id === courseId) || courses[0];
-  const enrolled = isEnrolled(course.id);
-  const enrollment = getEnrolledCourse(course.id);
+  const course = courses.find((c) => c.id === courseId);
+  const enrolled = course ? isEnrolled(course.id) : false;
+  const enrollment = course ? getEnrolledCourse(course.id) : undefined;
 
   // Auto-enroll if opened directly so preview never breaks
   React.useEffect(() => {
-    if (!enrolled) {
+    if (course && user.isLoggedIn && !enrolled) {
       enrollCourse(course.id);
     }
-  }, [enrolled, course.id, enrollCourse]);
+  }, [user.isLoggedIn, enrolled, course, enrollCourse]);
+
+  // Check course existence
+  if (!course) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-[#E5E7EB] flex flex-col items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-[48px] text-outline">
+              search_off
+            </span>
+            <h3 className="font-headline-sm text-headline-sm text-primary font-bold">
+              Course Not Found
+            </h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md">
+              The course you are trying to access could not be found.
+            </p>
+            <Link
+              href="/courses"
+              className="mt-2 px-5 py-2.5 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold"
+            >
+              Browse Course Catalog
+            </Link>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
 
   // Flatten all lessons
   const allLessons: { moduleNumber: string; moduleTitle: string; lesson: Lesson }[] = [];
@@ -65,6 +94,7 @@ export default function CourseLearningPage({
 
   const { completedCount, totalCount, percentage } = getCourseProgress(course.id);
   const isAllCompleted = completedCount >= totalCount && totalCount > 0;
+  const isLastLesson = currentLessonIndex === allLessons.length - 1;
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
@@ -82,17 +112,21 @@ export default function CourseLearningPage({
   };
 
   const handleNextLesson = () => {
-    if (currentLessonIndex < allLessons.length - 1) {
+    if (!isLastLesson) {
       const nextLesson = allLessons[currentLessonIndex + 1].lesson;
       setCurrentLesson(course.id, nextLesson.id);
+    } else {
+      router.push(`/test/${course.id}`);
     }
   };
 
   const handleMarkCompleteAndNext = () => {
     markLessonComplete(course.id, currentLesson.id);
-    if (currentLessonIndex < allLessons.length - 1) {
+    if (!isLastLesson) {
       const nextLesson = allLessons[currentLessonIndex + 1].lesson;
       setCurrentLesson(course.id, nextLesson.id);
+    } else {
+      router.push(`/test/${course.id}`);
     }
   };
 
@@ -121,8 +155,9 @@ export default function CourseLearningPage({
   );
 
   return (
-    <AppShell customBreadcrumb={customBreadcrumb} maxWidth="max-w-[1440px]">
-      <div className="flex flex-col w-full gap-5">
+    <AuthGuard>
+      <AppShell customBreadcrumb={customBreadcrumb} maxWidth="max-w-[1440px]">
+        <div className="flex flex-col w-full gap-5">
         {/* Sleek Course Learning Top Navigation Bar */}
         <div className="bg-surface-container-lowest border border-[#E5E7EB] rounded-xl px-5 py-3.5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap">
@@ -299,23 +334,40 @@ export default function CourseLearningPage({
                   className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:opacity-95 shadow-sm transition-all"
                 >
                   <span>
-                    {isCurrentCompleted ? "Completed ✓ (Next)" : "Mark as Complete & Next"}
+                    {isLastLesson
+                      ? isCurrentCompleted
+                        ? "Completed ✓ (Go to Final Test)"
+                        : "Complete & Take Final Test"
+                      : isCurrentCompleted
+                      ? "Completed ✓ (Next)"
+                      : "Mark as Complete & Next"}
                   </span>
                   <span className="material-symbols-outlined text-[18px]">
-                    done_all
+                    {isLastLesson ? "workspace_premium" : "done_all"}
                   </span>
                 </button>
 
-                <button
-                  onClick={handleNextLesson}
-                  disabled={currentLessonIndex === allLessons.length - 1}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>Next Lesson</span>
-                  <span className="material-symbols-outlined text-[18px]">
-                    arrow_forward
-                  </span>
-                </button>
+                {isLastLesson ? (
+                  <Link
+                    href={`/test/${course.id}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
+                  >
+                    <span>Final Test</span>
+                    <span className="material-symbols-outlined text-[18px]">
+                      arrow_forward
+                    </span>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleNextLesson}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors shadow-sm"
+                  >
+                    <span>Next Lesson</span>
+                    <span className="material-symbols-outlined text-[18px]">
+                      arrow_forward
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -416,5 +468,6 @@ export default function CourseLearningPage({
         </div>
       </div>
     </AppShell>
+    </AuthGuard>
   );
 }
