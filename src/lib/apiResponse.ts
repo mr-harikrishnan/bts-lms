@@ -25,6 +25,16 @@ export function apiError(
   return NextResponse.json(body, { status, headers });
 }
 
+export function badRequestError(message: string = "Invalid request payload or parameters.") {
+  return apiError(message, 400, "BAD_REQUEST");
+}
+
+export function invalidObjectIdError(paramName: string = "id") {
+  return badRequestError(
+    `Invalid MongoDB ObjectId format for '${paramName}'. Expected a 24-character hexadecimal string.`
+  );
+}
+
 export function unauthorizedError(message: string = "Unauthorized. Please log in to continue.") {
   return apiError(message, 401, "UNAUTHORIZED");
 }

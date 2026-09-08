@@ -1,12 +1,13 @@
 [
   {
-    "courseId": "commercial-video-production",
+    "_id": "68a190000000000000000001",
+    "courseId": "68a1c0000000000000000002",
     "title": "Commercial Video Production & Storytelling Assessment",
     "timeLimitMinutes": 20,
     "passingScore": 70,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a180000000000000000001",
         "question": "According to commercial cinematography standards, what is the standard 180-degree shutter rule when shooting at 24 frames per second (fps)?",
         "options": [
           "Set shutter speed to 1/24 second",
@@ -18,7 +19,7 @@
         "explanation": "The 180-degree shutter rule specifies shutter speed should be double the frame rate (1/50s at 24fps) to reproduce natural human motion cadence."
       },
       {
-        "id": 2,
+        "_id": "68a180000000000000000002",
         "question": "In DaVinci Resolve color grading, which node stage should come before applying a creative look-LUT?",
         "options": [
           "Export compression node",
@@ -30,7 +31,7 @@
         "explanation": "Primary color balance, exposure adjustments, and color space transforms must be normalized into a standard gamut before applying creative aesthetic LUTs."
       },
       {
-        "id": 3,
+        "_id": "68a180000000000000000003",
         "question": "What is the difference between a J-cut and an L-cut in rhythmic video editing?",
         "options": [
           "In a J-cut, the audio of the next scene precedes the visual; in an L-cut, the audio of the current scene continues under the next visual",
@@ -42,7 +43,7 @@
         "explanation": "A J-cut leads with incoming audio before the video cut; an L-cut lets trailing audio linger while cutting to the following visual shot."
       },
       {
-        "id": 4,
+        "_id": "68a180000000000000000004",
         "question": "What is the target integrated loudness standard for commercial web video on YouTube and Spotify?",
         "options": [
           "0 LUFS",
@@ -54,7 +55,7 @@
         "explanation": "Standard web audio streaming targets -14 LUFS integrated loudness to prevent harsh digital clipping or automatic volume attenuation."
       },
       {
-        "id": 5,
+        "_id": "68a180000000000000000005",
         "question": "When lighting a human subject with a 3-point setup, what is the function of the backlight (hair light)?",
         "options": [
           "To illuminate the camera lens",
@@ -68,13 +69,14 @@
     ]
   },
   {
-    "courseId": "full-stack-web-dev",
+    "_id": "68a190000000000000000002",
+    "courseId": "68a1c0000000000000000005",
     "title": "Full-Stack Web Engineering Certification Assessment",
     "timeLimitMinutes": 30,
     "passingScore": 70,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a180000000000000000006",
         "question": "In React 19, which hook is best suited for wrapping expensive state updates so that user typing and clicking interactions remain non-blocking at 60fps?",
         "options": [
           "useEffect",
@@ -86,7 +88,7 @@
         "explanation": "useTransition allows marking state updates as non-blocking transitions, prioritizing critical user gestures while deferring heavyweight tree updates."
       },
       {
-        "id": 2,
+        "_id": "68a180000000000000000007",
         "question": "When designing a reducer function in modern React or Redux, which of the following is a mandatory contract?",
         "options": [
           "It must make asynchronous fetch calls directly",
@@ -98,7 +100,7 @@
         "explanation": "Reducers must always be pure functions: given the same state and action payload, they must return the exact same output with zero side effects."
       },
       {
-        "id": 3,
+        "_id": "68a180000000000000000008",
         "question": "What is the primary advantage of Context multiplexing (splitting State Context from Dispatch Context)?",
         "options": [
           "It increases the bundle size for better compression",
@@ -110,7 +112,7 @@
         "explanation": "By separating State Context from Dispatch Context, child components that only dispatch actions never re-render when state changes."
       },
       {
-        "id": 4,
+        "_id": "68a180000000000000000009",
         "question": "Why should array indices generally be avoided as keys in dynamic React lists?",
         "options": [
           "React throws a compile error if an index is used",
@@ -122,7 +124,7 @@
         "explanation": "Reusing array indices across list mutations breaks React Fiber's identity tracking, causing DOM nodes and local state to bind to the wrong items."
       },
       {
-        "id": 5,
+        "_id": "68a18000000000000000000a",
         "question": "In a production Docker container deployment for a Next.js application, why are multi-stage builds recommended?",
         "options": [
           "They enable multiple operating systems in one container",
@@ -136,13 +138,14 @@
     ]
   },
   {
-    "courseId": "performance-marketing",
+    "_id": "68a190000000000000000003",
+    "courseId": "68a1c0000000000000000006",
     "title": "Performance Marketing & Growth Systems Assessment",
     "timeLimitMinutes": 25,
     "passingScore": 70,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a18000000000000000000b",
         "question": "In Meta Ads auction theory, what is the core formula used to determine ad delivery priority?",
         "options": [
           "Total Value = Maximum Bid × Account Balance",
@@ -154,7 +157,7 @@
         "explanation": "Meta calculates Total Value = Bid × Estimated Action Rate + User Value, rewarding high-relevance creative with lower effective clearing costs."
       },
       {
-        "id": 2,
+        "_id": "68a18000000000000000000c",
         "question": "What is the key purpose of Google Tag Manager Server-Side Conversions API (CAPI)?",
         "options": [
           "To automatically generate AI marketing videos",
@@ -166,7 +169,7 @@
         "explanation": "Server-side CAPI sends hashed user conversion events directly from cloud infrastructure to advertising endpoints, recovering up to 25% of blocked browser events."
       },
       {
-        "id": 3,
+        "_id": "68a18000000000000000000d",
         "question": "When scaling dynamic creative testing (DCT), what does the 3:2:2 framework typically refer to?",
         "options": [
           "3 campaigns, 2 ad sets, 2 audiences",
@@ -178,7 +181,7 @@
         "explanation": "The 3:2:2 dynamic creative testing methodology pairs 3 videos/visuals with 2 body copy options and 2 headlines to identify algorithmic winners."
       },
       {
-        "id": 4,
+        "_id": "68a18000000000000000000e",
         "question": "Why is Blended CAC often preferred alongside Channel-Specific CAC when evaluating omnichannel growth?",
         "options": [
           "Blended CAC accounts for cross-channel halo effects and baseline organic conversion velocity",
@@ -190,7 +193,7 @@
         "explanation": "Blended CAC looks at total marketing investment divided by total acquired customers, capturing cross-channel synergy and word-of-mouth effects."
       },
       {
-        "id": 5,
+        "_id": "68a18000000000000000000f",
         "question": "What action should be taken when Google Search ad search term reports reveal high spend on irrelevant queries?",
         "options": [
           "Increase the daily budget",
@@ -204,13 +207,14 @@
     ]
   },
   {
-    "courseId": "backend-architecture-go",
+    "_id": "68a190000000000000000004",
+    "courseId": "68a1c0000000000000000001",
     "title": "Distributed Systems & Go Architecture Assessment",
     "timeLimitMinutes": 30,
     "passingScore": 75,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a180000000000000000010",
         "question": "In Go, what occurs if multiple goroutines send to an unbuffered channel when no receiver is ready?",
         "options": [
           "The channel expands dynamically in heap memory",
@@ -222,7 +226,7 @@
         "explanation": "Unbuffered channels have zero capacity; sends block until a corresponding receive is ready."
       },
       {
-        "id": 2,
+        "_id": "68a180000000000000000011",
         "question": "Which Go primitive should be used to wait for a collection of concurrently executed goroutines to finish?",
         "options": [
           "sync.Mutex",
@@ -234,7 +238,7 @@
         "explanation": "sync.WaitGroup provides Add, Done, and Wait methods for coordinating goroutine completion."
       },
       {
-        "id": 3,
+        "_id": "68a180000000000000000012",
         "question": "How should context cancellation be propagated down a call hierarchy in Go microservices?",
         "options": [
           "Pass the context.Context as the first parameter to functions",
@@ -246,7 +250,7 @@
         "explanation": "Idiomatic Go requires passing context.Context explicitly as the first function parameter."
       },
       {
-        "id": 4,
+        "_id": "68a180000000000000000013",
         "question": "In gRPC over HTTP/2, what enables multiplexing multiple concurrent RPC calls over a single TCP connection?",
         "options": [
           "HTTP/2 Binary Framing & Streams",
@@ -260,13 +264,14 @@
     ]
   },
   {
-    "courseId": "creative-direction-brand",
+    "_id": "68a190000000000000000005",
+    "courseId": "68a1c0000000000000000003",
     "title": "Creative Direction & Brand Identity Systems Assessment",
     "timeLimitMinutes": 20,
     "passingScore": 70,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a180000000000000000014",
         "question": "In modern design systems, what is the primary distinction between a global token and an alias/semantic token?",
         "options": [
           "Global tokens store raw values (e.g. blue-500); alias tokens assign contextual meaning (e.g. color-primary)",
@@ -278,7 +283,7 @@
         "explanation": "Global tokens define the raw design palette; semantic alias tokens reference global tokens with context and intent."
       },
       {
-        "id": 2,
+        "_id": "68a180000000000000000015",
         "question": "What is the WCAG AA minimum contrast ratio requirement for normal body text against its background?",
         "options": [
           "2:1",
@@ -290,7 +295,7 @@
         "explanation": "WCAG 2.1 AA mandates a minimum contrast ratio of 4.5:1 for regular text."
       },
       {
-        "id": 3,
+        "_id": "68a180000000000000000016",
         "question": "Why is a modular typographic scale (e.g. 1.25 Major Third) preferred in scalable brand systems?",
         "options": [
           "It provides harmonious, mathematically consistent proportions across all device viewports",
@@ -304,13 +309,14 @@
     ]
   },
   {
-    "courseId": "data-engineering-python",
+    "_id": "68a190000000000000000006",
+    "courseId": "68a1c0000000000000000004",
     "title": "Data Engineering & Stream Processing Assessment",
     "timeLimitMinutes": 25,
     "passingScore": 70,
     "questions": [
       {
-        "id": 1,
+        "_id": "68a180000000000000000017",
         "question": "What is the main advantage of columnar storage formats (like Apache Parquet) for analytical queries (OLAP)?",
         "options": [
           "Fast random single-row inserts",
@@ -322,7 +328,7 @@
         "explanation": "Columnar storage reads only the columns referenced in the query and yields high compression ratios."
       },
       {
-        "id": 2,
+        "_id": "68a180000000000000000018",
         "question": "In Apache Kafka, how is consumer group horizontal scaling bounded for a given topic?",
         "options": [
           "By the number of partitions in the topic",
@@ -334,7 +340,7 @@
         "explanation": "Each partition in a Kafka topic is consumed by at most one consumer instance in a consumer group."
       },
       {
-        "id": 3,
+        "_id": "68a180000000000000000019",
         "question": "What guarantees idempotency in ETL data pipeline stages?",
         "options": [
           "Re-running the pipeline on identical input data produces identical results without duplicates or side-effects",

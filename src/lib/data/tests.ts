@@ -14,9 +14,9 @@ export async function getCourseTest(
   const tests = await readJsonFile<CourseTest[]>("tests.json");
   let found = tests.find((t) => t.courseId === courseId);
 
-  // Fallback to full-stack-web-dev if specialized test is missing
-  if (!found) {
-    found = tests.find((t) => t.courseId === "full-stack-web-dev");
+  // Fallback to first available course test if specialized test is missing
+  if (!found && tests.length > 0) {
+    found = tests[0];
   }
 
   if (!found) {
@@ -29,12 +29,13 @@ export async function getCourseTest(
 
   // Strip answers to prevent client inspection
   const sanitized: PublicCourseTest = {
+    _id: found._id,
     courseId: found.courseId,
     title: found.title,
     timeLimitMinutes: found.timeLimitMinutes,
     passingScore: found.passingScore,
     questions: found.questions.map((q) => ({
-      id: q.id,
+      _id: q._id,
       question: q.question,
       codeSnippet: q.codeSnippet,
       options: q.options,
@@ -47,7 +48,7 @@ export async function getCourseTest(
 export async function gradeCourseTest(
   userEmail: string,
   courseId: string,
-  answers: Record<number, number>
+  answers: Record<string, number>
 ): Promise<TestSubmissionResult> {
   if (!userEmail || !courseId) {
     throw new Error("User email and courseId are required to submit an assessment.");
@@ -62,7 +63,7 @@ export async function gradeCourseTest(
   let correctCount = 0;
 
   rawTest.questions.forEach((q) => {
-    if (answers[q.id] !== undefined && answers[q.id] === q.correctIndex) {
+    if (answers[q._id] !== undefined && answers[q._id] === q.correctIndex) {
       correctCount += 1;
     }
   });
@@ -80,7 +81,7 @@ export async function gradeCourseTest(
     courseId,
     score,
     passed,
-    certificate ? certificate.id : undefined
+    certificate ? certificate._id : undefined
   );
 
   return {

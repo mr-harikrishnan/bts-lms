@@ -22,7 +22,7 @@ export default function CertificateViewPage({
 
   const contextCert =
     getCertificateById(certificateId) ||
-    certificates.find((c) => c.id === certificateId || c.credentialId === certificateId);
+    certificates.find((c) => c._id === certificateId || c.credentialId === certificateId);
   const cert = contextCert || apiCert;
 
   useEffect(() => {

@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { getModulesByCourseId } from "@/lib/data/modules";
 import { getCourseById } from "@/lib/data/courses";
-import { apiSuccess, notFoundError, serverError } from "@/lib/apiResponse";
+import { apiSuccess, notFoundError, serverError, invalidObjectIdError } from "@/lib/apiResponse";
+import { isValidObjectId } from "@/lib/objectId";
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +10,11 @@ export async function GET(
 ) {
   try {
     const { courseId } = await params;
-    const course = await getCourseById(courseId);
+    if (!isValidObjectId(courseId)) {
+      return invalidObjectIdError("courseId");
+    }
 
+    const course = await getCourseById(courseId);
     if (!course) {
       return notFoundError(`Course with ID '${courseId}' was not found.`);
     }

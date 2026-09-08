@@ -32,16 +32,16 @@ export default function DashboardPage() {
   // Primary active course for Continue Learning hero
   const activeEnrollment = enrolledCourses[0];
   const activeCourse = activeEnrollment
-    ? courses.find((c) => c.id === activeEnrollment.courseId)
+    ? courses.find((c) => c._id === activeEnrollment.courseId)
     : courses[0];
 
   const activeProgress = activeCourse
-    ? getCourseProgress(activeCourse.id)
+    ? getCourseProgress(activeCourse._id)
     : { completedCount: 0, totalCount: 12, percentage: 0 };
 
   // Recommended courses that are not yet enrolled
   const recommendedCourses = courses
-    .filter((c) => !enrolledCourses.some((e) => e.courseId === c.id))
+    .filter((c) => !enrolledCourses.some((e) => e.courseId === c._id))
     .slice(0, 2);
 
   return (
@@ -193,7 +193,7 @@ export default function DashboardPage() {
 
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto shrink-0">
               <Link
-                href={`/courses/${activeCourse.id}/learn`}
+                href={`/courses/${activeCourse._id}/learn`}
                 className="px-6 py-3 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2 text-center"
               >
                 <span>Resume Workspace</span>
@@ -233,7 +233,7 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {recommendedCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard key={course._id} course={course} />
             ))}
           </div>
         </section>

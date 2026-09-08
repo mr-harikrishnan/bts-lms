@@ -1,6 +1,6 @@
 [
   {
-    "id": "backend-architecture-go",
+    "_id": "68a1c0000000000000000001",
     "title": "Distributed Systems & Backend Architecture in Go",
     "category": "Web Development",
     "level": "Advanced",
@@ -35,7 +35,7 @@
     "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
   },
   {
-    "id": "commercial-video-production",
+    "_id": "68a1c0000000000000000002",
     "title": "Commercial Video Production & Social Storytelling",
     "category": "Content Creation",
     "level": "Beginner-Friendly",
@@ -70,7 +70,7 @@
     "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
   },
   {
-    "id": "creative-direction-brand",
+    "_id": "68a1c0000000000000000003",
     "title": "Creative Direction & Brand Identity Systems",
     "category": "Content Creation",
     "level": "Intermediate",
@@ -104,7 +104,7 @@
     "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
   },
   {
-    "id": "data-engineering-python",
+    "_id": "68a1c0000000000000000004",
     "title": "Cloud Analytics & Production Data Pipelines",
     "category": "Web Development",
     "level": "Intermediate",
@@ -139,7 +139,7 @@
     "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
   },
   {
-    "id": "full-stack-web-dev",
+    "_id": "68a1c0000000000000000005",
     "title": "Full-Stack Web Development: From Modern Frontend to Production",
     "category": "Web Development",
     "level": "Intermediate",
@@ -175,7 +175,7 @@
     "videoUrl": "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4"
   },
   {
-    "id": "performance-marketing",
+    "_id": "68a1c0000000000000000006",
     "title": "Advanced Performance Marketing & Growth Systems",
     "category": "Digital Marketing",
     "level": "Advanced",

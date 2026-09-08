@@ -10,21 +10,26 @@ import {
   notFoundError,
   unauthorizedError,
   serverError,
+  invalidObjectIdError,
 } from "@/lib/apiResponse";
+import { isValidObjectId } from "@/lib/objectId";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params;
+    if (!isValidObjectId(courseId)) {
+      return invalidObjectIdError("courseId");
+    }
+
     const user = await getAuthenticatedUser();
     if (!user) {
       return unauthorizedError();
     }
 
-    const { courseId } = await params;
     const progressData = await getUserCourseProgress(user.email, courseId);
-
     if (!progressData) {
       return notFoundError(
         `User is not enrolled in course '${courseId}' or course does not exist.`
@@ -42,16 +47,22 @@ export async function PUT(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params;
+    if (!isValidObjectId(courseId)) {
+      return invalidObjectIdError("courseId");
+    }
+
     const user = await getAuthenticatedUser();
     if (!user) {
       return unauthorizedError();
     }
 
-    const { courseId } = await params;
     const body = await request.json().catch(() => null);
-
     if (!body || !body.currentLessonId) {
       return apiError("Field 'currentLessonId' is required.", 400);
+    }
+    if (!isValidObjectId(body.currentLessonId)) {
+      return invalidObjectIdError("currentLessonId");
     }
 
     const updated = await updateCurrentLesson(

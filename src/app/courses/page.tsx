@@ -164,13 +164,13 @@ export default function CoursesCatalogPage() {
           ) : isFiltering ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 opacity-60 transition-opacity">
               {courses.map((course) => (
-                <CourseCard key={course.id} course={course} />
+                <CourseCard key={course._id} course={course} />
               ))}
             </div>
           ) : courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {courses.map((course) => (
-                <CourseCard key={course.id} course={course} />
+                <CourseCard key={course._id} course={course} />
               ))}
             </div>
           ) : (

@@ -34,7 +34,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setCurrentTime(0);
       setIsPlaying(false);
     }
-  }, [lesson.id]);
+  }, [lesson._id]);
 
   const handlePlayToggle = () => {
     if (!videoRef.current) return;

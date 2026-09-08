@@ -7,19 +7,25 @@ import {
   notFoundError,
   unauthorizedError,
   serverError,
+  invalidObjectIdError,
 } from "@/lib/apiResponse";
+import { isValidObjectId } from "@/lib/objectId";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params;
+    if (!isValidObjectId(courseId)) {
+      return invalidObjectIdError("courseId");
+    }
+
     const user = await getAuthenticatedUser();
     if (!user) {
       return unauthorizedError("Please sign in to enroll in this course.");
     }
 
-    const { courseId } = await params;
     const course = await getCourseById(courseId);
     if (!course) {
       return notFoundError(`Course with ID '${courseId}' was not found.`);

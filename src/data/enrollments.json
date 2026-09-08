@@ -1,29 +1,32 @@
 [
   {
-    "userId": "usr-default-1",
+    "_id": "68a1b0000000000000000001",
+    "userId": "68a1a0000000000000000001",
     "userEmail": "hari.prasath@example.com",
-    "courseId": "full-stack-web-dev",
+    "courseId": "68a1c0000000000000000005",
     "enrolledAt": "2025-01-10",
     "completedLessonIds": [
-      "lesson-1-1",
-      "lesson-1-2",
-      "lesson-1-3",
-      "lesson-2-1"
+      "68a1e000000000000000000c",
+      "68a1e000000000000000000d",
+      "68a1e000000000000000000e",
+      "68a1e000000000000000000f"
     ],
-    "currentLessonId": "lesson-3-4",
+    "currentLessonId": "68a1e0000000000000000015",
     "isCompleted": true,
     "testScore": 100,
     "testPassed": true,
-    "certificateId": "cert-full-stack-web-dev-1788852989890"
+    "certificateId": "6a9fc3c313e60897cc98ec5d"
   },
   {
+    "_id": "68a1b0000000000000000002",
+    "userId": "68a1a0000000000000000001",
     "userEmail": "hari.prasath@example.com",
-    "courseId": "performance-marketing",
+    "courseId": "68a1c0000000000000000006",
     "enrolledAt": "2026-09-08",
     "completedLessonIds": [
-      "pm-1-1"
+      "68a1e0000000000000000018"
     ],
-    "currentLessonId": "pm-1-1",
+    "currentLessonId": "68a1e0000000000000000018",
     "isCompleted": false
   }
 ]

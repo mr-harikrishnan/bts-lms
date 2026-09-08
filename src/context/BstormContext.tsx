@@ -201,7 +201,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getCourseProgress = (courseId: string) => {
-    const course = courses.find((c) => c.id === courseId);
+    const course = courses.find((c) => c._id === courseId);
     const totalCount =
       course?.modules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
     if (!user.isLoggedIn) {
@@ -236,7 +236,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
           testScore: score,
           testPassed: passed,
           isCompleted: passed ? true : enrollment.isCompleted,
-          certificateId: cert ? cert.id : enrollment.certificateId,
+          certificateId: cert ? cert._id : enrollment.certificateId,
         };
       })
     );
@@ -250,7 +250,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getCertificateById = (certId: string): Certificate | undefined => {
-    return certificates.find((c) => c.id === certId || c.credentialId === certId);
+    return certificates.find((c) => c._id === certId || c.credentialId === certId);
   };
 
   const value = useMemo(

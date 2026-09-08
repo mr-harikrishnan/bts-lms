@@ -1,6 +1,8 @@
 import { EnrolledCourseProgress, CourseProgressSummary } from "@/types";
 import { readJsonFile, writeJsonFile } from "./storage";
 import { getCourseById } from "./courses";
+import { getUserByEmail } from "./users";
+import { generateObjectId } from "../objectId";
 
 export async function getUserEnrollments(
   userEmail: string
@@ -68,10 +70,16 @@ export async function enrollUserInCourse(
     return existing;
   }
 
-  const course = await getCourseById(courseId);
-  const firstLessonId = course?.modules?.[0]?.lessons?.[0]?.id || "lesson-1-1";
+  const [course, user] = await Promise.all([
+    getCourseById(courseId),
+    getUserByEmail(userEmail),
+  ]);
+
+  const firstLessonId = course?.modules?.[0]?.lessons?.[0]?._id || "";
 
   const newEnrollment: EnrolledCourseProgress = {
+    _id: generateObjectId(),
+    userId: user?._id,
     userEmail: userEmail.trim().toLowerCase(),
     courseId,
     enrolledAt: new Date().toISOString().split("T")[0],

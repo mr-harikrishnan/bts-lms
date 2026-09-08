@@ -22,7 +22,7 @@ export default function CheckoutPage({
   const [apiCourse, setApiCourse] = useState<Course | null>(null);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
 
-  const contextCourse = courses.find((c) => c.id === courseId);
+  const contextCourse = courses.find((c) => c._id === courseId);
   const course = contextCourse || apiCourse;
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function CheckoutPage({
   }
 
 
-  const alreadyEnrolled = isEnrolled(course.id);
+  const alreadyEnrolled = isEnrolled(course._id);
 
   return (
     <AuthGuard>
@@ -160,7 +160,7 @@ export default function CheckoutPage({
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-3">
                 <Link
-                  href={`/courses/${course.id}/learn`}
+                  href={`/courses/${course._id}/learn`}
                   className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-secondary text-on-secondary text-sm font-semibold hover:bg-secondary/90 transition-all shadow-sm text-center flex items-center justify-center gap-2"
                 >
                   <span>Continue Learning</span>

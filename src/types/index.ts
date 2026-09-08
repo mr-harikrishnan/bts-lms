@@ -10,7 +10,9 @@ export interface LessonTakeaway {
 }
 
 export interface Lesson {
-  id: string;
+  _id: string;
+  courseId?: string;
+  moduleId?: string;
   lessonNumber: string; // e.g. "3.4"
   title: string;
   duration: string; // e.g. "24m" or "1h 10m"
@@ -20,14 +22,15 @@ export interface Lesson {
 }
 
 export interface CourseModule {
-  id: string;
+  _id: string;
+  courseId?: string;
   moduleNumber: string; // e.g. "Module 01"
   title: string;
   lessons: Lesson[];
 }
 
 export interface Course {
-  id: string;
+  _id: string;
   title: string;
   category: "Digital Marketing" | "Content Creation" | "Web Development";
   level: "Beginner-Friendly" | "Intermediate" | "Advanced";
@@ -53,11 +56,12 @@ export interface Course {
   featured?: boolean;
   isUpcoming?: boolean;
   previewVideoUrl?: string;
+  videoUrl?: string;
   modules: CourseModule[];
 }
 
 export interface User {
-  id?: string;
+  _id?: string;
   name: string;
   email: string;
   college: string;
@@ -71,6 +75,7 @@ export interface User {
 }
 
 export interface EnrolledCourseProgress {
+  _id?: string;
   userId?: string;
   userEmail?: string;
   courseId: string;
@@ -84,7 +89,7 @@ export interface EnrolledCourseProgress {
 }
 
 export interface Certificate {
-  id: string;
+  _id: string;
   userId?: string;
   userEmail?: string;
   courseId: string;
@@ -101,7 +106,7 @@ export interface Certificate {
 }
 
 export interface TestQuestion {
-  id: number;
+  _id: string;
   question: string;
   codeSnippet?: string;
   options: string[];
@@ -112,6 +117,7 @@ export interface TestQuestion {
 export type PublicTestQuestion = Omit<TestQuestion, "correctIndex" | "explanation">;
 
 export interface CourseTest {
+  _id?: string;
   courseId: string;
   title: string;
   timeLimitMinutes: number;
@@ -120,6 +126,7 @@ export interface CourseTest {
 }
 
 export interface PublicCourseTest {
+  _id?: string;
   courseId: string;
   title: string;
   timeLimitMinutes: number;
@@ -134,7 +141,7 @@ export interface CourseProgressSummary {
 }
 
 export interface TestSubmissionRequest {
-  answers: Record<number, number>; // questionId -> selectedOptionIndex
+  answers: Record<string, number>; // question _id -> selectedOptionIndex
 }
 
 export interface TestSubmissionResult {
@@ -160,4 +167,3 @@ export interface ApiErrorResponse {
 }
 
 export type ApiResult<T> = ApiResponse<T> | ApiErrorResponse;
-

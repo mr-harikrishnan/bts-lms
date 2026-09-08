@@ -3,7 +3,7 @@ import { readJsonFile } from "./storage";
 import { getLessonsByCourseId } from "./lessons";
 
 interface StoredModule {
-  id: string;
+  _id: string;
   courseId: string;
   moduleNumber: string;
   title: string;
@@ -23,24 +23,42 @@ export async function getModulesByCourseId(courseId: string): Promise<CourseModu
   const courseLessons = await getLessonsByCourseId(courseId);
 
   return courseModules.map((m) => ({
-    id: m.id,
+    _id: m._id,
+    courseId: m.courseId,
     moduleNumber: m.moduleNumber,
     title: m.title,
     lessons: courseLessons.filter(
-      (l) => (l as Lesson & { moduleId: string }).moduleId === m.id
+      (l) => (l as Lesson & { moduleId?: string }).moduleId === m._id
     ),
   }));
 }
 
 export async function getModuleById(
-  courseId: string,
-  moduleId: string
+  moduleId: string,
+  courseId?: string
 ): Promise<CourseModule | null> {
-  if (!courseId || !moduleId) {
+  if (!moduleId) {
     return null;
   }
 
-  const modules = await getModulesByCourseId(courseId);
-  const found = modules.find((m) => m.id === moduleId);
-  return found || null;
+  const allModules = await readJsonFile<StoredModule[]>("modules.json");
+  const found = allModules.find(
+    (m) => m._id === moduleId && (courseId ? m.courseId === courseId : true)
+  );
+
+  if (!found) {
+    return null;
+  }
+
+  const courseLessons = await getLessonsByCourseId(found.courseId);
+
+  return {
+    _id: found._id,
+    courseId: found.courseId,
+    moduleNumber: found.moduleNumber,
+    title: found.title,
+    lessons: courseLessons.filter(
+      (l) => (l as Lesson & { moduleId?: string }).moduleId === found._id
+    ),
+  };
 }

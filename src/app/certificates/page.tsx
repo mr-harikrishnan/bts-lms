@@ -61,7 +61,7 @@ export default function CertificatesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {certificates.map((cert) => (
               <div
-                key={cert.id}
+                key={cert._id}
                 className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-6 shadow-sm flex flex-col justify-between gap-5 group hover:shadow-md transition-all relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-container/30 rounded-bl-full pointer-events-none -z-0" />
@@ -113,7 +113,7 @@ export default function CertificatesPage() {
                     Recipient: {cert.studentName}
                   </span>
                   <Link
-                    href={`/certificates/${cert.id}`}
+                    href={`/certificates/${cert._id}`}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shadow-sm"
                   >
                     <span>View & Verify</span>

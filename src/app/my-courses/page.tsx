@@ -30,7 +30,7 @@ export default function MyCoursesPage() {
 
   // Map enrolled progress with course data
   const enrolledWithData = enrolledCourses.map((enr) => {
-    const course = courses.find((c) => c.id === enr.courseId) || courses[0];
+    const course = courses.find((c) => c._id === enr.courseId) || courses[0];
     const progress = getCourseProgress(enr.courseId);
     const cert = certificates.find((c) => c.courseId === enr.courseId);
     const isCompleted = enr.isCompleted || progress.percentage === 100 || !!cert;
@@ -115,7 +115,7 @@ export default function MyCoursesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {currentList.map(({ course, progress, cert, isCompleted }) => (
               <div
-                key={course.id}
+                key={course._id}
                 className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-5 shadow-sm flex flex-col justify-between gap-4 group hover:shadow-md transition-all"
               >
                 <div className="flex flex-col sm:flex-row gap-4 items-start">
@@ -191,7 +191,7 @@ export default function MyCoursesPage() {
                   <div className="flex items-center gap-2">
                     {cert ? (
                       <Link
-                        href={`/certificates/${cert.id}`}
+                        href={`/certificates/${cert._id}`}
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-semibold hover:opacity-90 transition-all shadow-xs"
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -201,7 +201,7 @@ export default function MyCoursesPage() {
                       </Link>
                     ) : progress.completedCount >= progress.totalCount ? (
                       <Link
-                        href={`/test/${course.id}`}
+                        href={`/test/${course._id}`}
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shadow-sm"
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -211,7 +211,7 @@ export default function MyCoursesPage() {
                       </Link>
                     ) : (
                       <Link
-                        href={`/courses/${course.id}/learn`}
+                        href={`/courses/${course._id}/learn`}
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
                       >
                         <span>Continue Course</span>

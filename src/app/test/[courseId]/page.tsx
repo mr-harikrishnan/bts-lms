@@ -19,13 +19,13 @@ export default function FinalTestPage({
   const router = useRouter();
   const { courses, recordTestResult } = useBstorm();
 
-  const course = courses.find((c) => c.id === courseId);
+  const course = courses.find((c) => c._id === courseId);
   const [testData, setTestData] = useState<PublicCourseTest | null>(null);
   const [isLoadingTest, setIsLoadingTest] = useState(true);
   const [loadError, setLoadError] = useState("");
 
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
@@ -75,10 +75,10 @@ export default function FinalTestPage({
     setSubmissionError("");
 
     try {
-      const result = await courseService.submitTest(course.id, selectedAnswers);
-      recordTestResult(course.id, result.score, result.passed, result.certificate);
+      const result = await courseService.submitTest(course._id, selectedAnswers);
+      recordTestResult(course._id, result.score, result.passed, result.certificate);
       router.replace(
-        `/test/${course.id}/result?score=${result.score}&passed=${result.passed}`
+        `/test/${course._id}/result?score=${result.score}&passed=${result.passed}`
       );
     } catch (err: unknown) {
       console.error("Test submission failed:", err);
@@ -109,7 +109,7 @@ export default function FinalTestPage({
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const handleSelectOption = (questionId: number, optionIdx: number) => {
+  const handleSelectOption = (questionId: string, optionIdx: number) => {
     setSelectedAnswers((prev) => ({
       ...prev,
       [questionId]: optionIdx,
@@ -229,10 +229,10 @@ export default function FinalTestPage({
             <div className="flex items-center gap-2">
               {testData.questions.map((q, idx) => {
                 const isCurrent = idx === currentQuestionIdx;
-                const isAnswered = selectedAnswers[q.id] !== undefined;
+                const isAnswered = selectedAnswers[q._id] !== undefined;
                 return (
                   <button
-                    key={q.id}
+                    key={q._id}
                     onClick={() => setCurrentQuestionIdx(idx)}
                     className={`w-9 h-9 rounded-xl font-label-md text-xs font-bold transition-all shrink-0 ${
                       isCurrent
@@ -291,12 +291,12 @@ export default function FinalTestPage({
               {/* Options */}
               <div className="flex flex-col gap-3 pt-2">
                 {currentQuestion.options.map((opt, optIdx) => {
-                  const isSelected = selectedAnswers[currentQuestion.id] === optIdx;
+                  const isSelected = selectedAnswers[currentQuestion._id] === optIdx;
                   return (
                     <button
                       key={optIdx}
                       type="button"
-                      onClick={() => handleSelectOption(currentQuestion.id, optIdx)}
+                      onClick={() => handleSelectOption(currentQuestion._id, optIdx)}
                       className={`text-left p-4 rounded-xl border transition-all flex items-start gap-3.5 group ${
                         isSelected
                           ? "bg-secondary-container/40 border-secondary text-primary font-medium ring-1 ring-secondary/50"

@@ -34,9 +34,10 @@ export default function CourseLearningPage({
 
   const [apiCourse, setApiCourse] = useState<Course | null>(null);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   // Find course from context or fetch from API
-  const contextCourse = courses.find((c) => c.id === courseId);
+  const contextCourse = courses.find((c) => c._id === courseId);
   const course = contextCourse || apiCourse;
 
   React.useEffect(() => {
@@ -67,13 +68,13 @@ export default function CourseLearningPage({
     };
   }, [courseId, contextCourse]);
 
-  const enrolled = course ? isEnrolled(course.id) : false;
-  const enrollment = course ? getEnrolledCourse(course.id) : undefined;
+  const enrolled = course ? isEnrolled(course._id) : false;
+  const enrollment = course ? getEnrolledCourse(course._id) : undefined;
 
   // Auto-enroll if opened directly so preview never breaks
   React.useEffect(() => {
     if (course && user.isLoggedIn && !enrolled) {
-      enrollCourse(course.id);
+      enrollCourse(course._id);
     }
   }, [user.isLoggedIn, enrolled, course, enrollCourse]);
 
@@ -133,11 +134,11 @@ export default function CourseLearningPage({
     });
   });
 
-  const currentLessonId = enrollment?.currentLessonId || allLessons[3]?.lesson.id || allLessons[0]?.lesson.id;
+  const currentLessonId = enrollment?.currentLessonId || allLessons[3]?.lesson._id || allLessons[0]?.lesson._id;
   const completedLessonIds = enrollment?.completedLessonIds || [];
 
   const currentLessonIndex = allLessons.findIndex(
-    (item) => item.lesson.id === currentLessonId
+    (item) => item.lesson._id === currentLessonId
   );
   const activeItem =
     currentLessonIndex !== -1 ? allLessons[currentLessonIndex] : allLessons[0];
@@ -145,45 +146,43 @@ export default function CourseLearningPage({
   const currentLesson = activeItem.lesson;
   const currentModuleNumber = activeItem.moduleNumber;
 
-  const { completedCount, totalCount, percentage } = getCourseProgress(course.id);
+  const { completedCount, totalCount, percentage } = getCourseProgress(course._id);
   const isAllCompleted = completedCount >= totalCount && totalCount > 0;
   const isLastLesson = currentLessonIndex === allLessons.length - 1;
 
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
   // Handlers
   const handleSelectLesson = (lessonId: string) => {
-    setCurrentLesson(course.id, lessonId);
+    setCurrentLesson(course._id, lessonId);
     setMobileDrawerOpen(false);
   };
 
   const handlePrevLesson = () => {
     if (currentLessonIndex > 0) {
       const prevLesson = allLessons[currentLessonIndex - 1].lesson;
-      setCurrentLesson(course.id, prevLesson.id);
+      setCurrentLesson(course._id, prevLesson._id);
     }
   };
 
   const handleNextLesson = () => {
     if (!isLastLesson) {
       const nextLesson = allLessons[currentLessonIndex + 1].lesson;
-      setCurrentLesson(course.id, nextLesson.id);
+      setCurrentLesson(course._id, nextLesson._id);
     } else {
-      router.push(`/test/${course.id}`);
+      router.push(`/test/${course._id}`);
     }
   };
 
   const handleMarkCompleteAndNext = () => {
-    markLessonComplete(course.id, currentLesson.id);
+    markLessonComplete(course._id, currentLesson._id);
     if (!isLastLesson) {
       const nextLesson = allLessons[currentLessonIndex + 1].lesson;
-      setCurrentLesson(course.id, nextLesson.id);
+      setCurrentLesson(course._id, nextLesson._id);
     } else {
-      router.push(`/test/${course.id}`);
+      router.push(`/test/${course._id}`);
     }
   };
 
-  const isCurrentCompleted = completedLessonIds.includes(currentLesson.id);
+  const isCurrentCompleted = completedLessonIds.includes(currentLesson._id);
 
   // Custom TopBar Breadcrumb
   const customBreadcrumb = (
@@ -402,7 +401,7 @@ export default function CourseLearningPage({
 
                 {isLastLesson ? (
                   <Link
-                    href={`/test/${course.id}`}
+                    href={`/test/${course._id}`}
                     className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
                   >
                     <span>Final Test</span>
@@ -475,7 +474,7 @@ export default function CourseLearningPage({
                 </div>
 
                 <Link
-                  href={`/test/${course.id}`}
+                  href={`/test/${course._id}`}
                   className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/90 text-on-secondary font-label-md text-label-md font-semibold transition-all shadow-md"
                 >
                   <span>Start Final Test</span>
@@ -513,7 +512,7 @@ export default function CourseLearningPage({
 
             <CourseCurriculum
               course={course}
-              currentLessonId={currentLesson.id}
+              currentLessonId={currentLesson._id}
               completedLessonIds={completedLessonIds}
               onSelectLesson={handleSelectLesson}
             />

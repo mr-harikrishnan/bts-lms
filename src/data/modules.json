@@ -1,105 +1,105 @@
 [
   {
-    "id": "go-1",
-    "courseId": "backend-architecture-go",
+    "_id": "68a1d0000000000000000001",
+    "courseId": "68a1c0000000000000000001",
     "moduleNumber": "Module 01",
     "title": "Go Concurrency & Memory Model",
     "order": 1
   },
   {
-    "id": "cv-1",
-    "courseId": "commercial-video-production",
+    "_id": "68a1d0000000000000000002",
+    "courseId": "68a1c0000000000000000002",
     "moduleNumber": "Module 01",
     "title": "Visual Narrative & Scripting Psychology",
     "order": 1
   },
   {
-    "id": "cv-2",
-    "courseId": "commercial-video-production",
+    "_id": "68a1d0000000000000000003",
+    "courseId": "68a1c0000000000000000002",
     "moduleNumber": "Module 02",
     "title": "Cinematography, Lighting & Camera Mastery",
     "order": 2
   },
   {
-    "id": "cv-3",
-    "courseId": "commercial-video-production",
+    "_id": "68a1d0000000000000000004",
+    "courseId": "68a1c0000000000000000002",
     "moduleNumber": "Module 03",
     "title": "Editorial Cadence & DaVinci Color Grading",
     "order": 3
   },
   {
-    "id": "cv-4",
-    "courseId": "commercial-video-production",
+    "_id": "68a1d0000000000000000005",
+    "courseId": "68a1c0000000000000000002",
     "moduleNumber": "Module 04",
     "title": "Sound Design, Spatial Mixing & Delivery",
     "order": 4
   },
   {
-    "id": "cd-1",
-    "courseId": "creative-direction-brand",
+    "_id": "68a1d0000000000000000006",
+    "courseId": "68a1c0000000000000000003",
     "moduleNumber": "Module 01",
     "title": "Design Tokens & Variable Typography",
     "order": 1
   },
   {
-    "id": "de-1",
-    "courseId": "data-engineering-python",
+    "_id": "68a1d0000000000000000007",
+    "courseId": "68a1c0000000000000000004",
     "moduleNumber": "Module 01",
     "title": "Modern ELT Architecture",
     "order": 1
   },
   {
-    "id": "mod-1",
-    "courseId": "full-stack-web-dev",
+    "_id": "68a1d0000000000000000008",
+    "courseId": "68a1c0000000000000000005",
     "moduleNumber": "Module 01",
     "title": "Modern JS & TypeScript",
     "order": 1
   },
   {
-    "id": "mod-2",
-    "courseId": "full-stack-web-dev",
+    "_id": "68a1d0000000000000000009",
+    "courseId": "68a1c0000000000000000005",
     "moduleNumber": "Module 02",
     "title": "Component Architecture",
     "order": 2
   },
   {
-    "id": "mod-3",
-    "courseId": "full-stack-web-dev",
+    "_id": "68a1d000000000000000000a",
+    "courseId": "68a1c0000000000000000005",
     "moduleNumber": "Module 03",
     "title": "Advanced React & Data Hydration",
     "order": 3
   },
   {
-    "id": "mod-4",
-    "courseId": "full-stack-web-dev",
+    "_id": "68a1d000000000000000000b",
+    "courseId": "68a1c0000000000000000005",
     "moduleNumber": "Module 04",
     "title": "Backend REST & GraphQL APIs with Node",
     "order": 4
   },
   {
-    "id": "pm-1",
-    "courseId": "performance-marketing",
+    "_id": "68a1d000000000000000000c",
+    "courseId": "68a1c0000000000000000006",
     "moduleNumber": "Module 01",
     "title": "Digital Marketing Foundations & Funnel Engineering",
     "order": 1
   },
   {
-    "id": "pm-2",
-    "courseId": "performance-marketing",
+    "_id": "68a1d000000000000000000d",
+    "courseId": "68a1c0000000000000000006",
     "moduleNumber": "Module 02",
     "title": "Meta Ads & Algorithmic Creative Strategy",
     "order": 2
   },
   {
-    "id": "pm-3",
-    "courseId": "performance-marketing",
+    "_id": "68a1d000000000000000000e",
+    "courseId": "68a1c0000000000000000006",
     "moduleNumber": "Module 03",
     "title": "Google Search, Shopping & Performance Max",
     "order": 3
   },
   {
-    "id": "pm-4",
-    "courseId": "performance-marketing",
+    "_id": "68a1d000000000000000000f",
+    "courseId": "68a1c0000000000000000006",
     "moduleNumber": "Module 04",
     "title": "Attribution, GA4 & Data-Driven Growth",
     "order": 4

@@ -16,7 +16,7 @@ export async function getCourses(filters?: CourseFilterParams): Promise<Course[]
 
   let result = await Promise.all(
     baseCourses.map(async (c) => {
-      const modules = await getModulesByCourseId(c.id);
+      const modules = await getModulesByCourseId(c._id);
       return {
         ...c,
         modules,
@@ -82,12 +82,12 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
   }
 
   const baseCourses = await readJsonFile<Omit<Course, "modules">[]>("courses.json");
-  const course = baseCourses.find((c) => c.id === courseId);
+  const course = baseCourses.find((c) => c._id === courseId);
   if (!course) {
     return null;
   }
 
-  const modules = await getModulesByCourseId(course.id);
+  const modules = await getModulesByCourseId(course._id);
   return {
     ...course,
     modules,

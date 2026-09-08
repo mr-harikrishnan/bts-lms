@@ -12,7 +12,7 @@ import { Certificate } from "@/types";
 function TestResultContent({ courseId }: { courseId: string }) {
   const searchParams = useSearchParams();
   const { courses, getCertificateByCourseId, user } = useBstorm();
-  const course = courses.find((c) => c.id === courseId);
+  const course = courses.find((c) => c._id === courseId);
 
   const [apiCert, setApiCert] = useState<Certificate | null>(null);
 
@@ -22,7 +22,7 @@ function TestResultContent({ courseId }: { courseId: string }) {
       ? searchParams.get("passed") === "true"
       : score >= 70;
 
-  const contextCert = course ? getCertificateByCourseId(course.id) : undefined;
+  const contextCert = course ? getCertificateByCourseId(course._id) : undefined;
   const certificate = contextCert || apiCert;
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function TestResultContent({ courseId }: { courseId: string }) {
       userService
         .getCertificates()
         .then((certs) => {
-          const match = certs.find((c) => c.courseId === course.id);
+          const match = certs.find((c) => c.courseId === course._id);
           if (match) setApiCert(match);
         })
         .catch(console.error);
@@ -137,7 +137,7 @@ function TestResultContent({ courseId }: { courseId: string }) {
           {passed ? (
             <>
               <Link
-                href={certificate ? `/certificates/${certificate.id}` : "/certificates"}
+                href={certificate ? `/certificates/${certificate._id}` : "/certificates"}
                 className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-bold hover:bg-secondary/90 transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">
@@ -156,7 +156,7 @@ function TestResultContent({ courseId }: { courseId: string }) {
           ) : (
             <>
               <Link
-                href={`/test/${course.id}`}
+                href={`/test/${course._id}`}
                 className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">
@@ -166,7 +166,7 @@ function TestResultContent({ courseId }: { courseId: string }) {
               </Link>
 
               <Link
-                href={`/courses/${course.id}/learn`}
+                href={`/courses/${course._id}/learn`}
                 className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md font-semibold hover:bg-surface-container border border-[#E5E7EB] transition-all flex items-center justify-center gap-2"
               >
                 <span>Review Lessons</span>

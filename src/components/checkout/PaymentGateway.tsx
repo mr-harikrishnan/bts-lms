@@ -38,8 +38,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
     if (isProcessing) return;
     setIsProcessing(true);
     try {
-      await enrollCourse(course.id);
-      router.replace(`/courses/${course.id}/learn`);
+      await enrollCourse(course._id);
+      router.replace(`/courses/${course._id}/learn`);
     } catch (err) {
       console.error("Enrollment failed:", err);
       setIsProcessing(false);

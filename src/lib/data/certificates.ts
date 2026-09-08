@@ -2,6 +2,7 @@ import { Certificate } from "@/types";
 import { readJsonFile, writeJsonFile } from "./storage";
 import { getCourseById } from "./courses";
 import { getUserByEmail } from "./users";
+import { generateObjectId } from "../objectId";
 
 export async function getUserCertificates(userEmail: string): Promise<Certificate[]> {
   if (!userEmail) {
@@ -23,7 +24,7 @@ export async function getCertificateById(
 
   const certificates = await readJsonFile<Certificate[]>("certificates.json");
   const cert = certificates.find(
-    (c) => c.id === certificateId || c.credentialId === certificateId
+    (c) => c._id === certificateId || c.credentialId === certificateId
   );
   return cert || null;
 }
@@ -58,7 +59,7 @@ export async function generateCertificate(
   const user = await getUserByEmail(userEmail);
   const studentName = user?.name || "Hari";
 
-  const certId = `cert-${courseId}-${Date.now()}`;
+  const certObjectId = generateObjectId();
   const randomSuffix = Math.floor(1000 + Math.random() * 9000);
   const hexKey =
     "0x" +
@@ -67,8 +68,8 @@ export async function generateCertificate(
       .toUpperCase();
 
   const newCertificate: Certificate = {
-    id: certId,
-    userId: user?.id,
+    _id: certObjectId,
+    userId: user?._id,
     userEmail: userEmail.trim().toLowerCase(),
     courseId,
     courseTitle: course.title,
@@ -96,8 +97,9 @@ export async function generateCertificate(
         c.courseId === courseId
       )
   );
-  filtered.unshift(newCertificate);
 
+  filtered.push(newCertificate);
   await writeJsonFile<Certificate[]>("certificates.json", filtered);
+
   return newCertificate;
 }

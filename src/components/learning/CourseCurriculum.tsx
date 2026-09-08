@@ -19,8 +19,8 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   // Determine which module contains currentLessonId
   const initialOpenModules: Record<string, boolean> = {};
   course.modules.forEach((mod) => {
-    const hasCurrent = mod.lessons.some((l) => l.id === currentLessonId);
-    initialOpenModules[mod.id] = hasCurrent;
+    const hasCurrent = mod.lessons.some((l) => l._id === currentLessonId);
+    initialOpenModules[mod._id] = hasCurrent;
   });
 
   const [openModules, setOpenModules] = useState<Record<string, boolean>>(initialOpenModules);
@@ -37,7 +37,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
     const allOpen = Object.values(openModules).every(Boolean);
     const updated: Record<string, boolean> = {};
     course.modules.forEach((mod) => {
-      updated[mod.id] = !allOpen;
+      updated[mod._id] = !allOpen;
     });
     setOpenModules(updated);
   };
@@ -90,13 +90,13 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
       {/* Modules List */}
       <div className="flex flex-col gap-3 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
         {course.modules.map((module, modIdx) => {
-          const isModuleActive = module.lessons.some((l) => l.id === currentLessonId);
+          const isModuleActive = module.lessons.some((l) => l._id === currentLessonId);
           const completedInModule = module.lessons.filter((l) =>
-            completedLessonIds.includes(l.id)
+            completedLessonIds.includes(l._id)
           ).length;
           const isModuleCompleted = completedInModule === module.lessons.length;
           const isLocked = modIdx > 0 && !isModuleCompleted && !isModuleActive && completedInModule === 0 && completedCount < 3;
-          const isOpen = openModules[module.id] ?? false;
+          const isOpen = openModules[module._id] ?? false;
 
           // Filter lessons if search query present
           const filteredLessons = module.lessons.filter((l) =>
@@ -107,7 +107,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
 
           return (
             <div
-              key={module.id}
+              key={module._id}
               className={`bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm transition-all border ${
                 isModuleActive
                   ? "border-2 border-secondary shadow-md"
@@ -118,7 +118,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
             >
               {/* Module Header Accordion Trigger */}
               <button
-                onClick={() => toggleModule(module.id)}
+                onClick={() => toggleModule(module._id)}
                 className={`w-full flex items-center justify-between p-3.5 text-left transition-colors ${
                   isModuleActive
                     ? "bg-secondary-container/40"
@@ -202,13 +202,13 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
               {isOpen && (
                 <div className="p-2 flex flex-col gap-1 border-t border-surface-container bg-surface-container-lowest">
                   {filteredLessons.map((lesson) => {
-                    const isCurrent = lesson.id === currentLessonId;
-                    const isLessonDone = completedLessonIds.includes(lesson.id);
+                    const isCurrent = lesson._id === currentLessonId;
+                    const isLessonDone = completedLessonIds.includes(lesson._id);
 
                     if (isCurrent) {
                       return (
                         <div
-                          key={lesson.id}
+                          key={lesson._id}
                           className="flex items-center justify-between p-2.5 rounded-lg bg-secondary-container/60 border border-secondary/30 text-xs shadow-xs"
                         >
                           <div className="flex items-center gap-2">
@@ -240,8 +240,8 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
 
                     return (
                       <button
-                        key={lesson.id}
-                        onClick={() => onSelectLesson(lesson.id)}
+                        key={lesson._id}
+                        onClick={() => onSelectLesson(lesson._id)}
                         className={`w-full flex items-center justify-between p-2 rounded-lg text-xs group transition-colors text-left ${
                           isLessonDone
                             ? "hover:bg-surface-container-low text-on-surface-variant"

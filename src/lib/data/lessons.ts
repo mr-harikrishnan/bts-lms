@@ -19,16 +19,19 @@ export async function getLessonsByCourseId(courseId: string): Promise<Lesson[]> 
 }
 
 export async function getLessonById(
-  courseId: string,
-  lessonId: string
+  lessonId: string,
+  courseId?: string
 ): Promise<Lesson | null> {
-  if (!courseId || !lessonId) {
+  if (!lessonId) {
     return null;
   }
 
   const allLessons = await readJsonFile<StoredLesson[]>("lessons.json");
-  const match = allLessons.find(
-    (l) => l.courseId === courseId && l.id === lessonId
-  );
+  const match = allLessons.find((l) => {
+    const idMatch = l._id === lessonId;
+    if (!idMatch) return false;
+    return courseId ? l.courseId === courseId : true;
+  });
+
   return match || null;
 }

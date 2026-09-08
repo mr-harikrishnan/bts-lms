@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getLessonById } from "@/lib/data/lessons";
-import { apiSuccess, notFoundError, serverError } from "@/lib/apiResponse";
+import { apiSuccess, notFoundError, serverError, invalidObjectIdError } from "@/lib/apiResponse";
+import { isValidObjectId } from "@/lib/objectId";
 
 export async function GET(
   request: NextRequest,
@@ -8,8 +9,14 @@ export async function GET(
 ) {
   try {
     const { courseId, lessonId } = await params;
-    const lesson = await getLessonById(courseId, lessonId);
+    if (!isValidObjectId(courseId)) {
+      return invalidObjectIdError("courseId");
+    }
+    if (!isValidObjectId(lessonId)) {
+      return invalidObjectIdError("lessonId");
+    }
 
+    const lesson = await getLessonById(lessonId, courseId);
     if (!lesson) {
       return notFoundError(
         `Lesson with ID '${lessonId}' was not found in course '${courseId}'.`

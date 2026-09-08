@@ -48,7 +48,7 @@ export const FeaturedCoursesGrid: React.FC = () => {
 
         return (
           <article
-            key={course.id}
+            key={course._id}
             className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group"
           >
             <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
@@ -89,7 +89,7 @@ export const FeaturedCoursesGrid: React.FC = () => {
                   </span>
                 </div>
                 <Link
-                  href={`/checkout/${course.id}`}
+                  href={`/checkout/${course._id}`}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-xs"
                 >
                   <span>Enroll Now</span>

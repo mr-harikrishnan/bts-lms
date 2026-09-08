@@ -1,8 +1,8 @@
 [
   {
-    "id": "go-1-1",
-    "courseId": "backend-architecture-go",
-    "moduleId": "go-1",
+    "_id": "68a1e0000000000000000001",
+    "courseId": "68a1c0000000000000000001",
+    "moduleId": "68a1d0000000000000000001",
     "lessonNumber": "1.1",
     "title": "Goroutines, Channels & CSP Paradigm",
     "duration": "1h 10m",
@@ -24,9 +24,9 @@
     "order": 1
   },
   {
-    "id": "cv-1-1",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-1",
+    "_id": "68a1e0000000000000000002",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000002",
     "lessonNumber": "1.1",
     "title": "The 3-Act Commercial Scriptwriting Framework",
     "duration": "45m",
@@ -48,9 +48,9 @@
     "order": 1
   },
   {
-    "id": "cv-1-2",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-1",
+    "_id": "68a1e0000000000000000003",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000002",
     "lessonNumber": "1.2",
     "title": "Storyboarding & Cinematic Pre-visualization",
     "duration": "50m",
@@ -72,9 +72,9 @@
     "order": 2
   },
   {
-    "id": "cv-2-1",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-2",
+    "_id": "68a1e0000000000000000004",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000003",
     "lessonNumber": "2.1",
     "title": "3-Point Commercial Lighting & Motivated Sources",
     "duration": "1h 15m",
@@ -96,9 +96,9 @@
     "order": 1
   },
   {
-    "id": "cv-2-2",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-2",
+    "_id": "68a1e0000000000000000005",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000003",
     "lessonNumber": "2.2",
     "title": "Camera Rigging, Lenses & Sensor Exposure",
     "duration": "1h 30m",
@@ -120,9 +120,9 @@
     "order": 2
   },
   {
-    "id": "cv-3-1",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-3",
+    "_id": "68a1e0000000000000000006",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000004",
     "lessonNumber": "3.1",
     "title": "J-Cuts, L-Cuts & Rhythmic Editing in Premiere",
     "duration": "1h 20m",
@@ -144,9 +144,9 @@
     "order": 1
   },
   {
-    "id": "cv-3-2",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-3",
+    "_id": "68a1e0000000000000000007",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000004",
     "lessonNumber": "3.2",
     "title": "DaVinci Resolve Node-Based Color Grading",
     "duration": "1h 45m",
@@ -168,9 +168,9 @@
     "order": 2
   },
   {
-    "id": "cv-4-1",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-4",
+    "_id": "68a1e0000000000000000008",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000005",
     "lessonNumber": "4.1",
     "title": "Dialogue Cleanup, Foley & Audio Layering",
     "duration": "1h 10m",
@@ -192,9 +192,9 @@
     "order": 1
   },
   {
-    "id": "cv-4-2",
-    "courseId": "commercial-video-production",
-    "moduleId": "cv-4",
+    "_id": "68a1e0000000000000000009",
+    "courseId": "68a1c0000000000000000002",
+    "moduleId": "68a1d0000000000000000005",
     "lessonNumber": "4.2",
     "title": "Export Profiles, Master Codecs & Client Handoff",
     "duration": "1h 00m",
@@ -216,9 +216,9 @@
     "order": 2
   },
   {
-    "id": "cd-1-1",
-    "courseId": "creative-direction-brand",
-    "moduleId": "cd-1",
+    "_id": "68a1e000000000000000000a",
+    "courseId": "68a1c0000000000000000003",
+    "moduleId": "68a1d0000000000000000006",
     "lessonNumber": "1.1",
     "title": "Semantic Token Hierarchies in Figma",
     "duration": "50m",
@@ -240,9 +240,9 @@
     "order": 1
   },
   {
-    "id": "de-1-1",
-    "courseId": "data-engineering-python",
-    "moduleId": "de-1",
+    "_id": "68a1e000000000000000000b",
+    "courseId": "68a1c0000000000000000004",
+    "moduleId": "68a1d0000000000000000007",
     "lessonNumber": "1.1",
     "title": "Data Lake vs Lakehouse Paradigms",
     "duration": "55m",
@@ -264,9 +264,9 @@
     "order": 1
   },
   {
-    "id": "lesson-1-1",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-1",
+    "_id": "68a1e000000000000000000c",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000008",
     "lessonNumber": "1.1",
     "title": "Strict Typing & Generics",
     "duration": "45m",
@@ -288,9 +288,9 @@
     "order": 1
   },
   {
-    "id": "lesson-1-2",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-1",
+    "_id": "68a1e000000000000000000d",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000008",
     "lessonNumber": "1.2",
     "title": "Asynchronous JS & Promises",
     "duration": "55m",
@@ -312,9 +312,9 @@
     "order": 2
   },
   {
-    "id": "lesson-1-3",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-1",
+    "_id": "68a1e000000000000000000e",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000008",
     "lessonNumber": "1.3",
     "title": "TS Architecture in Scale",
     "duration": "50m",
@@ -336,9 +336,9 @@
     "order": 3
   },
   {
-    "id": "lesson-2-1",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-2",
+    "_id": "68a1e000000000000000000f",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000009",
     "lessonNumber": "2.1",
     "title": "Virtual DOM & Reconciliation",
     "duration": "1h 15m",
@@ -360,9 +360,9 @@
     "order": 1
   },
   {
-    "id": "lesson-2-2",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-2",
+    "_id": "68a1e0000000000000000010",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000009",
     "lessonNumber": "2.2",
     "title": "Context & Prop Drilling",
     "duration": "1h 20m",
@@ -384,9 +384,9 @@
     "order": 2
   },
   {
-    "id": "lesson-2-3",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-2",
+    "_id": "68a1e0000000000000000011",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d0000000000000000009",
     "lessonNumber": "2.3",
     "title": "Custom Hooks Optimization",
     "duration": "1h 40m",
@@ -408,9 +408,9 @@
     "order": 3
   },
   {
-    "id": "lesson-3-1",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-3",
+    "_id": "68a1e0000000000000000012",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000a",
     "lessonNumber": "3.1",
     "title": "Context Multiplexing & Reducers",
     "duration": "1h 10m",
@@ -432,9 +432,9 @@
     "order": 1
   },
   {
-    "id": "lesson-3-2",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-3",
+    "_id": "68a1e0000000000000000013",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000a",
     "lessonNumber": "3.2",
     "title": "Custom Hook Abstractions",
     "duration": "1h 40m",
@@ -456,9 +456,9 @@
     "order": 2
   },
   {
-    "id": "lesson-3-3",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-3",
+    "_id": "68a1e0000000000000000014",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000a",
     "lessonNumber": "3.3",
     "title": "Concurrency & Suspense",
     "duration": "2h 00m",
@@ -480,9 +480,9 @@
     "order": 3
   },
   {
-    "id": "lesson-3-4",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-3",
+    "_id": "68a1e0000000000000000015",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000a",
     "lessonNumber": "3.4",
     "title": "Component State Management with React Hooks & Reducers",
     "duration": "24m",
@@ -512,9 +512,9 @@
     "order": 4
   },
   {
-    "id": "lesson-4-1",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-4",
+    "_id": "68a1e0000000000000000016",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000b",
     "lessonNumber": "4.1",
     "title": "Microservice Architecture & Express / Fastify",
     "duration": "1h 30m",
@@ -536,9 +536,9 @@
     "order": 1
   },
   {
-    "id": "lesson-4-2",
-    "courseId": "full-stack-web-dev",
-    "moduleId": "mod-4",
+    "_id": "68a1e0000000000000000017",
+    "courseId": "68a1c0000000000000000005",
+    "moduleId": "68a1d000000000000000000b",
     "lessonNumber": "4.2",
     "title": "API Observability, Docker Deployment & CI/CD",
     "duration": "1h 45m",
@@ -560,9 +560,9 @@
     "order": 2
   },
   {
-    "id": "pm-1-1",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-1",
+    "_id": "68a1e0000000000000000018",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000c",
     "lessonNumber": "1.1",
     "title": "Funnel Economics & CAC/LTV Mechanics",
     "duration": "40m",
@@ -584,9 +584,9 @@
     "order": 1
   },
   {
-    "id": "pm-1-2",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-1",
+    "_id": "68a1e0000000000000000019",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000c",
     "lessonNumber": "1.2",
     "title": "Audience Segmentation & Persona Engineering",
     "duration": "50m",
@@ -608,9 +608,9 @@
     "order": 2
   },
   {
-    "id": "pm-2-1",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-2",
+    "_id": "68a1e000000000000000001a",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000d",
     "lessonNumber": "2.1",
     "title": "Auction Theory & eCPM Optimization",
     "duration": "1h 10m",
@@ -632,9 +632,9 @@
     "order": 1
   },
   {
-    "id": "pm-2-2",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-2",
+    "_id": "68a1e000000000000000001b",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000d",
     "lessonNumber": "2.2",
     "title": "Creative Fatigue Cycling & Dynamic Testing",
     "duration": "1h 25m",
@@ -656,9 +656,9 @@
     "order": 2
   },
   {
-    "id": "pm-3-1",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-3",
+    "_id": "68a1e000000000000000001c",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000e",
     "lessonNumber": "3.1",
     "title": "Intent Capture with Google Search Architecture",
     "duration": "1h 05m",
@@ -680,9 +680,9 @@
     "order": 1
   },
   {
-    "id": "pm-3-2",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-3",
+    "_id": "68a1e000000000000000001d",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000e",
     "lessonNumber": "3.2",
     "title": "Performance Max Campaign Orchestration",
     "duration": "1h 15m",
@@ -704,9 +704,9 @@
     "order": 2
   },
   {
-    "id": "pm-4-1",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-4",
+    "_id": "68a1e000000000000000001e",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000f",
     "lessonNumber": "4.1",
     "title": "Server-Side Tagging & Conversions API (CAPI)",
     "duration": "1h 20m",
@@ -728,9 +728,9 @@
     "order": 1
   },
   {
-    "id": "pm-4-2",
-    "courseId": "performance-marketing",
-    "moduleId": "pm-4",
+    "_id": "68a1e000000000000000001f",
+    "courseId": "68a1c0000000000000000006",
+    "moduleId": "68a1d000000000000000000f",
     "lessonNumber": "4.2",
     "title": "Marketing Mix Modeling & Incremental Testing",
     "duration": "1h 30m",

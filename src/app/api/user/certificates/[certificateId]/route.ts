@@ -1,6 +1,12 @@
 import { NextRequest } from "next/server";
 import { getCertificateById } from "@/lib/data/certificates";
-import { apiSuccess, notFoundError, serverError } from "@/lib/apiResponse";
+import {
+  apiSuccess,
+  notFoundError,
+  serverError,
+  invalidObjectIdError,
+} from "@/lib/apiResponse";
+import { isValidObjectId } from "@/lib/objectId";
 
 export async function GET(
   request: NextRequest,
@@ -8,8 +14,11 @@ export async function GET(
 ) {
   try {
     const { certificateId } = await params;
-    const certificate = await getCertificateById(certificateId);
+    if (!isValidObjectId(certificateId)) {
+      return invalidObjectIdError("certificateId");
+    }
 
+    const certificate = await getCertificateById(certificateId);
     if (!certificate) {
       return notFoundError(`Certificate credential '${certificateId}' was not found.`);
     }

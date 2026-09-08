@@ -1,5 +1,6 @@
 import { User } from "@/types";
 import { readJsonFile, writeJsonFile } from "./storage";
+import { generateObjectId } from "../objectId";
 
 export async function getUserById(id: string): Promise<User | null> {
   if (!id) {
@@ -7,7 +8,7 @@ export async function getUserById(id: string): Promise<User | null> {
   }
 
   const users = await readJsonFile<User[]>("users.json");
-  const found = users.find((u) => u.id === id);
+  const found = users.find((u) => u._id === id);
   return found ? sanitizeUser(found) : null;
 }
 
@@ -63,7 +64,7 @@ export async function createUser(data: Partial<User>): Promise<User> {
   }
 
   const newUser: User = {
-    id: `usr-${Date.now()}`,
+    _id: generateObjectId(),
     name: data.name.trim(),
     email: data.email.trim().toLowerCase(),
     college: data.college?.trim() || "University Partner Institution",

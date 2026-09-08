@@ -82,12 +82,24 @@ export const courseService = {
 
   async submitTest(
     courseId: string,
-    answers: Record<number, number>
+    answers: Record<string, number>
   ): Promise<TestSubmissionResult> {
     return request<TestSubmissionResult>(`/api/courses/${courseId}/test/submit`, {
       method: "POST",
       body: JSON.stringify({ answers }),
     });
+  },
+};
+
+export const moduleService = {
+  async getById(id: string): Promise<CourseModule> {
+    return request<CourseModule>(`/api/modules/${id}`);
+  },
+};
+
+export const lessonService = {
+  async getById(id: string): Promise<Lesson> {
+    return request<Lesson>(`/api/lessons/${id}`);
   },
 };
 
