@@ -1,160 +1,76 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const PublicFooter: React.FC = () => {
   return (
-    <footer className="pt-12 pb-8 border-t border-[#E5E7EB] flex flex-col gap-10 bg-surface">
-      <div className="max-w-[1280px] mx-auto w-full px-6 md:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          {/* Col 1: Brand & Thesis */}
-          <div className="col-span-2 flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="BSTORM Logo"
-                className="h-8 w-8 rounded-lg object-contain"
-                src="/logo.png"
-              />
-              <div className="flex flex-col">
-                <span className="font-display text-lg font-bold text-primary tracking-tight leading-none">
-                  BSTORM
-                </span>
-                <span className="text-[10px] text-on-surface-variant font-medium tracking-wider uppercase mt-0.5">
-                  by Brainstorm Creators
-                </span>
+    <footer className="border-t border-stone-200 bg-white pt-12 pb-10">
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-stone-100">
+          {/* Brand Col */}
+          <div className="md:col-span-6 flex flex-col gap-3">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-stone-50 border border-stone-200 p-1">
+                <Image
+                  alt="BSTORM Logo"
+                  className="object-contain"
+                  src="/logo.png"
+                  width={24}
+                  height={24}
+                />
               </div>
-            </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
-              Practical, career-focused digital skills. We help college students,
-              beginners, and creators master high-demand tech skills through hands-on
-              practice projects and self-paced video lessons.
+              <span className="font-sans text-lg font-bold text-[#2D3536] tracking-tight">
+                BSTORM
+              </span>
+            </Link>
+            <p className="text-sm text-stone-500 max-w-sm leading-relaxed">
+              Practical Digital Skills. Structured, beginner-friendly online courses designed to help you build real job-ready capabilities.
             </p>
-            <div className="flex items-center gap-3 text-on-surface-variant pt-2">
-              <span className="material-symbols-outlined text-[20px] hover:text-primary cursor-pointer transition-colors">
-                public
-              </span>
-              <span className="material-symbols-outlined text-[20px] hover:text-primary cursor-pointer transition-colors">
-                code
-              </span>
-              <span className="material-symbols-outlined text-[20px] hover:text-primary cursor-pointer transition-colors">
-                hub
-              </span>
-              <span className="material-symbols-outlined text-[20px] hover:text-primary cursor-pointer transition-colors">
-                mail
-              </span>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="md:col-span-3 flex flex-col gap-2.5">
+            <span className="text-xs font-semibold text-stone-900 uppercase tracking-wider">
+              Navigation
+            </span>
+            <div className="flex flex-col gap-2 text-sm text-stone-600">
+              <Link href="/courses" className="hover:text-[#2D3536] transition-colors">
+                Courses
+              </Link>
+              <a href="#why-bstorm" className="hover:text-[#2D3536] transition-colors">
+                Why BSTORM
+              </a>
+              <a href="#curriculum" className="hover:text-[#2D3536] transition-colors">
+                Curriculum
+              </a>
+              <Link href="/login" className="hover:text-[#2D3536] transition-colors">
+                Sign In
+              </Link>
             </div>
           </div>
 
-          {/* Col 2: Learning Tracks */}
-          <div className="flex flex-col gap-3">
-            <span className="font-label-md text-label-md text-primary font-semibold">
-              Specializations
+          {/* Support Links */}
+          <div className="md:col-span-3 flex flex-col gap-2.5">
+            <span className="text-xs font-semibold text-stone-900 uppercase tracking-wider">
+              Support
             </span>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              Digital Marketing
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              Content Creation
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              Full Stack Engineering
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              Brand Architecture
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              React 19 Masterclass
-            </Link>
-          </div>
-
-          {/* Col 3: Platform */}
-          <div className="flex flex-col gap-3">
-            <span className="font-label-md text-label-md text-primary font-semibold">
-              Platform
-            </span>
-            <a
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="#methodology"
-            >
-              Our Methodology
-            </a>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/courses"
-            >
-              Course Catalog
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/dashboard"
-            >
-              Student Terminal
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/certificates"
-            >
-              Verify Certificate
-            </Link>
-            <Link
-              className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-              href="/my-courses"
-            >
-              Placement Network
-            </Link>
-          </div>
-
-          {/* Col 4: Institutional & Legal */}
-          <div className="flex flex-col gap-3">
-            <span className="font-label-md text-label-md text-primary font-semibold">
-              Institution
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-              Enterprise Training
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-              Academic Advisory
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-              Privacy Charter
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-              Student Honor Code
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-              Refund Policies
-            </span>
+            <div className="flex flex-col gap-2 text-sm text-stone-600">
+              <a href="mailto:contact@bstorm.edu" className="hover:text-[#2D3536] transition-colors">
+                Contact
+              </a>
+              <Link href="/courses" className="hover:text-[#2D3536] transition-colors">
+                Help & FAQ
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Attribution & Compliance */}
-        <div className="pt-8 mt-8 border-t border-[#E5E7EB] flex flex-col md:flex-row items-center justify-between gap-4 font-caption text-caption text-on-surface-variant">
-          <p>© 2025 BSTORM. Provided by Brainstorm Creators. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-6">
-            <span className="hover:text-primary cursor-pointer transition-colors">
-              ISO 9001:2015 Accredited
-            </span>
-            <span className="hover:text-primary cursor-pointer transition-colors">
-              Encrypted TLS 1.3
-            </span>
-            <span className="hover:text-primary cursor-pointer transition-colors">
-              System Status: Operational
-            </span>
+        {/* Bottom Bar */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-500">
+          <p>© 2026 BSTORM. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <span className="text-stone-400">Practical Online Learning</span>
+            <span className="text-stone-400">Project-Driven</span>
           </div>
         </div>
       </div>

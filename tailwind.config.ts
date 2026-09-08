@@ -56,6 +56,14 @@ const config: Config = {
         background: "#f1fbfe",
         "on-background": "#141d20",
         "surface-variant": "#dae4e7",
+        brand: {
+          primary: "#2D3536",
+          sage: "#98A897",
+          moss: "#697C70",
+          blue: "#B3C9D6",
+          cream: "#F2EFE2",
+          surface: "#FAF9F6",
+        },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],

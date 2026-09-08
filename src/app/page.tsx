@@ -1,723 +1,592 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  ArrowRight,
+  Play,
+  CheckCircle2,
+  Circle,
+  Compass,
+  Layers,
+  GraduationCap,
+  BookOpen,
+  Sparkles,
+  Award,
+  Video,
+  Code2,
+  TrendingUp,
+} from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { COURSES } from "@/data/courses";
 
 export default function LandingPage() {
-  const heroCourse =
-    COURSES.find((c) => c.id === "performance-marketing") || COURSES[0];
-  const heroLesson = heroCourse.modules[0]?.lessons[0];
-  const heroVideoUrl = heroCourse.previewVideoUrl || heroLesson?.videoUrl || "";
   return (
-    <div className="bg-surface font-body-md text-on-surface min-h-screen flex flex-col selection:bg-secondary-container selection:text-primary">
-      {/* PUBLIC TOP HEADER */}
+    <div className="bg-[#FAF9F6] font-sans text-[#2D3536] min-h-screen flex flex-col selection:bg-[#E2ECE5] selection:text-[#2D3536]">
+      {/* 1. PUBLIC HEADER */}
       <PublicHeader />
 
-      {/* MAIN LANDING CONTENT */}
-      <main className="relative bg-surface flex-grow">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-6 py-8 md:py-12">
-          <div className="flex flex-col w-full">
-            {/* Subtle Ambient Glow */}
-            <div className="relative w-full overflow-hidden">
-              <div className="absolute -top-24 right-1/4 w-96 h-96 bg-secondary-container/40 rounded-full blur-3xl pointer-events-none -z-10" />
-              <div className="absolute top-72 -left-20 w-80 h-80 bg-surface-container-high/60 rounded-full blur-2xl pointer-events-none -z-10" />
+      <main className="flex-grow">
+        {/* 2. HERO SECTION */}
+        <section className="relative pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-18 border-b border-stone-200/70 overflow-hidden">
+          {/* Subtle warm accent ambient glow */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F2EFE2]/60 rounded-full blur-3xl pointer-events-none -z-10" />
+          <div className="absolute bottom-0 left-10 w-[400px] h-[400px] bg-[#B3C9D6]/15 rounded-full blur-3xl pointer-events-none -z-10" />
 
-              {/* 1. HERO SECTION */}
-              <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-2 pb-16">
-                <div className="lg:col-span-7 flex flex-col gap-6">
-                  <div className="self-start text-xs font-bold uppercase tracking-widest text-emerald-700">
-                    <span>Practical Online Courses</span>
-                  </div>
-
-                  <h1 className="font-display tracking-tight font-bold max-w-xl text-3xl sm:text-4xl leading-tight text-slate-950">
-                    Master Practical Digital Skills That Build{" "}
-                    <span className="text-secondary underline decoration-secondary-fixed-dim decoration-4 underline-offset-8">
-                      Real Careers
-                    </span>
-                  </h1>
-
-                  <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
-                    Simple, beginner-friendly online courses designed for college students to master high-demand digital skills step-by-step.
-                  </p>
-
-                  {/* CTAs */}
-                  <div className="flex flex-wrap items-center gap-4 pt-2">
-                    <Link
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm hover:shadow-md active:scale-[0.99] group"
-                      href="/checkout/performance-marketing"
-                    >
-                      <span>Explore Digital Marketing</span>
-                      <span className="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">
-                        arrow_forward
-                      </span>
-                    </Link>
-
-                    <Link
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-slate-800 text-sm font-semibold border border-slate-200 shadow-2xs hover:bg-slate-50 transition-all"
-                      href="/courses"
-                    >
-                      <span className="material-symbols-outlined text-[18px] text-emerald-700">
-                        explore
-                      </span>
-                      <span>View All Courses</span>
-                    </Link>
-                  </div>
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+              {/* Left Column: Value Proposition */}
+              <div className="lg:col-span-6 flex flex-col items-start text-left">
+                {/* Eyebrow */}
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#98A897]/15 border border-[#98A897]/30 text-[#697C70] text-xs font-semibold uppercase tracking-widest mb-5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#697C70]" />
+                  PRACTICAL DIGITAL SKILLS
                 </div>
 
-                {/* Hero Visual: Static Player Frame (Non-clickable, no certificate badge) */}
-                <div className="lg:col-span-5 relative">
-                  <div className="bg-white/95 rounded-3xl p-6 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.08),0_1px_3px_rgba(15,23,42,0.04)] flex flex-col gap-4 relative z-10 border border-slate-200/80 ring-1 ring-slate-900/5 backdrop-blur-xl">
-                    {/* Window Header */}
-                    <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-rose-400" />
-                        <span className="w-3 h-3 rounded-full bg-amber-400" />
-                        <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                        <span className="ml-2 text-xs font-semibold text-slate-700">
-                          BSTORM Studio Player
-                        </span>
-                      </div>
-                      <span className="text-xs font-semibold text-slate-500">
-                        Self-Paced
-                      </span>
-                    </div>
+                {/* Main Headline */}
+                <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#2D3536] tracking-tight leading-[1.15] mb-5">
+                  Master the Digital Skills That Build{" "}
+                  <span className="text-[#697C70]">Real Careers.</span>
+                </h1>
 
-                    {/* Static Video Simulation Frame - Not Clickable */}
-                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 select-none pointer-events-none shadow-inner">
-                      <video
-                        className="w-full h-full object-cover"
-                        src={heroVideoUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-between p-4 sm:p-5">
-                        <div className="flex justify-between items-center">
-                          <span className="px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-md text-slate-900 text-xs font-semibold shadow-xs">
-                            {heroCourse.modules[0]?.moduleNumber} • Lesson {heroLesson?.lessonNumber || "1.1"}
-                          </span>
-                          <span className="px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-xs font-medium">
-                            {heroLesson?.duration || "40m"} Preview
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-base sm:text-lg font-bold text-white leading-snug">
-                              {heroLesson?.title || heroCourse.title}
-                            </h4>
-                            <p className="text-xs text-slate-300 mt-0.5">
-                              Instructor: {heroCourse.instructor.name}
-                            </p>
-                          </div>
-                          <div className="w-11 h-11 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg">
-                            <span className="material-symbols-outlined text-[24px]">
-                              play_arrow
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                {/* Supporting Text */}
+                <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed max-w-xl mb-8">
+                  Learn practical, job-ready skills in Digital Marketing, Content
+                  Creation, and Web Development through structured, beginner-friendly
+                  courses.
+                </p>
 
-                    {/* Module Progress Row */}
-                    <div className="bg-slate-50 p-4 rounded-2xl flex flex-col gap-2.5 border border-slate-200/70">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-800 font-semibold">
-                          Course Progress: Module 1
-                        </span>
-                        <span className="text-emerald-700 font-bold">65% Completed</span>
-                      </div>
-                      <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-                        <div className="h-full rounded-full bg-emerald-600 w-[65%]" />
-                      </div>
-                      <div className="flex justify-between items-center text-slate-500 text-xs pt-0.5">
-                        <span>Next: Google Ads Search Campaign</span>
-                        <span className="font-semibold text-slate-900">In Progress</span>
-                      </div>
-                    </div>
-
-                    {/* Course Delivery Info */}
-                    <div className="flex items-center justify-between pt-1 text-xs text-slate-500 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <span>Self-paced practical curriculum</span>
-                      </div>
-                      <span className="material-symbols-outlined text-emerald-700 text-[20px]">
-                        verified
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* METHODOLOGY TICKER */}
-              <section className="py-8 my-4 border-y border-[#E5E7EB] flex flex-wrap items-center justify-around gap-6 text-on-surface-variant font-label-md text-label-md">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-[20px]">
-                    terminal
-                  </span>
-                  <span>100% Practical & Beginner-Friendly</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-[20px]">
-                    support_agent
-                  </span>
-                  <span>Dedicated Doubt Support</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-[20px]">
-                    folder_special
-                  </span>
-                  <span>Real Resume-Ready Projects</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-[20px]">
-                    badge
-                  </span>
-                  <span>Career & Placement Guidance</span>
-                </div>
-              </section>
-
-              {/* 2. CATEGORY EXPLORATION (3 CORE PILLARS) */}
-              <section className="py-16 flex flex-col gap-10" id="tracks">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                  <div className="flex flex-col gap-2 max-w-xl">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-                      Career Tracks
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                      Practical Skills for Beginners
-                    </h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      No boring theory. Learn high-demand digital skills step-by-step with real-world practice.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                      Digital Marketing Available Now
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Pillar 1: Performance Marketing (Available Now) */}
-                  <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group border-2 border-secondary/30 relative">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                          Available Now
-                        </span>
-                        <span className="font-caption text-caption text-on-surface-variant font-medium">
-                          14 Weeks
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-headline-md text-headline-md text-primary font-bold group-hover:text-secondary transition-colors">
-                          Performance Marketing & Growth
-                        </h3>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
-                          Run real Meta and Google ad campaigns, measure ROI, and learn how to generate real customers online.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pt-2">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Meta Ads Manager
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Google Ads
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Campaign Budgeting
-                        </span>
-                      </div>
-                    </div>
-                    <div className="pt-6 mt-6 border-t border-[#E5E7EB] flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="font-caption text-caption text-on-surface-variant">
-                          38 Lessons • 6 Projects
-                        </span>
-                        <span className="font-headline-sm text-headline-sm font-bold text-primary">
-                          ₹2,499
-                        </span>
-                      </div>
-                      <Link
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors shadow-sm"
-                        href="/checkout/performance-marketing"
-                      >
-                        <span>Enroll Now</span>
-                        <span className="material-symbols-outlined text-[16px]">
-                          arrow_forward
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Pillar 2: Content Creation (Upcoming Soon) */}
-                  <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between group border border-[#E5E7EB] opacity-90">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
-                          Upcoming Track
-                        </span>
-                        <span className="font-caption text-caption text-on-surface-variant font-medium">
-                          10 Weeks
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-headline-md text-headline-md text-primary font-bold">
-                          Content Creation & Video Editing
-                        </h3>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
-                          Learn storytelling, video editing for Instagram Reels & YouTube Shorts, and viral content formats.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pt-2">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Premiere Pro
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Reels & Shorts
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Storytelling
-                        </span>
-                      </div>
-                    </div>
-                    <div className="pt-6 mt-6 border-t border-[#E5E7EB] flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="font-caption text-caption text-on-surface-variant">
-                          Launching Soon
-                        </span>
-                        <span className="font-label-md text-label-md font-semibold text-amber-700">
-                          In Production
-                        </span>
-                      </div>
-                      <button
-                        disabled
-                        className="px-4 py-2 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold cursor-not-allowed opacity-80"
-                      >
-                        Coming Soon
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Pillar 3: Web Engineering (Upcoming Soon) */}
-                  <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between group border border-[#E5E7EB] opacity-90">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
-                          Upcoming Track
-                        </span>
-                        <span className="font-caption text-caption text-on-surface-variant font-medium">
-                          16 Weeks
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-headline-md text-headline-md text-primary font-bold">
-                          Full Stack Web Development
-                        </h3>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
-                          Build responsive websites and web apps from scratch using HTML, CSS, JavaScript, and React.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pt-2">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          React
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          JavaScript
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-600 font-medium">
-                          Web Projects
-                        </span>
-                      </div>
-                    </div>
-                    <div className="pt-6 mt-6 border-t border-[#E5E7EB] flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="font-caption text-caption text-on-surface-variant">
-                          Launching Soon
-                        </span>
-                        <span className="font-label-md text-label-md font-semibold text-amber-700">
-                          In Production
-                        </span>
-                      </div>
-                      <button
-                        disabled
-                        className="px-4 py-2 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold cursor-not-allowed opacity-80"
-                      >
-                        Coming Soon
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* 3. WHY BSTORM */}
-              <section
-                className="py-14 my-4 bg-surface-container-low rounded-3xl p-8 md:p-10 border border-[#E5E7EB]/70"
-                id="methodology"
-              >
-                <div className="max-w-xl flex flex-col gap-2 mb-10">
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-                    Why Learn With Us
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                    Simple, Practical & Beginner-Friendly
-                  </h2>
-                  <p className="font-body-md text-body-md text-on-surface-variant">
-                    Designed specifically for college students to learn practical skills without complicated jargon.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col gap-2.5 border border-[#E5E7EB]/50">
-                    <div className="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[24px]">
-                        precision_manufacturing
-                      </span>
-                    </div>
-                    <h4 className="font-headline-sm text-headline-sm text-primary font-bold">
-                      100% Practical
-                    </h4>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Learn by doing real exercises and hands-on projects instead of memorizing slides.
-                    </p>
-                  </div>
-
-                  <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col gap-2.5 border border-[#E5E7EB]/50">
-                    <div className="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[24px]">
-                        play_lesson
-                      </span>
-                    </div>
-                    <h4 className="font-headline-sm text-headline-sm text-primary font-bold">
-                      Bite-Sized Lessons
-                    </h4>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Short, easy-to-follow video modules that you can learn comfortably at your own pace.
-                    </p>
-                  </div>
-
-                  <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col gap-2.5 border border-[#E5E7EB]/50">
-                    <div className="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[24px]">
-                        folder_special
-                      </span>
-                    </div>
-                    <h4 className="font-headline-sm text-headline-sm text-primary font-bold">
-                      Portfolio Projects
-                    </h4>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Build real-world projects that you can showcase on your resume and LinkedIn profile.
-                    </p>
-                  </div>
-
-                  <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col gap-2.5 border border-[#E5E7EB]/50">
-                    <div className="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[24px]">
-                        support_agent
-                      </span>
-                    </div>
-                    <h4 className="font-headline-sm text-headline-sm text-primary font-bold">
-                      Doubt Support
-                    </h4>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Get help from mentors whenever you get stuck on any exercise or lesson.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              {/* 4. CURATED INTENSIVE PROGRAMS */}
-              <section className="py-16 flex flex-col gap-10" id="curriculum">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-                      Featured Programs
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                      Courses & Upcoming Tracks
-                    </h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Digital marketing is ready for enrollment. Web dev & content creation are in production.
-                    </p>
-                  </div>
+                {/* CTA Group */}
+                <div className="flex flex-wrap items-center gap-3.5 w-full sm:w-auto">
                   <Link
-                    className="font-label-md text-label-md text-secondary font-semibold hover:underline inline-flex items-center gap-1"
-                    href="/courses"
+                    href="/signup"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#2D3536] text-white text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm hover:shadow-md group"
                   >
-                    <span>View All Tracks</span>
-                    <span className="material-symbols-outlined text-[16px]">
-                      chevron_right
-                    </span>
+                    <span>Start Learning</span>
+                    <ArrowRight className="w-4 h-4 text-stone-300 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+
+                  <Link
+                    href="/courses"
+                    className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white text-[#2D3536] text-sm font-semibold border border-stone-300/80 hover:bg-stone-50 transition-colors shadow-2xs"
+                  >
+                    Explore Courses
                   </Link>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {/* Course 1: Digital Marketing (AVAILABLE NOW) */}
-                  <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-2 border-secondary/20">
-                    <div className="flex flex-col">
-                      <div className="relative w-full aspect-video">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          className="w-full h-full object-cover"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzNSmHQgtxzyYSwX_j_Nw9cV0CnIajPs_B5HzUav6bLjFKQ39SCrSfyXRlZPvP2XK2I2Eb4uYpj07_tF4eaM3ozOZ60nha1ZMzUoq_EPaek2WFJDHZ8lqpL0GvfGZ3AfHA4eGzxl0VkVFcMycfePkMn8M_4YipwWb-iG-BHv_QmQvAy5oipVZ_josPjXLI6Bqm75Akk3XehTsehoFOgouic4kqm7mBsNB_lIJZGyCU94rnvLoapBr8"
-                          alt="Digital Marketing Desk"
-                        />
-                      </div>
-                      <div className="p-6 flex flex-col gap-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                            Live Course • 14 Weeks
-                          </span>
-                          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                            Enrolling Now
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-primary font-bold leading-tight">
-                            Performance Marketing & Growth
-                          </h3>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
-                            Learn Meta ads, Google ads, conversion tracking, and campaign budgeting step-by-step.
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 pt-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            className="w-8 h-8 rounded-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ad_e9BhVNbU6J6JNT9eOCqYRYC-sNDJa8VVnxyeAkxgDdT2eW91YxvFabYsMoR8CrIW8WEq5yHZgKxzRMX2xrn1cr5bmEcqYh1VwX1pVE0KcMCJeWkFWe-g3GgKxBFAsLZXioa8bUC9y8ddajZ_5Mhu7JuoVW5t1bfzlYJH5nY9Y_Kd7RWHvE91zzpDTBalnu7mU6Xey5M7hbti1WJ9yUwmgCjMrLr88IRldu2numv0tDPHPxVgi"
-                            alt="Pooja Venkatesh"
-                          />
-                          <div className="flex flex-col">
-                            <span className="font-label-sm text-label-sm text-primary font-semibold">
-                              Pooja Venkatesh
-                            </span>
-                            <span className="font-caption text-caption text-on-surface-variant">
-                              Ex-Growth Lead
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+              {/* Right Column: Realistic EdTech Course Visual */}
+              <div className="lg:col-span-6 flex justify-center lg:justify-end">
+                <div className="w-full max-w-[520px] bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-[0_12px_36px_-8px_rgba(45,53,54,0.08)]">
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#697C70]" />
+                      <span className="text-xs font-semibold text-[#697C70] uppercase tracking-wider">
+                        Digital Marketing
+                      </span>
                     </div>
-                    <div className="p-6 pt-0 flex items-center justify-between border-t border-[#E5E7EB] mt-3 pt-4">
-                      <div className="flex flex-col">
-                        <span className="font-caption text-caption text-on-surface-variant line-through">
-                          ₹7,999
-                        </span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-headline-sm text-headline-sm text-primary font-bold">
-                            ₹2,499
-                          </span>
-                          <span className="font-caption text-caption text-secondary font-semibold">
-                            68% off
-                          </span>
-                        </div>
-                      </div>
-                      <Link
-                        className="px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors shadow-sm"
-                        href="/checkout/performance-marketing"
-                      >
-                        Enroll Now
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Course 2: Content Creation (UPCOMING SOON) */}
-                  <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between border border-[#E5E7EB] opacity-90">
-                    <div className="flex flex-col">
-                      <div className="relative w-full aspect-video">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          className="w-full h-full object-cover"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIgAUTxz_lmURMIDfE6NW0gn5w1beNTNliIZZpJBSzTsGnVLlnPKN4_7OPkeRFe6WSykNMaRRHKS20xdXxtxmxS1TwKbVt3MmjlofuAQ5VBB4Z8AVquFwR0iZt8-EPMxyF_WVDuh_tRM-uOvL0RO3ukpENrxAcsyeomFIw27hjvojEnLLQt4OOXP5aasDQvp3Res0lxHSNHsdv2sa8kZg0UYLSsUzDYtQI1ELLWDCxHFEW0sjrE51A"
-                          alt="Commercial Video Setup"
-                        />
-                      </div>
-                      <div className="p-6 flex flex-col gap-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
-                            Upcoming Track • 10 Weeks
-                          </span>
-                          <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
-                            In Production
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-primary font-bold leading-tight">
-                            Commercial Content & Media Design
-                          </h3>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
-                            Learn scriptwriting, video shooting, and editing for Instagram Reels & YouTube Shorts.
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 pt-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            className="w-8 h-8 rounded-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWvRzPv4umPBs-EZvIRGoiO7_2N1t_15NqxOWD5wWrI_IceYxRho3H7p8vfVQBOOXT5SHMWSq15FnnqPukqePIasecXudzsvlHBSixC7yeiLg1QOYRYQV3Il61fsUeK1OPoLA8rAusN5DHf3I_zm90PgiHC7zTNsRM1GMSeoNaBQtSOkCTmtY2g7ux2xDKUIYUZ4yEmrQIovxdUporwkIFkiBN7N7e67Lm96rfI8Hr0e4WoEOklEII"
-                            alt="Devang Nair"
-                          />
-                          <div className="flex flex-col">
-                            <span className="font-label-sm text-label-sm text-primary font-semibold">
-                              Devang Nair
-                            </span>
-                            <span className="font-caption text-caption text-on-surface-variant">
-                              Video Creator
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-6 pt-0 flex items-center justify-between border-t border-[#E5E7EB] mt-3 pt-4">
-                      <div className="flex flex-col">
-                        <span className="font-headline-sm text-headline-sm text-primary font-bold">
-                          ₹2,199
-                        </span>
-                        <span className="font-caption text-caption text-amber-700 font-semibold">
-                          Coming Soon
-                        </span>
-                      </div>
-                      <button
-                        disabled
-                        className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold cursor-not-allowed opacity-80"
-                      >
-                        Coming Soon
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Course 3: Web Development (UPCOMING SOON) */}
-                  <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between border border-[#E5E7EB] opacity-90">
-                    <div className="flex flex-col">
-                      <div className="relative w-full aspect-video">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          className="w-full h-full object-cover"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgFZ_j0XbOEi8BsaYJ7yne4y1Ws4qC8ARomJcHIhfYTT4S-wJgsugDQSA5udzqVEDdO5zESAhdQBXM2vYA-UjIZkULD4Emhv_V7fLDK696FEJdb26H_DkPE3ChIoA_dAdn15alAboS-22_0MCE3NmAUssuHyo5Mshb99p0zEQVrMMOvGrE8Su9_Ddr5CDNf-9WNVIGD-bpViPbEbvmPf2GSbP2jLZLwthzr-cxHqvG6vvxMc6wuDt1"
-                          alt="Web Development Desk"
-                        />
-                      </div>
-                      <div className="p-6 flex flex-col gap-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
-                            Upcoming Track • 16 Weeks
-                          </span>
-                          <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
-                            In Production
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-primary font-bold leading-tight">
-                            Full Stack Web Development
-                          </h3>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
-                            Build modern responsive web applications from scratch with HTML, CSS, JavaScript, and React.
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 pt-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            className="w-8 h-8 rounded-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYW3Xt4-aqRgLDACjqHOORlHkXcnwXK28rhSwcyLkp0xzFTuDfri1PIp-BydGpclIJvb7SfgFCddAgOzTSMryb8qs35QowHf5LTFnUkRKg6Qe_UI_sPchjYylQnh34fuMAzK_WOrPD0K9ACuJAfPokPDepokI3RmhYDC8XrpTmR3m9vcZffbhwJHpOQlWTRDw42jmRaO2Mbjnd-SzhzXFEBlgFORulymCvKfPSgh_V9pZYSGzV70xf"
-                            alt="Ananya Chawla"
-                          />
-                          <div className="flex flex-col">
-                            <span className="font-label-sm text-label-sm text-primary font-semibold">
-                              Ananya Chawla
-                            </span>
-                            <span className="font-caption text-caption text-on-surface-variant">
-                              Senior Engineer
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-6 pt-0 flex items-center justify-between border-t border-[#E5E7EB] mt-3 pt-4">
-                      <div className="flex flex-col">
-                        <span className="font-headline-sm text-headline-sm text-primary font-bold">
-                          ₹2,999
-                        </span>
-                        <span className="font-caption text-caption text-amber-700 font-semibold">
-                          Coming Soon
-                        </span>
-                      </div>
-                      <button
-                        disabled
-                        className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold cursor-not-allowed opacity-80"
-                      >
-                        Coming Soon
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* 5. STUDENT TESTIMONIAL (NO CERTIFICATE PREVIEW CARD) */}
-              <section className="py-10 my-4 bg-surface-container-lowest rounded-3xl p-8 md:p-10 border border-[#E5E7EB] shadow-sm">
-                <div className="max-w-2xl mx-auto text-center flex flex-col items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[24px]">
-                      format_quote
+                    <span className="text-xs text-stone-500 font-medium">
+                      Self-Paced Track
                     </span>
                   </div>
-                  <h3 className="font-headline-md text-headline-md text-primary font-bold leading-snug">
-                    &ldquo;BSTORM taught me practical digital marketing with simple step-by-step guidance.&rdquo;
+
+                  {/* Course Title */}
+                  <h3 className="text-lg font-bold text-[#2D3536] leading-snug mb-3">
+                    Performance Marketing Fundamentals
                   </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant">
-                    &ldquo;The lessons were so beginner-friendly. I learned how to set up real ad campaigns and analyze metrics, which helped me land my first marketing job.&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3 pt-2">
-                    <div className="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold">
-                      RN
-                    </div>
-                    <div className="text-left">
-                      <div className="font-label-md text-label-md text-primary font-bold">
-                        Rohan Nambiar
+
+                  {/* Course Video Preview Thumbnail */}
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-stone-900 mb-4 group">
+                    <Image
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE_ClTyI4HQkfnWMUuJxQpwls3wLIx0mj4JZ8fiPSfoLBvbRgUKoawKPwSI4IS4p_fDXkek49N1TfE1Hp12znkeYosvQdR4HopfmRJx0OvtSyCBIw3zxWZTnrd23umvfpNdbUsw4KfzSFwaAN3xStg70zfIcvhUFTFntXUi-3r6LWU8i8wJwxKLmDk7Syk-MPNbSQs3scrURXI1gkjDE4161MOAXtUiWEuf3lLeqWQdNzRQ8LZBJqx"
+                      alt="Performance Marketing Workspace"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 500px"
+                      className="object-cover opacity-90 group-hover:scale-102 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#2D3536]/80 via-transparent to-black/20" />
+
+                    {/* Lesson Overlay Info */}
+                    <div className="absolute inset-0 p-4 flex flex-col justify-between">
+                      <div className="self-start px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-sm text-[11px] font-semibold text-[#2D3536]">
+                        Lesson 1.2 • 40m
                       </div>
-                      <div className="font-caption text-caption text-on-surface-variant">
-                        Growth Analyst • BSTORM Student
+
+                      <div className="flex items-end justify-between gap-3">
+                        <div>
+                          <span className="text-[11px] text-stone-300 font-medium uppercase tracking-wide block">
+                            Now Playing
+                          </span>
+                          <span className="text-sm font-semibold text-white leading-tight block">
+                            Understanding Digital Marketing Funnels
+                          </span>
+                        </div>
+
+                        {/* Subtle Play Button */}
+                        <div className="w-10 h-10 rounded-full bg-white text-[#2D3536] flex items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
+                          <Play className="w-4 h-4 fill-current ml-0.5" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </section>
 
-              {/* 6. READY TO LEVEL UP CTA BANNER */}
-              <section className="py-14 my-8 rounded-3xl bg-primary text-on-primary p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
-                <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="flex flex-col gap-3 max-w-xl relative z-10">
-                  <span className="font-label-sm text-label-sm text-secondary-fixed font-semibold uppercase tracking-wider">
-                    Start Learning
-                  </span>
-                  <h2 className="font-display text-display font-bold leading-tight">
-                    Start Learning Digital Marketing Today
-                  </h2>
-                  <p className="font-body-md text-body-md text-inverse-on-surface">
-                    Start mastering practical ad campaigns, analytics, and growth strategies with step-by-step guidance.
-                  </p>
+                  {/* Course Progress Section */}
+                  <div className="bg-[#FAF9F6] rounded-xl p-3.5 border border-stone-200/70 mb-4">
+                    <div className="flex items-center justify-between text-xs font-semibold mb-2">
+                      <span className="text-stone-700">Course Progress</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-stone-500 font-medium">4 / 12 lessons</span>
+                        <span className="text-[#697C70]">• 33% Complete</span>
+                      </div>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="w-full h-1.5 rounded-full bg-stone-200 overflow-hidden">
+                      <div className="h-full rounded-full bg-[#697C70] w-[33%]" />
+                    </div>
+                  </div>
+
+                  {/* Realistic Learning Continuum */}
+                  <div className="flex items-center justify-between px-1 pt-1 text-xs text-stone-600 font-medium border-t border-stone-100">
+                    <div className="flex items-center gap-1.5 text-[#697C70] font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Lessons</span>
+                    </div>
+                    <span className="text-stone-300">→</span>
+                    <div className="flex items-center gap-1.5 text-[#697C70] font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Projects</span>
+                    </div>
+                    <span className="text-stone-300">→</span>
+                    <div className="flex items-center gap-1.5 text-stone-500">
+                      <Circle className="w-3.5 h-3.5" />
+                      <span>Final Assessment</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10 w-full md:w-auto">
-                  <Link
-                    className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold hover:bg-on-secondary transition-all text-center shadow-lg"
-                    href="/checkout/performance-marketing"
-                  >
-                    Enroll in Digital Marketing
-                  </Link>
-                  <Link
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md hover:bg-surface-container-highest/20 transition-all text-center border border-[#E5E7EB]/20"
-                    href="/courses"
-                  >
-                    Browse All Courses
-                  </Link>
-                </div>
-              </section>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* 3. TRUST / VALUE STRIP */}
+        <section className="bg-white border-b border-stone-200/80 py-6">
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-4 divide-y md:divide-y-0 md:divide-x divide-stone-200">
+              <div className="flex items-center gap-3 pt-3 md:pt-0 sm:px-3 first:pt-0 first:pl-0">
+                <div className="w-8 h-8 rounded-lg bg-[#98A897]/15 text-[#697C70] flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#2D3536] leading-tight">
+                    100% Practical
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">Hands-on exercises</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-3 md:pt-0 sm:px-4">
+                <div className="w-8 h-8 rounded-lg bg-[#98A897]/15 text-[#697C70] flex items-center justify-center shrink-0">
+                  <Compass className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#2D3536] leading-tight">
+                    Beginner Friendly
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">Clear step-by-step guidance</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-3 md:pt-0 sm:px-4">
+                <div className="w-8 h-8 rounded-lg bg-[#98A897]/15 text-[#697C70] flex items-center justify-center shrink-0">
+                  <Layers className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#2D3536] leading-tight">
+                    Real Projects
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">Work you can showcase</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-3 md:pt-0 sm:px-4 last:pr-0">
+                <div className="w-8 h-8 rounded-lg bg-[#98A897]/15 text-[#697C70] flex items-center justify-center shrink-0">
+                  <GraduationCap className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#2D3536] leading-tight">
+                    Career Focused
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">Skills employers need</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. COURSE CATEGORIES SECTION */}
+        <section className="py-16 sm:py-20" id="curriculum">
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            {/* Section Header */}
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#697C70] block mb-2">
+                Course Catalog
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2D3536] tracking-tight mb-3">
+                Learn Skills That Move Your Career Forward
+              </h2>
+              <p className="text-base text-stone-600 leading-relaxed">
+                Start with practical courses designed around real-world digital skills.
+              </p>
+            </div>
+
+            {/* Exactly 3 Primary Categories Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Category 1: Digital Marketing */}
+              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
+                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+                  <Image
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzNSmHQgtxzyYSwX_j_Nw9cV0CnIajPs_B5HzUav6bLjFKQ39SCrSfyXRlZPvP2XK2I2Eb4uYpj07_tF4eaM3ozOZ60nha1ZMzUoq_EPaek2WFJDHZ8lqpL0GvfGZ3AfHA4eGzxl0VkVFcMycfePkMn8M_4YipwWb-iG-BHv_QmQvAy5oipVZ_josPjXLI6Bqm75Akk3XehTsehoFOgouic4kqm7mBsNB_lIJZGyCU94rnvLoapBr8"
+                    alt="Digital Marketing Analytics Dashboard"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    className="object-cover group-hover:scale-103 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    <span>Digital Marketing</span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
+                      Performance Marketing & Growth Systems
+                    </h3>
+                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
+                      Master Meta Ads Manager, Google Search ads, conversion tracking, and campaign budgeting to drive real ROI.
+                    </p>
+
+                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
+                      <span>10 Lessons • 6 Projects</span>
+                      <span className="w-1 h-1 rounded-full bg-stone-300" />
+                      <span>14 Weeks</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-stone-400 block">Tuition</span>
+                      <span className="text-lg font-bold text-[#2D3536]">₹2,499</span>
+                    </div>
+                    <Link
+                      href="/checkout/performance-marketing"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-xs"
+                    >
+                      <span>Enroll Now</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+
+              {/* Category 2: Content Creation */}
+              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
+                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+                  <Image
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIgAUTxz_lmURMIDfE6NW0gn5w1beNTNliIZZpJBSzTsGnVLlnPKN4_7OPkeRFe6WSykNMaRRHKS20xdXxtxmxS1TwKbVt3MmjlofuAQ5VBB4Z8AVquFwR0iZt8-EPMxyF_WVDuh_tRM-uOvL0RO3ukpENrxAcsyeomFIw27hjvojEnLLQt4OOXP5aasDQvp3Res0lxHSNHsdv2sa8kZg0UYLSsUzDYtQI1ELLWDCxHFEW0sjrE51A"
+                    alt="Content Creation & Video Production Studio"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    className="object-cover group-hover:scale-103 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
+                    <Video className="w-3.5 h-3.5" />
+                    <span>Content Creation</span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
+                      Commercial Video & Social Storytelling
+                    </h3>
+                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
+                      Learn camera lighting, video shooting, Premiere Pro & DaVinci editing, and short-form storytelling for YouTube & Reels.
+                    </p>
+
+                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
+                      <span>8 Lessons • 4 Projects</span>
+                      <span className="w-1 h-1 rounded-full bg-stone-300" />
+                      <span>10 Weeks</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-stone-400 block">Tuition</span>
+                      <span className="text-lg font-bold text-[#2D3536]">₹2,199</span>
+                    </div>
+                    <Link
+                      href="/courses"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-100 text-[#2D3536] text-xs sm:text-sm font-medium hover:bg-stone-200 transition-colors"
+                    >
+                      <span>View Course</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+
+              {/* Category 3: Web Development */}
+              <article className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group">
+                <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+                  <Image
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgFZ_j0XbOEi8BsaYJ7yne4y1Ws4qC8ARomJcHIhfYTT4S-wJgsugDQSA5udzqVEDdO5zESAhdQBXM2vYA-UjIZkULD4Emhv_V7fLDK696FEJdb26H_DkPE3ChIoA_dAdn15alAboS-22_0MCE3NmAUssuHyo5Mshb99p0zEQVrMMOvGrE8Su9_Ddr5CDNf-9WNVIGD-bpViPbEbvmPf2GSbP2jLZLwthzr-cxHqvG6vvxMc6wuDt1"
+                    alt="Web Development Code Workspace"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    className="object-cover group-hover:scale-103 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5" />
+                    <span>Web Development</span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
+                      Full-Stack Web Development
+                    </h3>
+                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
+                      Build modern web applications from scratch with HTML, CSS, JavaScript, React, Node.js, and database fundamentals.
+                    </p>
+
+                    <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
+                      <span>12 Lessons • 5 Projects</span>
+                      <span className="w-1 h-1 rounded-full bg-stone-300" />
+                      <span>16 Weeks</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-stone-400 block">Tuition</span>
+                      <span className="text-lg font-bold text-[#2D3536]">₹2,999</span>
+                    </div>
+                    <Link
+                      href="/courses"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-100 text-[#2D3536] text-xs sm:text-sm font-medium hover:bg-stone-200 transition-colors"
+                    >
+                      <span>View Course</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. WHY BSTORM SECTION */}
+        <section className="py-16 sm:py-20 bg-white border-y border-stone-200/80" id="why-bstorm">
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            {/* Section Header */}
+            <div className="max-w-2xl mb-14">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#697C70] block mb-2">
+                Why BSTORM
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2D3536] tracking-tight mb-3">
+                Learn by Doing, Not Just Watching.
+              </h2>
+              <p className="text-base text-stone-600 leading-relaxed">
+                Traditional tutorials focus on memorizing concepts. BSTORM focuses on building real-world practical ability.
+              </p>
+            </div>
+
+            {/* 4 Strong Principles — Editorial Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {/* Principle 1 */}
+              <div className="flex flex-col border-l-2 border-[#697C70] pl-5 py-1">
+                <span className="text-xs font-mono font-semibold text-[#697C70] mb-2 block">
+                  01 / CURRICULUM
+                </span>
+                <h3 className="text-lg font-bold text-[#2D3536] mb-2">
+                  Practical Curriculum
+                </h3>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  Learn skills through real-world examples, actual industry tools, and step-by-step case studies without confusing jargon.
+                </p>
+              </div>
+
+              {/* Principle 2 */}
+              <div className="flex flex-col border-l-2 border-[#697C70] pl-5 py-1">
+                <span className="text-xs font-mono font-semibold text-[#697C70] mb-2 block">
+                  02 / STRUCTURE
+                </span>
+                <h3 className="text-lg font-bold text-[#2D3536] mb-2">
+                  Structured Learning
+                </h3>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  Follow a clear step-by-step learning path. Every lesson builds systematically on the previous one to avoid overwhelm.
+                </p>
+              </div>
+
+              {/* Principle 3 */}
+              <div className="flex flex-col border-l-2 border-[#697C70] pl-5 py-1">
+                <span className="text-xs font-mono font-semibold text-[#697C70] mb-2 block">
+                  03 / PORTFOLIO
+                </span>
+                <h3 className="text-lg font-bold text-[#2D3536] mb-2">
+                  Projects That Matter
+                </h3>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  Build practical work you can actually show. Walk away with tangible assets to highlight on your resume and LinkedIn.
+                </p>
+              </div>
+
+              {/* Principle 4 */}
+              <div className="flex flex-col border-l-2 border-[#697C70] pl-5 py-1">
+                <span className="text-xs font-mono font-semibold text-[#697C70] mb-2 block">
+                  04 / CREDENTIAL
+                </span>
+                <h3 className="text-lg font-bold text-[#2D3536] mb-2">
+                  Completion Certificate
+                </h3>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  Earn a professional certificate after completing the course and assessment, verifiable online anytime.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. LEARNING FLOW SECTION */}
+        <section className="py-16 sm:py-20">
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#697C70] block mb-2">
+                How It Works
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2D3536] tracking-tight mb-3">
+                Your Learning Journey
+              </h2>
+              <p className="text-base text-stone-600">
+                A structured, outcome-driven process from start to certification.
+              </p>
+            </div>
+
+            {/* 5-Step Linear Journey */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 relative">
+              {/* Step 1 */}
+              <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-2xs flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono font-bold text-[#697C70] px-2 py-0.5 rounded bg-[#98A897]/15">
+                    01
+                  </span>
+                  <BookOpen className="w-4 h-4 text-stone-400" />
+                </div>
+                <h4 className="text-base font-bold text-[#2D3536] mb-1.5">
+                  Choose a Course
+                </h4>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  Pick a skill track aligned with your career goals and interest.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-2xs flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono font-bold text-[#697C70] px-2 py-0.5 rounded bg-[#98A897]/15">
+                    02
+                  </span>
+                  <Play className="w-4 h-4 text-stone-400" />
+                </div>
+                <h4 className="text-base font-bold text-[#2D3536] mb-1.5">
+                  Learn Through Videos
+                </h4>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  Watch structured, bite-sized lessons taught by industry practitioners.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-2xs flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono font-bold text-[#697C70] px-2 py-0.5 rounded bg-[#98A897]/15">
+                    03
+                  </span>
+                  <Layers className="w-4 h-4 text-stone-400" />
+                </div>
+                <h4 className="text-base font-bold text-[#2D3536] mb-1.5">
+                  Complete Lessons
+                </h4>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  Practice hands-on exercises and build real resume-ready projects.
+                </p>
+              </div>
+
+              {/* Step 4 */}
+              <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-2xs flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono font-bold text-[#697C70] px-2 py-0.5 rounded bg-[#98A897]/15">
+                    04
+                  </span>
+                  <Sparkles className="w-4 h-4 text-stone-400" />
+                </div>
+                <h4 className="text-base font-bold text-[#2D3536] mb-1.5">
+                  Take the Final Test
+                </h4>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  Evaluate your retention and demonstrate mastery through a final assessment.
+                </p>
+              </div>
+
+              {/* Step 5 */}
+              <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-2xs flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono font-bold text-[#697C70] px-2 py-0.5 rounded bg-[#98A897]/15">
+                    05
+                  </span>
+                  <Award className="w-4 h-4 text-stone-400" />
+                </div>
+                <h4 className="text-base font-bold text-[#2D3536] mb-1.5">
+                  Earn Your Certificate
+                </h4>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  Receive an authenticated credential you can share on LinkedIn and resumes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. FINAL CALL TO ACTION */}
+        <section className="py-16 sm:py-20 bg-[#2D3536] text-white">
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+            <div className="max-w-2xl mx-auto text-center flex flex-col items-center">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#98A897] block mb-3">
+                Ready to begin?
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-4">
+                Start Building Skills That Matter.
+              </h2>
+              <p className="text-base sm:text-lg text-stone-300 leading-relaxed mb-8 max-w-xl">
+                Choose your learning path and start building practical digital skills today.
+              </p>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#2D3536] text-sm font-semibold hover:bg-[#F2EFE2] transition-colors shadow-md group"
+              >
+                <span>Start Learning</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* COMPREHENSIVE PUBLIC FOOTER */}
+      {/* 8. PUBLIC FOOTER */}
       <PublicFooter />
     </div>
   );
