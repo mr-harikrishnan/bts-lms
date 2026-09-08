@@ -13,8 +13,21 @@ import {
 } from "@/types";
 import { CourseFilterParams } from "@/lib/data/courses";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
+function resolveApiUrl(endpoint: string): string {
+  const normalized = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  if (normalized.startsWith("/api/payments")) {
+    return `${BACKEND_URL}${normalized.replace("/api/payments", "/payments")}`;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL && normalized.startsWith("/api/")) {
+    return `${BACKEND_URL}${normalized.replace("/api", "")}`;
+  }
+  return normalized;
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = resolveApiUrl(endpoint);
 
   const headers = new Headers(options.headers || {});
   if (!headers.has("Content-Type") && options.body && typeof options.body === "string") {
@@ -192,3 +205,37 @@ export const userService = {
     });
   },
 };
+
+export interface RazorpayOrderData {
+  orderId: string;
+  razorpayOrderId: string;
+  amount: number;
+  currency: string;
+  keyId: string;
+  courseTitle?: string;
+}
+
+export const paymentService = {
+  async createOrder(courseId: string): Promise<RazorpayOrderData> {
+    return request<RazorpayOrderData>("/api/payments/orders", {
+      method: "POST",
+      body: JSON.stringify({ courseId }),
+    });
+  },
+
+  async verifyPayment(payload: {
+    orderId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }): Promise<{ enrollment: EnrolledCourseProgress; paymentId: string }> {
+    return request<{ enrollment: EnrolledCourseProgress; paymentId: string }>(
+      "/api/payments/verify",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
+  },
+};
+
