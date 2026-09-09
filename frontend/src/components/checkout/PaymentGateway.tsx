@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Course } from "@/types";
 import { useRouter } from "next/navigation";
 import { useBstorm } from "@/context/BstormContext";
@@ -641,7 +642,19 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
         </button>
         <div className="text-center">
           <span className="font-caption text-caption text-outline">
-            By completing payment, you agree to BSTORM Academic Honor Code and Terms of Learning.
+            By completing payment, you agree to our{" "}
+            <Link href="/terms" target="_blank" className="underline hover:text-primary transition-colors">
+              Terms &amp; Conditions
+            </Link>
+            ,{" "}
+            <Link href="/privacy" target="_blank" className="underline hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            , and{" "}
+            <Link href="/refund-policy" target="_blank" className="underline hover:text-primary transition-colors">
+              7-Day Refund Policy
+            </Link>
+            .
           </span>
         </div>
       </div>

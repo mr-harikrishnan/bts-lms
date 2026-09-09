@@ -266,7 +266,15 @@ export default function SignupPage() {
             </form>
 
             <p className="mt-6 text-center text-xs text-slate-400">
-              By registering, you agree to BSTORM Terms of Service and Privacy Policy.
+              By registering, you agree to BSTORM{" "}
+              <Link href="/terms" target="_blank" className="underline hover:text-slate-600 transition-colors">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" target="_blank" className="underline hover:text-slate-600 transition-colors">
+                Privacy Policy
+              </Link>
+              .
             </p>
           </div>
         </main>

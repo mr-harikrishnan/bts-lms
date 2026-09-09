@@ -43,18 +43,18 @@ export const PublicHeader: React.FC = () => {
           >
             Courses
           </Link>
-          <a
+          <Link
             className="px-3.5 py-1.5 rounded-md hover:text-[#2D3536] hover:bg-stone-100/70 transition-colors"
-            href="#why-bstorm"
+            href="/about"
           >
-            Why BSTORM
-          </a>
-          <a
+            About
+          </Link>
+          <Link
             className="px-3.5 py-1.5 rounded-md hover:text-[#2D3536] hover:bg-stone-100/70 transition-colors"
-            href="#curriculum"
+            href="/contact"
           >
-            Curriculum
-          </a>
+            Contact
+          </Link>
         </nav>
 
         {/* Right Actions */}
@@ -104,20 +104,20 @@ export const PublicHeader: React.FC = () => {
           >
             Courses
           </Link>
-          <a
-            href="#why-bstorm"
+          <Link
+            href="/about"
             onClick={() => setMobileOpen(false)}
             className="text-sm font-medium text-stone-700 py-1.5 border-b border-stone-100"
           >
-            Why BSTORM
-          </a>
-          <a
-            href="#curriculum"
+            About Us
+          </Link>
+          <Link
+            href="/contact"
             onClick={() => setMobileOpen(false)}
             className="text-sm font-medium text-stone-700 py-1.5 border-b border-stone-100"
           >
-            Curriculum
-          </a>
+            Contact Us
+          </Link>
           <div className="flex items-center justify-between pt-2">
             <Link
               href="/login"
