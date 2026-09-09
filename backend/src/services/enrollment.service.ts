@@ -85,6 +85,27 @@ export async function markLessonComplete(userId: string, courseId: string, lesso
   return enrollment;
 }
 
+export async function enrollFreeCourse(userId: string, courseId: string) {
+  const userOid = toObjectId(userId);
+  const courseOid = toObjectId(courseId);
+
+  const course = await Course.findById(courseOid);
+  if (!course) {
+    const error: any = new Error(`Course with ID '${courseId}' was not found.`);
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Strictly block direct enrollment for paid courses (payment bypass prevention)
+  if (course.price > 0) {
+    const error: any = new Error('Payment required. Direct enrollment is not permitted for paid courses.');
+    error.statusCode = 402;
+    throw error;
+  }
+
+  return enrollUser(userId, courseId);
+}
+
 export async function enrollUser(userId: string, courseId: string) {
   const userOid = toObjectId(userId);
   const courseOid = toObjectId(courseId);
@@ -103,14 +124,26 @@ export async function enrollUser(userId: string, courseId: string) {
 
   const firstLesson = await Lesson.findOne({ courseId: courseOid }).sort({ order: 1, lessonNumber: 1 });
 
-  const enrollment = await Enrollment.create({
-    userId: userOid,
-    courseId: courseOid,
-    enrolledAt: new Date(),
-    completedLessonIds: [],
-    currentLessonId: firstLesson?._id,
-    isCompleted: false,
-  });
+  try {
+    const enrollment = await Enrollment.create({
+      userId: userOid,
+      courseId: courseOid,
+      enrolledAt: new Date(),
+      completedLessonIds: [],
+      currentLessonId: firstLesson?._id,
+      isCompleted: false,
+    });
 
-  return enrollment;
+    return enrollment;
+  } catch (err: any) {
+    // Handle race condition idempotently if concurrent creation occurred
+    if (err.code === 11000) {
+      const raceExisting = await Enrollment.findOne({ userId: userOid, courseId: courseOid });
+      if (raceExisting) {
+        return raceExisting;
+      }
+    }
+    throw err;
+  }
 }
+

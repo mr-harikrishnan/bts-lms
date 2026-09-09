@@ -71,12 +71,16 @@ export default function CourseLearningPage({
   const enrolled = course ? isEnrolled(course._id) : false;
   const enrollment = course ? getEnrolledCourse(course._id) : undefined;
 
-  // Auto-enroll if opened directly so preview never breaks
+  // Only auto-enroll strictly free courses. For paid courses, redirect to checkout.
   React.useEffect(() => {
     if (course && user.isLoggedIn && !enrolled) {
-      enrollCourse(course._id);
+      if (course.price === 0) {
+        enrollCourse(course._id);
+      } else {
+        router.replace(`/checkout/${course._id}`);
+      }
     }
-  }, [user.isLoggedIn, enrolled, course, enrollCourse]);
+  }, [user.isLoggedIn, enrolled, course, enrollCourse, router]);
 
   if (isContextLoading || isLoadingApi) {
     return (
@@ -120,6 +124,34 @@ export default function CourseLearningPage({
       </AuthGuard>
     );
   }
+
+  // Guard paid course content: require verified active enrollment
+  if (course.price > 0 && !enrolled) {
+    return (
+      <AuthGuard>
+        <AppShell>
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-[#E5E7EB] flex flex-col items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-[48px] text-amber-500">
+              lock
+            </span>
+            <h3 className="font-headline-sm text-headline-sm text-primary font-bold">
+              Enrollment Required
+            </h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md">
+              This is a premium course. Please complete enrollment to access video lessons and learning materials.
+            </p>
+            <Link
+              href={`/checkout/${course._id}`}
+              className="mt-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold shadow-sm hover:opacity-90 transition-opacity"
+            >
+              Enroll Now (₹{course.price})
+            </Link>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
 
 
   // Flatten all lessons

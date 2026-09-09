@@ -89,3 +89,73 @@ export function validateSignup(data: any): ValidatorResult {
     },
   };
 }
+
+export function validateForgotPassword(data: any): ValidatorResult {
+  const errors: string[] = [];
+
+  if (!data || typeof data !== 'object') {
+    return { valid: false, errors: ['Request body must be a JSON object'] };
+  }
+  if (!data.email) {
+    errors.push('Email is required');
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  const email = String(data.email).trim().toLowerCase();
+  if (!EMAIL_REGEX.test(email)) {
+    errors.push('Invalid email format');
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  return {
+    valid: true,
+    sanitized: { email },
+  };
+}
+
+export function validateResetPassword(data: any): ValidatorResult {
+  const errors: string[] = [];
+
+  if (!data || typeof data !== 'object') {
+    return { valid: false, errors: ['Request body must be a JSON object'] };
+  }
+  if (!data.token) {
+    errors.push('Reset token is required');
+  }
+  if (!data.newPassword) {
+    errors.push('New password is required');
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  const token = String(data.token).trim();
+  const newPassword = String(data.newPassword);
+
+  if (token.length < 10) {
+    errors.push('Invalid token format');
+  }
+  if (newPassword.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  return {
+    valid: true,
+    sanitized: {
+      token,
+      newPassword,
+    },
+  };
+}
+

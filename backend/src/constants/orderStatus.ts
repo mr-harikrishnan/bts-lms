@@ -3,6 +3,7 @@ export const ORDER_STATUS = {
   PAID: 'paid',
   FAILED: 'failed',
   CANCELLED: 'cancelled',
+  REFUNDED: 'refunded',
 } as const;
 
 export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS];

@@ -99,3 +99,24 @@ export async function logout(req: Request, res: Response, next: NextFunction): P
     next(error);
   }
 }
+
+export async function forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { email } = req.body;
+    const result = await authService.forgotPassword(email);
+    apiSuccess(res, result, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { token, newPassword } = req.body;
+    const result = await authService.resetPassword(token, newPassword);
+    apiSuccess(res, result, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+

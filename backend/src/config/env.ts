@@ -23,6 +23,23 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
+// In production, validate Razorpay credentials are provided
+if (process.env.NODE_ENV === 'production') {
+  const productionRequired = [
+    'RAZORPAY_KEY_ID',
+    'RAZORPAY_KEY_SECRET',
+    'RAZORPAY_WEBHOOK_SECRET',
+  ] as const;
+
+  for (const envVar of productionRequired) {
+    const val = process.env[envVar];
+    if (!val || val.includes('placeholder')) {
+      console.error(`[FATAL] Production requires valid ${envVar}. Found missing or placeholder value.`);
+      process.exit(1);
+    }
+  }
+}
+
 export interface Environment {
   NODE_ENV: string;
   PORT: number;
@@ -35,6 +52,13 @@ export interface Environment {
   RAZORPAY_KEY_ID: string;
   RAZORPAY_KEY_SECRET: string;
   RAZORPAY_WEBHOOK_SECRET: string;
+  EMAILJS_SERVICE_ID?: string;
+  EMAILJS_TEMPLATE_ID_PASSWORD_RESET?: string;
+  EMAILJS_TEMPLATE_ID_ORDER?: string;
+  EMAILJS_TEMPLATE_ID_ENROLLMENT?: string;
+  EMAILJS_TEMPLATE_ID_CERTIFICATE?: string;
+  EMAILJS_PUBLIC_KEY?: string;
+  EMAILJS_PRIVATE_KEY?: string;
   isProduction: boolean;
 }
 
@@ -50,5 +74,13 @@ export const env: Environment = {
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_placeholder_secret',
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || 'rzp_webhook_placeholder_secret',
+  EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
+  EMAILJS_TEMPLATE_ID_PASSWORD_RESET: process.env.EMAILJS_TEMPLATE_ID_PASSWORD_RESET,
+  EMAILJS_TEMPLATE_ID_ORDER: process.env.EMAILJS_TEMPLATE_ID_ORDER,
+  EMAILJS_TEMPLATE_ID_ENROLLMENT: process.env.EMAILJS_TEMPLATE_ID_ENROLLMENT,
+  EMAILJS_TEMPLATE_ID_CERTIFICATE: process.env.EMAILJS_TEMPLATE_ID_CERTIFICATE,
+  EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY,
+  EMAILJS_PRIVATE_KEY: process.env.EMAILJS_PRIVATE_KEY,
   isProduction: process.env.NODE_ENV === 'production',
 };
+

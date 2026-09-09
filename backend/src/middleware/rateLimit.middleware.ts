@@ -32,6 +32,21 @@ export const paymentLimiter = rateLimit({
   },
 });
 
+export const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    apiError(
+      res,
+      'Too many password reset attempts. Please try again after 15 minutes.',
+      429,
+      ERROR_CODES.RATE_LIMIT_EXCEEDED
+    );
+  },
+});
+
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -46,3 +61,4 @@ export const apiLimiter = rateLimit({
     );
   },
 });
+

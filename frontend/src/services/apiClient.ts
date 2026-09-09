@@ -236,6 +236,20 @@ export const authService = {
       method: "POST",
     });
   },
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    return request<{ message: string }>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    return request<{ message: string }>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, newPassword }),
+    });
+  },
 };
 
 export const userService = {
@@ -334,3 +348,5 @@ export const paymentService = {
     );
   },
 };
+
+

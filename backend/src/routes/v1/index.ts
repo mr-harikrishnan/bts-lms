@@ -8,6 +8,7 @@ import enrollmentRoutes from './enrollment.routes.js';
 import certificateRoutes from './certificate.routes.js';
 import testRoutes from './test.routes.js';
 import paymentRoutes from './payment.routes.js';
+import adminRoutes from './admin.routes.js';
 
 const router = Router();
 
@@ -21,5 +22,7 @@ router.use('/enrollments', enrollmentRoutes);
 router.use('/certificates', certificateRoutes);
 router.use('/tests', testRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;
+

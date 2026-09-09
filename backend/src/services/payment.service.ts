@@ -1,15 +1,20 @@
 import crypto from 'crypto';
 import { razorpayInstance } from '../config/razorpay.js';
 import { env } from '../config/env.js';
-import { Order, IOrder } from '../models/Order.js';
+import { Order } from '../models/Order.js';
 import { Payment } from '../models/Payment.js';
 import { Course } from '../models/Course.js';
 import { Enrollment } from '../models/Enrollment.js';
+import { User } from '../models/User.js';
 import { WebhookEvent } from '../models/WebhookEvent.js';
 import { ORDER_STATUS, PAYMENT_STATUS } from '../constants/orderStatus.js';
 import { toObjectId } from '../utils/objectId.js';
 import { enrollUser } from './enrollment.service.js';
 import { logger } from '../utils/logger.js';
+import {
+  sendOrderConfirmationEmail,
+  sendEnrollmentConfirmationEmail,
+} from './email.service.js';
 
 export async function createPaymentOrder(userId: string, courseId: string) {
   const userOid = toObjectId(userId);
@@ -30,8 +35,7 @@ export async function createPaymentOrder(userId: string, courseId: string) {
     throw error;
   }
 
-  // Server-side price resolution (never trust client amount)
-  // Razorpay amounts are in the smallest currency unit (paise for INR, 1 INR = 100 paise)
+  // Server-side price resolution in paise (never trust client amount)
   const amountInPaise = Math.round(course.price * 100);
 
   const internalOrder = await Order.create({
@@ -61,12 +65,10 @@ export async function createPaymentOrder(userId: string, courseId: string) {
     });
   } catch (err: any) {
     logger.error('Razorpay order creation error:', err);
-    // In local dev/test with mock keys, fallback to mock order ID
-    razorpayOrder = {
-      id: `order_mock_${crypto.randomBytes(8).toString('hex')}`,
-      amount: amountInPaise,
-      currency: 'INR',
-    };
+    // Production fix: never generate mock orders on failure. Fail cleanly with 502 Bad Gateway
+    const error: any = new Error('Payment gateway service is currently unavailable. Please try again.');
+    error.statusCode = 502;
+    throw error;
   }
 
   internalOrder.razorpayOrderId = razorpayOrder.id;
@@ -106,6 +108,36 @@ export async function verifyPaymentSignature(
     throw error;
   }
 
+  // Idempotency: If already paid, return existing enrollment and payment state
+  if (order.status === ORDER_STATUS.PAID) {
+    const existingPayment = await Payment.findOne({ razorpayOrderId });
+    const existingEnrollment = await Enrollment.findOne({
+      userId: order.userId,
+      courseId: order.courseId,
+    });
+    return {
+      verified: true,
+      orderId: order._id,
+      paymentId: existingPayment?._id,
+      enrollment: existingEnrollment,
+    };
+  }
+
+  // Verify course still exists and amount matches course price
+  const course = await Course.findById(order.courseId);
+  if (!course) {
+    const error: any = new Error('Associated course not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const expectedAmountInPaise = Math.round(course.price * 100);
+  if (order.amount !== expectedAmountInPaise) {
+    const error: any = new Error('Payment amount does not match the course price.');
+    error.statusCode = 400;
+    throw error;
+  }
+
   // HMAC SHA256 Signature Verification
   const text = `${razorpayOrderId}|${razorpayPaymentId}`;
   const generatedSignature = crypto
@@ -132,21 +164,41 @@ export async function verifyPaymentSignature(
   order.status = ORDER_STATUS.PAID;
   await order.save();
 
-  // Create payment record
-  const payment = await Payment.create({
-    orderId: order._id,
-    userId: order.userId,
-    courseId: order.courseId,
-    razorpayPaymentId,
-    razorpayOrderId,
-    razorpaySignature,
-    amount: order.amount,
-    currency: order.currency,
-    status: PAYMENT_STATUS.CAPTURED,
-  });
+  // Create or retrieve payment record
+  let payment = await Payment.findOne({ razorpayPaymentId });
+  if (!payment) {
+    payment = await Payment.create({
+      orderId: order._id,
+      userId: order.userId,
+      courseId: order.courseId,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+      amount: order.amount,
+      currency: order.currency,
+      status: PAYMENT_STATUS.CAPTURED,
+    });
+  }
 
-  // Grant course access / enrollment atomically
+  // Grant course access / enrollment atomically (idempotent)
   const enrollment = await enrollUser(userId, order.courseId.toString());
+
+  // Asynchronously dispatch transactional confirmation emails
+  User.findById(order.userId)
+    .then((user) => {
+      if (user) {
+        sendOrderConfirmationEmail(user.email, user.name, {
+          courseTitle: course.title,
+          amount: order.amount,
+          orderId: order._id.toString(),
+        }).catch((err) => logger.error('Order email error:', err));
+
+        sendEnrollmentConfirmationEmail(user.email, user.name, course.title).catch(
+          (err) => logger.error('Enrollment email error:', err)
+        );
+      }
+    })
+    .catch((err) => logger.error('User lookup for payment email failed:', err));
 
   return {
     verified: true,
@@ -221,6 +273,16 @@ export async function handleRazorpayWebhook(rawBody: Buffer | string, signature:
         }
 
         await enrollUser(order.userId.toString(), order.courseId.toString());
+      }
+    }
+  } else if (event.event === 'payment.failed') {
+    const paymentEntity = event.payload?.payment?.entity;
+    const razorpayOrderId = paymentEntity?.order_id;
+    if (razorpayOrderId) {
+      const order = await Order.findOne({ razorpayOrderId });
+      if (order && order.status !== ORDER_STATUS.PAID) {
+        order.status = ORDER_STATUS.FAILED;
+        await order.save();
       }
     }
   }

@@ -14,6 +14,7 @@ import { ROLES } from '../src/constants/roles.js';
 import { ORDER_STATUS, PAYMENT_STATUS } from '../src/constants/orderStatus.js';
 import { generateAccessToken } from '../src/utils/token.js';
 import { env } from '../src/config/env.js';
+import { razorpayInstance } from '../src/config/razorpay.js';
 import mongoose from 'mongoose';
 
 describe('Razorpay Payment Security & Order Flow Tests', () => {
@@ -24,10 +25,20 @@ describe('Razorpay Payment Security & Order Flow Tests', () => {
   before(async () => {
     await connectDatabase();
 
+    razorpayInstance.orders.create = (async (options: any) => {
+      return {
+        id: `order_test_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        amount: options.amount,
+        currency: options.currency || 'INR',
+        receipt: options.receipt,
+      };
+    }) as any;
+
     student = await User.create({
       name: 'Payment Student',
       email: 'payment.student@test.com',
       password: 'hashedPassword123',
+
       role: ROLES.STUDENT,
     });
 

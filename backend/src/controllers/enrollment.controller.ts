@@ -59,7 +59,7 @@ export async function markLessonComplete(req: Request, res: Response, next: Next
 
 export async function enroll(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const enrollment = await enrollmentService.enrollUser(
+    const enrollment = await enrollmentService.enrollFreeCourse(
       req.user!._id.toString(),
       req.params.courseId as string
     );
@@ -68,3 +68,4 @@ export async function enroll(req: Request, res: Response, next: NextFunction): P
     next(error);
   }
 }
+

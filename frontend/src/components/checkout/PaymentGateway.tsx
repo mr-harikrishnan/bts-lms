@@ -72,65 +72,66 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
       // 2. Load official Razorpay Checkout SDK
       const sdkLoaded = await loadRazorpayScript();
 
-      if (sdkLoaded && (window as any).Razorpay) {
-        const options = {
-          key: orderData.keyId,
-          amount: orderData.amount,
-          currency: orderData.currency || "INR",
-          name: "BSTORM Academy",
-          description: course.title,
-          order_id: orderData.razorpayOrderId,
-          prefill: {
-            name: user.name || "",
-            email: user.email || "",
-          },
-          theme: {
-            color: "#006A4E",
-          },
-          handler: async (response: {
-            razorpay_order_id: string;
-            razorpay_payment_id: string;
-            razorpay_signature: string;
-          }) => {
-            try {
-              // 3. Cryptographically verify signature on backend
-              await paymentService.verifyPayment({
-                orderId: orderData.orderId,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-              });
-
-              await refreshData();
-              router.replace(`/courses/${course._id}/learn`);
-            } catch (verifyErr: any) {
-              console.error("Signature verification error:", verifyErr);
-              setErrorMessage(
-                verifyErr?.message || "Payment verification failed. Please contact support."
-              );
-              setIsProcessing(false);
-            }
-          },
-          modal: {
-            ondismiss: () => {
-              setIsProcessing(false);
-            },
-          },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.on("payment.failed", (resp: any) => {
-          console.error("Razorpay payment failed:", resp.error);
-          setErrorMessage(resp.error?.description || "Payment was declined by your bank.");
-          setIsProcessing(false);
-        });
-        rzp.open();
-      } else {
-        // Direct sandbox enrollment fallback
-        await enrollCourse(course._id);
-        await refreshData();
-        router.replace(`/courses/${course._id}/learn`);
+      if (!sdkLoaded || !(window as any).Razorpay) {
+        setErrorMessage(
+          "Razorpay payment gateway failed to load. Please check your internet connection and try again."
+        );
+        setIsProcessing(false);
+        return;
       }
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "BSTORM Academy",
+        description: course.title,
+        order_id: orderData.razorpayOrderId,
+        prefill: {
+          name: user.name || "",
+          email: user.email || "",
+        },
+        theme: {
+          color: "#006A4E",
+        },
+        handler: async (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            // 3. Cryptographically verify signature on backend
+            await paymentService.verifyPayment({
+              orderId: orderData.orderId,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            await refreshData();
+            router.replace(`/courses/${course._id}/learn`);
+          } catch (verifyErr: any) {
+            console.error("Signature verification error:", verifyErr);
+            setErrorMessage(
+              verifyErr?.message || "Payment verification failed. Please contact support."
+            );
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", (resp: any) => {
+        console.error("Razorpay payment failed:", resp.error);
+        setErrorMessage(resp.error?.description || "Payment was declined by your bank.");
+        setIsProcessing(false);
+      });
+      rzp.open();
     } catch (err: any) {
       console.error("Payment initiation error:", err);
       setErrorMessage(

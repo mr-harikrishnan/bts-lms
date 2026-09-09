@@ -64,10 +64,24 @@ export function errorHandler(
     return;
   }
 
+  // Generic MongoDB / Mongoose errors
+  if (err.name === 'MongoServerError' || err.name === 'MongooseError') {
+    apiError(
+      res,
+      'A database operation error occurred. Please try again.',
+      500,
+      ERROR_CODES.INTERNAL_SERVER_ERROR
+    );
+    return;
+  }
+
   const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
-  const message = statusCode === 500 ? 'An internal server error occurred.' : err.message || 'Error occurred.';
+  const message = statusCode === 500
+    ? 'An internal server error occurred. Please try again later.'
+    : err.message || 'An unexpected error occurred.';
 
   apiError(res, message, statusCode, ERROR_CODES.INTERNAL_SERVER_ERROR);
+
 }
 
 export function notFoundHandler(req: Request, res: Response): void {
