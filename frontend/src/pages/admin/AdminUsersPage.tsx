@@ -9,6 +9,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
+  UserPlus,
+  X,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { adminService } from "@/services/apiClient";
@@ -30,6 +34,20 @@ export const AdminUsersPage: React.FC = () => {
   const [alertMsg, setAlertMsg] = useState<{ type: "success" | "error"; text: string } | null>(
     null
   );
+
+  // Create User Modal State
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "student" as "student" | "admin",
+    college: "",
+    district: "",
+    state: "",
+    rollNumber: "",
+  });
 
   const loadUsers = async () => {
     setIsLoading(true);
@@ -78,12 +96,12 @@ export const AdminUsersPage: React.FC = () => {
       await adminService.updateUserRole(confirmRoleUser._id, newRole);
       setAlertMsg({
         type: "success",
-        text: `Successfully updated ${confirmRoleUser.name}'s role to ${newRole}.`,
+        text: `Role for ${confirmRoleUser.name} changed to ${newRole.toUpperCase()}.`,
       });
       setConfirmRoleUser(null);
       await loadUsers();
     } catch (err: any) {
-      setAlertMsg({ type: "error", text: err?.message || "Role change failed." });
+      setAlertMsg({ type: "error", text: err?.message || "Failed to update role." });
     } finally {
       setIsProcessing(false);
     }
@@ -113,6 +131,54 @@ export const AdminUsersPage: React.FC = () => {
       await loadUsers();
     } catch (err: any) {
       setAlertMsg({ type: "error", text: err?.message || "Failed to delete user." });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createForm.name.trim() || !createForm.email.trim() || !createForm.password) {
+      setAlertMsg({ type: "error", text: "Name, email, and password are required." });
+      return;
+    }
+
+    if (createForm.password.length < 6) {
+      setAlertMsg({ type: "error", text: "Password must be at least 6 characters long." });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await adminService.createUser({
+        name: createForm.name.trim(),
+        email: createForm.email.trim(),
+        password: createForm.password,
+        role: createForm.role,
+        college: createForm.college.trim(),
+        district: createForm.district.trim(),
+        state: createForm.state.trim(),
+        rollNumber: createForm.rollNumber.trim(),
+      });
+
+      setAlertMsg({
+        type: "success",
+        text: `User ${createForm.name} successfully created as ${createForm.role.toUpperCase()}.`,
+      });
+      setCreateModalOpen(false);
+      setCreateForm({
+        name: "",
+        email: "",
+        password: "",
+        role: "student",
+        college: "",
+        district: "",
+        state: "",
+        rollNumber: "",
+      });
+      await loadUsers();
+    } catch (err: any) {
+      setAlertMsg({ type: "error", text: err?.message || "Failed to create user." });
     } finally {
       setIsProcessing(false);
     }
@@ -167,6 +233,17 @@ export const AdminUsersPage: React.FC = () => {
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
             </button>
+
+            <button
+              onClick={() => {
+                setAlertMsg(null);
+                setCreateModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#2D3536] text-white text-xs font-medium hover:bg-stone-800 transition-colors shadow-xs"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>Add New User</span>
+            </button>
           </div>
         </div>
 
@@ -203,122 +280,319 @@ export const AdminUsersPage: React.FC = () => {
                 {isLoading ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-stone-400">
-                      Loading user records...
+                      <div className="flex items-center justify-center gap-2">
+                        <RefreshCw className="w-4 h-4 animate-spin text-stone-400" />
+                        <span>Loading user accounts...</span>
+                      </div>
                     </td>
                   </tr>
-                ) : users.length > 0 ? (
+                ) : users.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-stone-400">
+                      No users match the search criteria.
+                    </td>
+                  </tr>
+                ) : (
                   users.map((u) => {
                     const isSelf = u.email.toLowerCase() === currentAdmin.email.toLowerCase();
                     return (
-                      <tr key={u._id} className="hover:bg-stone-50/70 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center font-bold text-stone-700 shrink-0">
-                              {u.name?.charAt(0)?.toUpperCase() || "U"}
+                      <tr key={u._id} className="hover:bg-stone-50/80 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-600 font-semibold text-xs">
+                              {u.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
                               <div className="font-semibold text-stone-900 flex items-center gap-1.5">
-                                <span>{u.name}</span>
+                                {u.name}
                                 {isSelf && (
-                                  <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[9px] font-mono uppercase font-bold">
-                                    You
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-amber-100 text-amber-800 font-bold tracking-wider">
+                                    YOU
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[11px] text-stone-400 font-mono">{u.email}</div>
+                              <div className="text-[11px] text-stone-500">{u.email}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          {u.role === "admin" ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] font-semibold">
-                              <Shield className="w-3 h-3 text-amber-600" />
-                              <span>Admin</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-700 text-[11px] font-medium">
-                              <UserIcon className="w-3 h-3 text-sky-600" />
-                              <span>Student</span>
-                            </span>
-                          )}
+
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                              u.role === "admin"
+                                ? "bg-amber-50 text-amber-800 border border-amber-200/60"
+                                : "bg-emerald-50 text-emerald-800 border border-emerald-200/60"
+                            }`}
+                          >
+                            <Shield className="w-2.5 h-2.5" />
+                            <span className="capitalize">{u.role}</span>
+                          </span>
                         </td>
-                        <td className="py-3 px-4 text-stone-700">
-                          <div>{u.college || "—"}</div>
+
+                        <td className="py-3.5 px-4">
+                          <div className="text-stone-800">{u.college || "—"}</div>
                           <div className="text-[10px] text-stone-400">
                             {[u.district, u.state].filter(Boolean).join(", ") || "—"}
                           </div>
                         </td>
-                        <td className="py-3 px-4 font-mono text-stone-600">{u.rollNumber || "—"}</td>
-                        <td className="py-3 px-4 text-stone-500">
-                          {u.createdAt
-                            ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })
-                            : "—"}
+
+                        <td className="py-3.5 px-4 font-mono text-[11px] text-stone-600">
+                          {u.rollNumber || "—"}
                         </td>
-                        <td className="py-3 px-4 text-right">
+
+                        <td className="py-3.5 px-4 text-[11px] text-stone-500">
+                          {new Date(u.createdAt).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </td>
+
+                        <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            {!isSelf && (
-                              <>
-                                <button
-                                  onClick={() => setConfirmRoleUser(u)}
-                                  className="px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 hover:bg-stone-100 transition-colors text-stone-700"
-                                >
-                                  {u.role === "admin" ? "Demote" : "Promote"}
-                                </button>
-                                <button
-                                  onClick={() => setDeletingUser(u)}
-                                  className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                  title="Delete User"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </>
-                            )}
+                            <button
+                              onClick={() => setConfirmRoleUser(u)}
+                              disabled={isSelf}
+                              className={`p-1.5 rounded-lg border transition-colors ${
+                                isSelf
+                                  ? "opacity-30 cursor-not-allowed text-stone-300 border-stone-200"
+                                  : "text-stone-500 hover:text-stone-800 hover:bg-stone-100 border-stone-200"
+                              }`}
+                              title={
+                                isSelf
+                                  ? "Cannot change your own role"
+                                  : u.role === "admin"
+                                  ? "Demote to Student"
+                                  : "Promote to Admin"
+                              }
+                            >
+                              <ShieldAlert className="w-3.5 h-3.5" />
+                            </button>
+
+                            <button
+                              onClick={() => setDeletingUser(u)}
+                              disabled={isSelf}
+                              className={`p-1.5 rounded-lg border transition-colors ${
+                                isSelf
+                                  ? "opacity-30 cursor-not-allowed text-stone-300 border-stone-200"
+                                  : "text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200"
+                              }`}
+                              title={
+                                isSelf
+                                  ? "Cannot delete your own admin account"
+                                  : "Delete User Account"
+                              }
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </td>
                       </tr>
                     );
                   })
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-stone-400">
-                      No user accounts found.
-                    </td>
-                  </tr>
                 )}
               </tbody>
             </table>
           </div>
 
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="p-4 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
-              <span>
-                Showing page {pagination.page} of {pagination.totalPages} ({pagination.total} users)
-              </span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="p-1.5 rounded-lg border border-stone-200 hover:bg-stone-100 disabled:opacity-40"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  disabled={page >= pagination.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="p-1.5 rounded-lg border border-stone-200 hover:bg-stone-100 disabled:opacity-40"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+          {/* Pagination Bar */}
+          <div className="p-4 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
+            <div>
+              Showing {users.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+              {pagination.total} registered users
             </div>
-          )}
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="px-3 py-1 font-semibold text-stone-700">
+                Page {pagination.page} of {pagination.totalPages || 1}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={page >= pagination.totalPages}
+                className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Add New User Modal */}
+      {createModalOpen && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-stone-200 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-stone-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-stone-900">Add New User Account</h3>
+                  <p className="text-xs text-stone-500">Create a student learner or platform administrator</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCreateModalOpen(false)}
+                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={createForm.name}
+                    onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                    placeholder="e.g. Karthik Raja"
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={createForm.email}
+                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                    placeholder="e.g. learner@example.com"
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    Password * (min 6 chars)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      value={createForm.password}
+                      onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                      placeholder="••••••••"
+                      className="w-full px-3 py-2 pr-9 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                    >
+                      {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    Account Role *
+                  </label>
+                  <select
+                    value={createForm.role}
+                    onChange={(e) => setCreateForm({ ...createForm, role: e.target.value as "student" | "admin" })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  >
+                    <option value="student">Learner / Student</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                  College / Institution (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={createForm.college}
+                  onChange={(e) => setCreateForm({ ...createForm, college: e.target.value })}
+                  placeholder="e.g. PSG College of Technology"
+                  className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    District
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.district}
+                    onChange={(e) => setCreateForm({ ...createForm, district: e.target.value })}
+                    placeholder="e.g. Coimbatore"
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.state}
+                    onChange={(e) => setCreateForm({ ...createForm, state: e.target.value })}
+                    placeholder="e.g. Tamil Nadu"
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                    Roll Number
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.rollNumber}
+                    onChange={(e) => setCreateForm({ ...createForm, rollNumber: e.target.value })}
+                    placeholder="e.g. 23CS101"
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setCreateModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isProcessing}
+                  className="px-4 py-2 rounded-xl text-xs font-medium bg-[#2D3536] text-white hover:bg-stone-800 transition-colors disabled:opacity-50"
+                >
+                  {isProcessing ? "Creating Account..." : "Create User"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Role Confirmation Dialog */}
       {confirmRoleUser && (

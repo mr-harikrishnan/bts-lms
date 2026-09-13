@@ -379,6 +379,22 @@ export const adminService = {
     );
   },
 
+  async createUser(payload: {
+    name: string;
+    email: string;
+    password: string;
+    role?: "student" | "admin";
+    college?: string;
+    district?: string;
+    state?: string;
+    rollNumber?: string;
+  }): Promise<AdminUserItem> {
+    return request<AdminUserItem>("/admin/users", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
   async updateUserRole(userId: string, role: "student" | "admin"): Promise<AdminUserItem> {
     return request<AdminUserItem>(`/admin/users/${userId}/role`, {
       method: "PATCH",
