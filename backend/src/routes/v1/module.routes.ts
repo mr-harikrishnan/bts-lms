@@ -5,7 +5,7 @@ import { optionalAuth } from '../../middleware/auth.middleware.js';
 
 const router = Router();
 
+router.get('/course/:courseId', optionalAuth, validateObjectIdParam('courseId'), courseController.getCourseModules);
 router.get('/:id', optionalAuth, validateObjectIdParam('id'), courseController.getModuleById);
 
 export default router;
-

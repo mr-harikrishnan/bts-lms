@@ -5,8 +5,7 @@ import { requireAuth } from '../../middleware/auth.middleware.js';
 
 const router = Router();
 
+router.get('/course/:courseId', validateObjectIdParam('courseId'), requireAuth, courseController.getCourseLessons);
 router.get('/:id', validateObjectIdParam('id'), requireAuth, courseController.getLessonById);
 
 export default router;
-
-
