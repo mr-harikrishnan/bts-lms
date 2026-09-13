@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { GuestGuard } from "@/components/auth/GuestGuard";
+import { AdminGuard } from "@/components/auth/AdminGuard";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { PageLoadingFallback } from "@/components/common/PageLoadingFallback";
 
@@ -27,6 +28,14 @@ const CertificatesPage = lazy(() => import("@/pages/CertificatesPage").then((m) 
 const CertificateDetailPage = lazy(() => import("@/pages/CertificateDetailPage").then((m) => ({ default: m.CertificateDetailPage })));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const SettingsProfilePage = lazy(() => import("@/pages/SettingsProfilePage"));
+
+// Admin Management Console Pages
+const AdminOverviewPage = lazy(() => import("@/pages/admin/AdminOverviewPage").then((m) => ({ default: m.AdminOverviewPage })));
+const AdminCoursesPage = lazy(() => import("@/pages/admin/AdminCoursesPage").then((m) => ({ default: m.AdminCoursesPage })));
+const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage").then((m) => ({ default: m.AdminUsersPage })));
+const AdminEnrollmentsPage = lazy(() => import("@/pages/admin/AdminEnrollmentsPage").then((m) => ({ default: m.AdminEnrollmentsPage })));
+const AdminPaymentsPage = lazy(() => import("@/pages/admin/AdminPaymentsPage").then((m) => ({ default: m.AdminPaymentsPage })));
+
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function ScrollToTop() {
@@ -183,6 +192,48 @@ export default function App() {
               <AuthGuard>
                 <SettingsProfilePage />
               </AuthGuard>
+            }
+          />
+
+          {/* Secure Administrative Console Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminGuard>
+                <AdminOverviewPage />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/courses"
+            element={
+              <AdminGuard>
+                <AdminCoursesPage />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminGuard>
+                <AdminUsersPage />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/enrollments"
+            element={
+              <AdminGuard>
+                <AdminEnrollmentsPage />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <AdminGuard>
+                <AdminPaymentsPage />
+              </AdminGuard>
             }
           />
 

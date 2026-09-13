@@ -64,6 +64,7 @@ export interface User {
   _id?: string;
   name: string;
   email: string;
+  role?: "student" | "admin";
   college: string;
   district: string;
   state: string;
@@ -72,6 +73,55 @@ export interface User {
   avatar: string;
   isLoggedIn: boolean;
   password?: string;
+}
+
+export interface AdminStats {
+  totalStudents: number;
+  totalAdmins: number;
+  totalCourses: number;
+  totalEnrollments: number;
+  totalRevenue: number;
+  recentEnrollments: Array<{
+    _id: string;
+    userId?: { _id: string; name: string; email: string; avatar?: string };
+    courseId?: { _id: string; title: string; category: string; price: number; thumbnail?: string };
+    progress: number;
+    isCompleted: boolean;
+    createdAt: string;
+  }>;
+}
+
+export interface AdminUserItem {
+  _id: string;
+  name: string;
+  email: string;
+  role: "student" | "admin";
+  college?: string;
+  district?: string;
+  state?: string;
+  rollNumber?: string;
+  createdAt: string;
+}
+
+export interface AdminEnrollmentItem {
+  _id: string;
+  userId?: { _id: string; name: string; email: string };
+  courseId?: { _id: string; title: string; price: number; category: string };
+  progress: number;
+  isCompleted: boolean;
+  createdAt: string;
+}
+
+export interface AdminPaymentItem {
+  _id: string;
+  userId?: { _id: string; name: string; email: string };
+  courseId?: { _id: string; title: string };
+  orderId: string;
+  amount: number;
+  currency: string;
+  status: "authorized" | "captured" | "failed" | "refunded";
+  razorpayPaymentId?: string;
+  createdAt: string;
 }
 
 export interface EnrolledCourseProgress {

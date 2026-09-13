@@ -11,6 +11,10 @@ import {
   ApiResponse,
   ApiErrorResponse,
   CourseFilterParams,
+  AdminStats,
+  AdminUserItem,
+  AdminEnrollmentItem,
+  AdminPaymentItem,
 } from "@/types";
 
 const API_BASE =
@@ -352,5 +356,109 @@ export const paymentService = {
     );
   },
 };
+
+export const adminService = {
+  async getStats(): Promise<AdminStats> {
+    return request<AdminStats>("/admin/stats");
+  },
+
+  async getUsers(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+  } = {}): Promise<{ users: AdminUserItem[]; pagination: { total: number; page: number; limit: number; totalPages: number } }> {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", params.page.toString());
+    if (params.limit) query.set("limit", params.limit.toString());
+    if (params.search) query.set("search", params.search);
+    if (params.role) query.set("role", params.role);
+    const qs = query.toString();
+    return request<{ users: AdminUserItem[]; pagination: { total: number; page: number; limit: number; totalPages: number } }>(
+      `/admin/users${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  async updateUserRole(userId: string, role: "student" | "admin"): Promise<AdminUserItem> {
+    return request<AdminUserItem>(`/admin/users/${userId}/role`, {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    });
+  },
+
+  async deleteUser(userId: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/admin/users/${userId}`, {
+      method: "DELETE",
+    });
+  },
+
+  async createCourse(data: Partial<Course>): Promise<Course> {
+    return request<Course>("/admin/courses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateCourse(courseId: string, data: Partial<Course>): Promise<Course> {
+    return request<Course>(`/admin/courses/${courseId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deleteCourse(courseId: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/admin/courses/${courseId}`, {
+      method: "DELETE",
+    });
+  },
+
+  async getEnrollments(params: { page?: number; limit?: number } = {}): Promise<{
+    enrollments: AdminEnrollmentItem[];
+    pagination: { total: number; page: number; limit: number; totalPages: number };
+  }> {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", params.page.toString());
+    if (params.limit) query.set("limit", params.limit.toString());
+    const qs = query.toString();
+    return request<{
+      enrollments: AdminEnrollmentItem[];
+      pagination: { total: number; page: number; limit: number; totalPages: number };
+    }>(`/admin/enrollments${qs ? `?${qs}` : ""}`);
+  },
+
+  async grantEnrollment(payload: { userId?: string; userEmail?: string; courseId: string }): Promise<any> {
+    return request("/admin/enrollments", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async revokeEnrollment(enrollmentId: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/admin/enrollments/${enrollmentId}`, {
+      method: "DELETE",
+    });
+  },
+
+  async getPayments(params: { page?: number; limit?: number } = {}): Promise<{
+    payments: AdminPaymentItem[];
+    pagination: { total: number; page: number; limit: number; totalPages: number };
+  }> {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", params.page.toString());
+    if (params.limit) query.set("limit", params.limit.toString());
+    const qs = query.toString();
+    return request<{
+      payments: AdminPaymentItem[];
+      pagination: { total: number; page: number; limit: number; totalPages: number };
+    }>(`/admin/payments${qs ? `?${qs}` : ""}`);
+  },
+
+  async processRefund(paymentId: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/admin/payments/${paymentId}/refund`, {
+      method: "POST",
+    });
+  },
+};
+
 
 

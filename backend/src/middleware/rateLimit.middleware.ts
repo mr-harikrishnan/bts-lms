@@ -62,3 +62,19 @@ export const apiLimiter = rateLimit({
   },
 });
 
+export const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    apiError(
+      res,
+      'Administrative request limit reached. Please slow down.',
+      429,
+      ERROR_CODES.RATE_LIMIT_EXCEEDED
+    );
+  },
+});
+
+

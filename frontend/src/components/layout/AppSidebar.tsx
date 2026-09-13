@@ -9,6 +9,7 @@ import {
   LogOut,
   LogIn,
   X,
+  Shield,
 } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 
@@ -145,6 +146,26 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                   <Award className="w-4 h-4" />
                   <span>Certificates</span>
                 </Link>
+
+                {user.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    onClick={onClose}
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      pathname.startsWith("/admin")
+                        ? "bg-amber-500/10 text-amber-900 border border-amber-500/30 font-semibold"
+                        : "text-amber-800 bg-amber-50/60 hover:bg-amber-100/80"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <Shield className="w-4 h-4 text-amber-600" />
+                      <span>Admin Console</span>
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded bg-amber-200/80 text-amber-900 text-[9px] font-mono uppercase font-bold">
+                      Staff
+                    </span>
+                  </Link>
+                )}
               </>
             ) : (
               /* Public / Logged-Out Navigation: Courses Only */

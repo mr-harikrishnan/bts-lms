@@ -2,9 +2,11 @@ import { app } from './app.js';
 import { env } from './config/env.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 import { logger } from './utils/logger.js';
+import { ensureDefaultAdmin } from './services/adminInit.service.js';
 
 async function bootstrap() {
   await connectDatabase();
+  await ensureDefaultAdmin();
 
   const server = app.listen(env.PORT, () => {
     logger.info(`[Server] DLABS LMS Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);

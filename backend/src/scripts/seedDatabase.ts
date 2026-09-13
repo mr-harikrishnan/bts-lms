@@ -9,24 +9,24 @@ export async function seedDatabase() {
   await connectDatabase();
 
   // Create or update Admin account
-  const adminPassword = await hashPassword('Admin@123456');
+  const adminPassword = await hashPassword('Admin@123');
   await User.findOneAndUpdate(
-    { email: 'admin@bstorm.edu' },
+    { email: 'admin@gmail.com' },
     {
       name: 'System Administrator',
-      email: 'admin@bstorm.edu',
+      email: 'admin@gmail.com',
       password: adminPassword,
       role: ROLES.ADMIN,
-      college: 'BSTORM Academy Operations',
+      college: 'DLABS Central Administration',
       district: 'Coimbatore',
       state: 'Tamil Nadu',
       rollNumber: 'ADM-001',
-      grantName: 'Administrator Access',
-      avatar: 'https://lh3.googleusercontent.com/aida/AEtjO1U9TCa559VGVPXEorXaOd4-4F3-_yxTRkDiN4yL_rHscfc61Dv4oR6rF-Q5Q4SMHc2OiVKW4ppUavOEPI0k5rbfijrF1pDp1QYAUDcOnaN9BVLxBtRq47v7eMcqWE7eGAv5AK-_2-vhabqlwssRcL7ZzhHYRFQg21fjuWJbAUwIiCuxxGKHOITP3QvhqfDi6cdJfeH5tDbP6RoKeD5zNznQitsO7Rh6xF-n0IR0V8a4IS3RYSu34w6dLQQ',
+      grantName: 'Executive Administrator',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
-  console.log('[Seed] Verified Administrator account: admin@bstorm.edu / Admin@123456');
+  console.log('[Seed] Verified Administrator account: admin@gmail.com / Admin@123');
 
   // Then run JSON migration to ensure all course data is in MongoDB
   await migrateJsonToMongo();
