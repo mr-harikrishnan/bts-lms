@@ -150,7 +150,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       {/* Top Header Overlay */}
       <div className="relative z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none transition-opacity">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white font-label-sm text-label-sm">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white font-label-sm text-label-sm">
           <span>
             {moduleNumber} • Lesson {lesson.lessonNumber}
           </span>

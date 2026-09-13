@@ -113,7 +113,7 @@ export const CertificateDetailPage: React.FC = () => {
                 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                 <span>All Certificates</span>
               </Link>
-              <span className="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
+              <span className="px-2.5 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
                 Status: Verified & Active
               </span>
             </div>
@@ -185,7 +185,7 @@ export const CertificateDetailPage: React.FC = () => {
               </h2>
 
               <div className="inline-flex items-center gap-3 mt-1">
-                <span className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold">
+                <span className="px-3 py-1 rounded-md bg-secondary-container text-on-secondary-fixed text-xs font-bold">
                   Graduated with {cert ? cert.grade : "Honors"} ({cert ? cert.score : 96.4}%)
                 </span>
                 <span className="text-on-surface-variant font-caption text-xs">

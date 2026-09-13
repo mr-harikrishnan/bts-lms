@@ -71,7 +71,7 @@ export const CertificatesPage: React.FC = () => {
                           workspace_premium
                         </span>
                       </div>
-                      <span className="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">
+                      <span className="px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">
                         {cert.grade}
                       </span>
                     </div>

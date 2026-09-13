@@ -225,7 +225,7 @@ export const CourseLearningPage: React.FC = () => {
       <span className="text-primary font-semibold truncate max-w-[180px] sm:max-w-xs md:max-w-sm">
         {course.title}
       </span>
-      <span className="hidden md:inline-flex items-center ml-2 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold tracking-wide uppercase">
+      <span className="hidden md:inline-flex items-center ml-2 px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface-variant text-[11px] font-semibold tracking-wide uppercase">
         In Player
       </span>
     </div>
@@ -248,7 +248,7 @@ export const CourseLearningPage: React.FC = () => {
                 <span>All Courses</span>
               </Link>
 
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
                 <span className="material-symbols-outlined text-[15px] text-secondary">
                   layers
                 </span>
@@ -308,19 +308,19 @@ export const CourseLearningPage: React.FC = () => {
                   {/* Top row pills */}
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
                         <span className="material-symbols-outlined text-[15px] text-secondary">
                           play_circle
                         </span>
                         {currentModuleNumber} • Lesson {currentLesson.lessonNumber}
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
                         <span className="material-symbols-outlined text-[15px] text-secondary">
                           schedule
                         </span>
                         {currentLesson.duration} Duration
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
                         <span className="material-symbols-outlined text-[15px] text-secondary">
                           terminal
                         </span>
@@ -329,7 +329,7 @@ export const CourseLearningPage: React.FC = () => {
                     </div>
 
                     <span
-                      className={`inline-flex items-center px-3 py-0.5 rounded-full font-label-sm text-label-sm font-bold ${
+                      className={`inline-flex items-center px-3 py-1 rounded-md font-label-sm text-label-sm font-bold ${
                         isCurrentCompleted
                           ? "bg-secondary-container text-on-secondary-fixed"
                           : "bg-secondary/10 text-secondary"

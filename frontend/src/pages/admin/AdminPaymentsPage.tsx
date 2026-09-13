@@ -61,32 +61,32 @@ export const AdminPaymentsPage: React.FC = () => {
     }
   };
 
-  const getStatusChip = (status: AdminPaymentItem["status"]) => {
+  const getStatusBadge = (status: AdminPaymentItem["status"]) => {
     switch (status) {
       case "captured":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-[11px] font-semibold">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             <span>Captured</span>
           </span>
         );
       case "refunded":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-700 text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-700 text-[11px] font-semibold">
             <RotateCcw className="w-3 h-3 text-purple-600" />
             <span>Refunded</span>
           </span>
         );
       case "failed":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-700 text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-700 text-[11px] font-semibold">
             <XCircle className="w-3 h-3 text-red-600" />
             <span>Failed</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] font-semibold">
             <Clock className="w-3 h-3 text-amber-600" />
             <span>Authorized</span>
           </span>
@@ -181,7 +181,7 @@ export const AdminPaymentsPage: React.FC = () => {
                       <td className="py-3 px-4 font-bold text-stone-900 font-mono">
                         ₹{p.amount?.toLocaleString("en-IN") || 0}
                       </td>
-                      <td className="py-3 px-4">{getStatusChip(p.status)}</td>
+                      <td className="py-3 px-4">{getStatusBadge(p.status)}</td>
                       <td className="py-3 px-4 text-stone-500">
                         {p.createdAt
                           ? new Date(p.createdAt).toLocaleDateString("en-IN", {

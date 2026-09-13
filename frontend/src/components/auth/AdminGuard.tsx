@@ -55,7 +55,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
             <ShieldAlert className="w-7 h-7 text-red-400" />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-mono uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-mono uppercase tracking-wider mb-3">
             Error 403 • Forbidden Access
           </div>
 

@@ -175,7 +175,7 @@ export const FinalTestPage: React.FC = () => {
           <div className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
+                <span className="px-2.5 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
                   Final Test
                 </span>
                 <span className="font-caption text-caption text-outline">

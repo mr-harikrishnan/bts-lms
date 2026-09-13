@@ -157,7 +157,7 @@ export const DashboardPage: React.FC = () => {
 
                 <div className="flex flex-col gap-2 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+                    <span className="px-2.5 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
                       Continue Learning
                     </span>
                     <span className="font-caption text-caption text-outline">

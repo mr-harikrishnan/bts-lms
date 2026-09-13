@@ -36,11 +36,6 @@ export const HomePage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
               {/* Left Column: LMS Value Proposition */}
               <div className="lg:col-span-6 flex flex-col items-start text-left">
-                {/* Eyebrow badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#98A897]/15 border border-[#98A897]/30 text-[#697C70] text-xs font-semibold uppercase tracking-widest mb-5">
-                  <span className="w-2 h-2 rounded-full bg-[#697C70]" />
-                  <span>MODERN LEARNING MANAGEMENT SYSTEM</span>
-                </div>
 
                 {/* Main Headline */}
                 <h1 className="text-3xl sm:text-4xl lg:text-[48px] font-bold text-[#2D3536] tracking-tight leading-[1.14] mb-5">
@@ -470,15 +465,15 @@ export const HomePage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-stone-200/70 text-xs text-stone-600">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#697C70]" />
+                  <Check className="w-3.5 h-3.5 text-[#697C70] shrink-0" />
                   <span>Student-first platform architecture</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#697C70]" />
+                  <Check className="w-3.5 h-3.5 text-[#697C70] shrink-0" />
                   <span>Practical curriculum benchmarks</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#697C70]" />
+                  <Check className="w-3.5 h-3.5 text-[#697C70] shrink-0" />
                   <span>Dedicated student support desk</span>
                 </div>
               </div>

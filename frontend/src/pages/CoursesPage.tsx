@@ -88,8 +88,7 @@ export const CoursesPage: React.FC = () => {
                   <span className="text-xs font-bold tracking-wider uppercase text-emerald-300">
                     Industry Program
                   </span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-xs text-stone-300">Self-Paced Learning</span>
+                  <span className="text-xs text-stone-300">• Self-Paced Learning</span>
                 </div>
                 <h3 className="font-title-md text-base md:text-lg font-bold text-white mt-0.5">
                   100% Practical Skills • Real Industry Capstones

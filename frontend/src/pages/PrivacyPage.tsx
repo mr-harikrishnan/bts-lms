@@ -13,10 +13,6 @@ export default function PrivacyPage() {
           <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-[#F2EFE2]/60 rounded-full blur-3xl pointer-events-none -z-10" />
           <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#98A897]/15 border border-[#98A897]/30 text-[#697C70] text-xs font-semibold uppercase tracking-widest mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#697C70]" />
-                DATA PROTECTION
-              </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3536] tracking-tight leading-[1.18] mb-3">
                 Privacy Policy
               </h1>

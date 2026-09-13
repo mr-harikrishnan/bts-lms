@@ -187,8 +187,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200/80 text-xs text-stone-600">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200/80 text-xs text-stone-600">
+              <Shield className="w-3.5 h-3.5 text-stone-500" />
               <span className="font-mono text-[11px] text-stone-700 font-medium">Session Secure</span>
             </div>
           </div>

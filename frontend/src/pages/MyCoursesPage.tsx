@@ -129,7 +129,7 @@ export const MyCoursesPage: React.FC = () => {
 
                     <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-semibold">
+                        <span className="px-2 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed text-[11px] font-semibold">
                           {course.category}
                         </span>
                         {isCompleted ? (

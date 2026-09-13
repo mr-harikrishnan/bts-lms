@@ -113,8 +113,8 @@ export const CheckoutPage: React.FC = () => {
               </span>
             </div>
 
-            {/* Active Learner Session Pill */}
-            <div className="flex items-center gap-3 bg-surface-container-lowest px-3.5 py-1.5 rounded-full shadow-sm border border-[#E5E7EB]">
+            {/* Active Learner Session Box */}
+            <div className="flex items-center gap-3 bg-surface-container-lowest px-3.5 py-1.5 rounded-xl shadow-sm border border-[#E5E7EB]">
               <div className="relative">
                 <img
                   alt="Learner Avatar"
@@ -125,7 +125,7 @@ export const CheckoutPage: React.FC = () => {
               <span className="font-label-sm text-label-sm text-primary font-semibold">
                 {user.name || "Hari"}
               </span>
-              <span className="font-caption text-caption px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-medium">
+              <span className="font-caption text-caption px-2 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed font-medium">
                 {user.grantName || "PSG Tech Academic Grant"}
               </span>
             </div>
