@@ -77,30 +77,42 @@ export const PublicHeader: React.FC = () => {
         </nav>
 
         {/* Right Actions */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-3">
           {user?.isLoggedIn ? (
-            <Link
-              className="text-xs sm:text-[13px] font-medium text-stone-700 hover:text-[#2D3536] transition-colors"
-              to="/dashboard"
-            >
-              Dashboard
-            </Link>
+            <>
+              {user.role === "admin" && (
+                <Link
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold hover:bg-amber-100 transition-colors"
+                  to="/admin"
+                >
+                  Admin Console
+                </Link>
+              )}
+              <Link
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-[13px] font-medium hover:bg-stone-800 transition-colors shadow-xs group"
+                to="/dashboard"
+              >
+                <span>Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-300 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </>
           ) : (
-            <Link
-              className="text-xs sm:text-[13px] font-medium text-stone-700 hover:text-[#2D3536] transition-colors"
-              to="/login"
-            >
-              Sign In
-            </Link>
+            <>
+              <Link
+                className="text-xs sm:text-[13px] font-medium text-stone-700 hover:text-[#2D3536] transition-colors"
+                to="/login"
+              >
+                Sign In
+              </Link>
+              <Link
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-[13px] font-medium hover:bg-stone-800 transition-colors shadow-xs group"
+                to="/signup"
+              >
+                <span>Get Started</span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-300 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </>
           )}
-
-          <Link
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-[13px] font-medium hover:bg-stone-800 transition-colors shadow-xs group"
-            to="/signup"
-          >
-            <span>Start Learning</span>
-            <ArrowRight className="w-3.5 h-3.5 text-stone-300 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -149,21 +161,34 @@ export const PublicHeader: React.FC = () => {
             Contact Us
           </Link>
           <div className="flex items-center justify-between pt-2">
-            <Link
-              to="/login"
-              onClick={() => setMobileOpen(false)}
-              className="text-sm font-medium text-stone-700"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/signup"
-              onClick={() => setMobileOpen(false)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2D3536] text-white text-xs font-medium"
-            >
-              <span>Start Learning</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {user?.isLoggedIn ? (
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2D3536] text-white text-xs font-medium"
+              >
+                <span>Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-sm font-medium text-stone-700"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2D3536] text-white text-xs font-medium"
+                >
+                  <span>Get Started</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

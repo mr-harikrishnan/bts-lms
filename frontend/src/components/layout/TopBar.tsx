@@ -132,10 +132,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             >
               <div className="flex flex-col text-right hidden sm:flex">
                 <span className="text-xs font-semibold text-[#2D3536] leading-tight group-hover:text-[#697C70] transition-colors">
-                  {user.name || "Hari"}
+                  {user.name || "User"}
                 </span>
-                <span className="text-[11px] text-stone-500">
-                  Learner
+                <span className="text-[11px] text-stone-500 capitalize">
+                  {user.role === "admin" ? "Administrator" : "Learner"}
                 </span>
               </div>
               <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-stone-200 group-hover:ring-[#697C70] transition-colors relative">
