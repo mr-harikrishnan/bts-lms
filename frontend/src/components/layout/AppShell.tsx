@@ -13,7 +13,7 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({
   children,
   customBreadcrumb,
-  maxWidth = "max-w-[1280px]",
+  maxWidth = "w-full max-w-[1536px]",
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -29,7 +29,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           customBreadcrumb={customBreadcrumb}
         />
         <main className="relative pt-16 bg-surface flex-1">
-          <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-6 py-6 md:py-8`}>
+          <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-10 py-6 md:py-8`}>
             {children}
           </div>
         </main>

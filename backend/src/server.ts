@@ -7,7 +7,7 @@ async function bootstrap() {
   await connectDatabase();
 
   const server = app.listen(env.PORT, () => {
-    logger.info(`[Server] BSTORM LMS Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+    logger.info(`[Server] DLABS LMS Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
     logger.info(`[Server] API Healthcheck available at http://localhost:${env.PORT}/api/health`);
   });
 

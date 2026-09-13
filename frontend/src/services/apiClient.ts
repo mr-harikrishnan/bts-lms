@@ -13,7 +13,10 @@ import {
   CourseFilterParams,
 } from "@/types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) ||
+  (typeof process !== "undefined" && process.env && process.env.NEXT_PUBLIC_API_URL) ||
+  "http://localhost:5000/api/v1";
 
 // In-memory access token cache for authenticated requests
 let memoryAccessToken: string | null = null;
@@ -84,7 +87,8 @@ async function request<T>(endpoint: string, options: CustomRequestInit = {}): Pr
     const isAuthEndpoint =
       normalized.includes("/auth/login") ||
       normalized.includes("/auth/refresh") ||
-      normalized.includes("/auth/logout");
+      normalized.includes("/auth/logout") ||
+      (normalized.includes("/auth/me") && !memoryAccessToken);
 
     if (!isAuthEndpoint) {
       // Use existing refresh promise if already in flight, otherwise start new one

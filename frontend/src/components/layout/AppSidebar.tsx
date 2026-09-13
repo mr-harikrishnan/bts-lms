@@ -1,9 +1,5 @@
-"use client";
-
 import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   BookOpen,
@@ -22,8 +18,9 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
-  const pathname = usePathname();
-  const router = useRouter();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pathname = location.pathname;
   const { user, logout } = useBstorm();
   const isLoggedIn = user?.isLoggedIn;
 
@@ -35,11 +32,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
   const isSettingsActive =
     pathname === "/settings" || pathname.startsWith("/settings/");
 
-  const handleLogout = (e: React.MouseEvent) => {
+  const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (onClose) onClose();
-    logout();
-    router.replace("/");
+    await logout();
+    navigate("/", { replace: true });
   };
 
   return (
@@ -61,22 +58,20 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
           {/* Logo & Platform Name */}
           <div className="px-6 mb-8 flex items-center justify-between">
             <Link
-              href={isLoggedIn ? "/dashboard" : "/"}
+              to={isLoggedIn ? "/dashboard" : "/"}
               className="flex items-center gap-3"
               onClick={onClose}
             >
               <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-stone-50 border border-stone-200 p-1">
-                <Image
-                  alt="BSTORM Logo"
-                  className="object-contain"
+                <img
+                  alt="DLABS Logo"
+                  className="object-contain w-7 h-7"
                   src="/logo.png"
-                  width={28}
-                  height={28}
                 />
               </div>
               <div className="flex flex-col">
                 <span className="font-sans text-base font-bold text-[#2D3536] tracking-tight leading-tight">
-                  BSTORM
+                  DLABS
                 </span>
                 <span className="text-[10px] text-stone-500 font-medium tracking-normal">
                   Practical Digital Skills
@@ -100,7 +95,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
               /* Authenticated Navigation */
               <>
                 <Link
-                  href="/dashboard"
+                  to="/dashboard"
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     pathname === "/dashboard"
@@ -113,7 +108,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                 </Link>
 
                 <Link
-                  href="/courses"
+                  to="/courses"
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isCoursesActive
@@ -126,7 +121,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                 </Link>
 
                 <Link
-                  href="/my-courses"
+                  to="/my-courses"
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isMyCoursesActive
@@ -139,7 +134,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                 </Link>
 
                 <Link
-                  href="/certificates"
+                  to="/certificates"
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isCertificatesActive
@@ -154,7 +149,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
             ) : (
               /* Public / Logged-Out Navigation: Courses Only */
               <Link
-                href="/courses"
+                to="/courses"
                 onClick={onClose}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isCoursesActive
@@ -175,7 +170,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
             /* Authenticated Bottom Actions: Settings & Logout */
             <>
               <Link
-                href="/settings"
+                to="/settings"
                 onClick={onClose}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isSettingsActive
@@ -198,7 +193,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
           ) : (
             /* Public Bottom Action: Login Only */
             <Link
-              href="/login"
+              to="/login"
               onClick={onClose}
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-stone-700 hover:bg-stone-100/70 hover:text-stone-900 transition-colors"
             >

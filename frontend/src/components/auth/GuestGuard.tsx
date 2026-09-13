@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useBstorm } from "@/context/BstormContext";
 
 interface GuestGuardProps {
@@ -10,13 +8,13 @@ interface GuestGuardProps {
 
 export const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
   const { user, isHydrated } = useBstorm();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isHydrated && user.isLoggedIn) {
-      router.replace("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
-  }, [isHydrated, user.isLoggedIn, router]);
+  }, [isHydrated, user.isLoggedIn, navigate]);
 
   // Prevent flash while checking session or redirecting authenticated users
   if (!isHydrated || user.isLoggedIn) {

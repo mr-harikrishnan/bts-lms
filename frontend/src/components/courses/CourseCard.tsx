@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Course } from "@/types";
 import { useBstorm } from "@/context/BstormContext";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -135,8 +135,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
                 </span>
               </div>
               <Link
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 transition-all shadow-xs"
-                href={`/courses/${course._id}/learn`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 shadow-sm transition-all"
+                to={`/courses/${course._id}/learn`}
               >
                 <span>Continue Learning</span>
                 <span className="material-symbols-outlined text-[15px]">
@@ -178,7 +178,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
               </div>
               <Link
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shadow-sm hover:shadow-md transition-all group/btn"
-                href={user.isLoggedIn ? `/checkout/${course._id}` : `/login?redirect=/checkout/${course._id}`}
+                to={user.isLoggedIn ? `/checkout/${course._id}` : `/login?redirect=/checkout/${course._id}`}
               >
                 <span>View & Enroll</span>
                 <span className="material-symbols-outlined text-[15px] group-hover/btn:translate-x-0.5 transition-transform">

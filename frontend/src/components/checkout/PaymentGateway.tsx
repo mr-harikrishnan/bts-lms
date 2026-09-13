@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link, useNavigate } from "react-router-dom";
 import { Course } from "@/types";
-import { useRouter } from "next/navigation";
 import { useBstorm } from "@/context/BstormContext";
 import { paymentService } from "@/services/apiClient";
 
@@ -24,7 +23,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { enrollCourse, user, refreshData } = useBstorm();
 
   const [activeTab, setActiveTab] = useState<"upi" | "apps" | "card" | "netbanking">("upi");
@@ -61,7 +60,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
     setErrorMessage(null);
 
     if (!user.isLoggedIn) {
-      router.push(`/login?redirect=${encodeURIComponent(`/checkout/${course._id}`)}`);
+      navigate(`/login?redirect=${encodeURIComponent(`/checkout/${course._id}`)}`);
       return;
     }
 
@@ -85,7 +84,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency || "INR",
-        name: "BSTORM Academy",
+        name: "DLABS Academy",
         description: course.title,
         order_id: orderData.razorpayOrderId,
         prefill: {
@@ -110,7 +109,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
             });
 
             await refreshData();
-            router.replace(`/courses/${course._id}/learn`);
+            navigate(`/courses/${course._id}/learn`, { replace: true });
           } catch (verifyErr: any) {
             console.error("Signature verification error:", verifyErr);
             setErrorMessage(
@@ -643,15 +642,15 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
         <div className="text-center">
           <span className="font-caption text-caption text-outline">
             By completing payment, you agree to our{" "}
-            <Link href="/terms" target="_blank" className="underline hover:text-primary transition-colors">
+            <Link to="/terms" target="_blank" className="underline hover:text-primary transition-colors">
               Terms &amp; Conditions
             </Link>
             ,{" "}
-            <Link href="/privacy" target="_blank" className="underline hover:text-primary transition-colors">
+            <Link to="/privacy" target="_blank" className="underline hover:text-primary transition-colors">
               Privacy Policy
             </Link>
             , and{" "}
-            <Link href="/refund-policy" target="_blank" className="underline hover:text-primary transition-colors">
+            <Link to="/refund-policy" target="_blank" className="underline hover:text-primary transition-colors">
               7-Day Refund Policy
             </Link>
             .

@@ -33,14 +33,11 @@ export const corsSecurity = cors({
     }
 
 
-    // In development/test, allow configured FRONTEND_URL and local dev ports
-    const devAllowedOrigins = [
-      configuredFrontend,
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-    ];
-
-    if (devAllowedOrigins.includes(cleanOrigin)) {
+    // In development/test, allow configured FRONTEND_URL and any local dev ports
+    if (
+      cleanOrigin === configuredFrontend ||
+      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)
+    ) {
       return callback(null, true);
     }
 

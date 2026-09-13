@@ -291,3 +291,8 @@ export const useBstorm = () => {
   }
   return context;
 };
+
+// Aliases for DLABS rebranding
+export const useDlabs = useBstorm;
+export const DlabsProvider = BstormProvider;
+export const DlabsContext = BstormContext;

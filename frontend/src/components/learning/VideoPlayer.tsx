@@ -161,7 +161,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             4K UHD
           </span>
           <span className="px-2.5 py-0.5 rounded bg-black/50 backdrop-blur-md border border-white/10 text-emerald-400 font-label-sm text-label-sm font-semibold">
-            BSTORM Player v3.2
+            DLABS Player v3.2
           </span>
         </div>
       </div>

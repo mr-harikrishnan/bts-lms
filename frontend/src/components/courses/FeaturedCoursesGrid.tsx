@@ -1,8 +1,5 @@
-"use client";
-
 import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp, Video, Code2 } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 
@@ -52,12 +49,10 @@ export const FeaturedCoursesGrid: React.FC = () => {
             className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group"
           >
             <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
-              <Image
+              <img
                 src={course.thumbnail}
                 alt={course.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 400px"
-                className="object-cover group-hover:scale-103 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
               />
               <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#697C70] shadow-xs flex items-center gap-1.5">
                 {icon}
@@ -89,7 +84,7 @@ export const FeaturedCoursesGrid: React.FC = () => {
                   </span>
                 </div>
                 <Link
-                  href={`/checkout/${course._id}`}
+                  to={`/checkout/${course._id}`}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-xs"
                 >
                   <span>Enroll Now</span>

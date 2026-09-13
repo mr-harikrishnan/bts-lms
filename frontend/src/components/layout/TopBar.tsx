@@ -1,9 +1,5 @@
-"use client";
-
 import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Bell, Menu, ArrowRight } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 
@@ -16,7 +12,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onMenuToggle,
   customBreadcrumb,
 }) => {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const { user } = useBstorm();
   const isLoggedIn = user?.isLoggedIn;
 
@@ -37,10 +34,10 @@ export const TopBar: React.FC<TopBarProps> = ({
       return (
         <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-500 font-medium">
           <Link
-            href={isLoggedIn ? "/dashboard" : "/"}
+            to={isLoggedIn ? "/dashboard" : "/"}
             className="hover:text-stone-900 transition-colors"
           >
-            BSTORM
+            DLABS
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
           <span className="text-[#2D3536] font-semibold">Courses Catalog</span>
@@ -51,7 +48,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (pathname === "/my-courses") {
       return (
         <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-500 font-medium">
-          <Link href="/dashboard" className="hover:text-stone-900 transition-colors">
+          <Link to="/dashboard" className="hover:text-stone-900 transition-colors">
             Platform
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
@@ -63,7 +60,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (pathname === "/certificates") {
       return (
         <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-500 font-medium">
-          <Link href="/dashboard" className="hover:text-stone-900 transition-colors">
+          <Link to="/dashboard" className="hover:text-stone-900 transition-colors">
             Platform
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
@@ -75,7 +72,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (pathname.startsWith("/settings")) {
       return (
         <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-500 font-medium">
-          <Link href="/dashboard" className="hover:text-stone-900 transition-colors">
+          <Link to="/dashboard" className="hover:text-stone-900 transition-colors">
             Platform
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
@@ -89,10 +86,10 @@ export const TopBar: React.FC<TopBarProps> = ({
     return (
       <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-500 font-medium">
         <Link
-          href={isLoggedIn ? "/dashboard" : "/"}
+          to={isLoggedIn ? "/dashboard" : "/"}
           className="hover:text-stone-900 transition-colors"
         >
-          BSTORM
+          DLABS
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
         <span className="text-[#2D3536] font-semibold">Learning Platform</span>
@@ -130,7 +127,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <div className="h-5 w-[1px] bg-stone-200"></div>
 
             <Link
-              href="/settings/profile"
+              to="/settings/profile"
               className="flex items-center gap-2.5 group cursor-pointer"
             >
               <div className="flex flex-col text-right hidden sm:flex">
@@ -142,12 +139,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </span>
               </div>
               <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-stone-200 group-hover:ring-[#697C70] transition-colors relative">
-                <Image
+                <img
                   alt={`${user.name || "User"} Profile`}
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                   src={user.avatar || "/logo.png"}
-                  width={32}
-                  height={32}
                 />
               </div>
             </Link>
@@ -156,13 +151,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           /* Public / Logged Out Header Right Elements */
           <div className="flex items-center gap-3">
             <Link
-              href="/login"
+              to="/login"
               className="text-xs sm:text-sm font-medium text-stone-700 hover:text-[#2D3536] transition-colors"
             >
               Sign In
             </Link>
             <Link
-              href="/signup"
+              to="/signup"
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-2xs group"
             >
               <span>Start Learning</span>

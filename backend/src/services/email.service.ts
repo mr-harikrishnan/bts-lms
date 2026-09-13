@@ -71,7 +71,7 @@ export async function sendPasswordResetEmail(
       to_name: name || 'Student',
       to_email: toEmail,
       reset_link: resetLink,
-      support_email: 'support@bstorm.edu',
+      support_email: 'support@dlabs.edu',
       validity_minutes: 15,
     },
   });
