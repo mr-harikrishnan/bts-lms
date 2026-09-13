@@ -122,26 +122,28 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 </Link>
               );
             })}
+
+            {/* Learner Console directly below Transactions */}
+            <div className="pt-2 mt-2 border-t border-stone-800/80">
+              <Link
+                to="/dashboard"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors text-sky-200 bg-sky-950/40 border border-sky-800/50 hover:bg-sky-900/60 hover:text-white group"
+              >
+                <span className="flex items-center gap-3">
+                  <GraduationCap className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold text-white">Learner Console</span>
+                </span>
+                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[9px] font-mono uppercase font-bold border border-sky-500/30">
+                  Student
+                </span>
+              </Link>
+            </div>
           </nav>
         </div>
 
-        {/* Bottom Actions & User Strip */}
-        <div className="p-3 border-t border-stone-800/80 flex flex-col gap-2">
-          {/* Link to User Console (Learner Portal) */}
-          <Link
-            to="/dashboard"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors text-sky-200 bg-sky-950/40 border border-sky-800/50 hover:bg-sky-900/60 hover:text-white group"
-          >
-            <span className="flex items-center gap-3">
-              <GraduationCap className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-white">User Console</span>
-            </span>
-            <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[9px] font-mono uppercase font-bold border border-sky-500/30">
-              Learner
-            </span>
-          </Link>
-
-          {/* Admin User info card */}
+        {/* Bottom Actions & User Profile */}
+        <div className="p-3 border-t border-stone-800/80">
           <div className="p-2.5 rounded-xl bg-stone-800/60 border border-stone-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-full bg-stone-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
@@ -185,19 +187,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200/80 text-xs text-stone-600">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200/80 text-xs text-stone-600">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-mono text-[11px] text-stone-700 font-medium">Session Secure</span>
             </div>
-
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition-colors shadow-xs"
-            >
-              <GraduationCap className="w-3.5 h-3.5 text-sky-700" />
-              <span>User Console</span>
-              <ChevronRight className="w-3.5 h-3.5 text-sky-500" />
-            </Link>
           </div>
         </header>
 
