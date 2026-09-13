@@ -127,16 +127,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         {/* Bottom Actions & User Strip */}
         <div className="p-3 border-t border-stone-800/80 flex flex-col gap-2">
-          {/* Switch to Learner View */}
+          {/* Link to User Console (Learner Portal) */}
           <Link
             to="/dashboard"
-            className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-stone-300 hover:text-white hover:bg-stone-800 transition-colors"
+            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors text-sky-200 bg-sky-950/40 border border-sky-800/50 hover:bg-sky-900/60 hover:text-white group"
           >
-            <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-              <span>Learner View</span>
+            <span className="flex items-center gap-3">
+              <GraduationCap className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-white">User Console</span>
             </span>
-            <ChevronRight className="w-3.5 h-3.5 text-stone-500" />
+            <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[9px] font-mono uppercase font-bold border border-sky-500/30">
+              Learner
+            </span>
           </Link>
 
           {/* Admin User info card */}
@@ -190,10 +192,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition-colors shadow-xs"
             >
-              <span>Switch to Learner Portal</span>
-              <ChevronRight className="w-3.5 h-3.5 text-stone-500" />
+              <GraduationCap className="w-3.5 h-3.5 text-sky-700" />
+              <span>User Console</span>
+              <ChevronRight className="w-3.5 h-3.5 text-sky-500" />
             </Link>
           </div>
         </header>

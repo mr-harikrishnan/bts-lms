@@ -36,29 +36,8 @@ export async function migrateJsonToMongo() {
     return;
   }
 
-  // 1. Users
-  const rawUsers = readJsonFile('users.json');
-  console.log(`[Migration] Migrating ${rawUsers.length} Users...`);
-  for (const u of rawUsers) {
-    const hashedPassword = await hashPassword(u.password || 'password123');
-    await User.findByIdAndUpdate(
-      toObjectId(u._id),
-      {
-        _id: toObjectId(u._id),
-        name: u.name,
-        email: u.email.toLowerCase().trim(),
-        password: hashedPassword,
-        role: u.role || (u.email.includes('admin') ? ROLES.ADMIN : ROLES.STUDENT),
-        college: u.college || '',
-        district: u.district || '',
-        state: u.state || '',
-        rollNumber: u.rollNumber || '',
-        grantName: u.grantName || '',
-        avatar: u.avatar || '',
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-  }
+  // 1. Users - Skipped (Preserving only real user data: admin@gmail.com)
+  console.log('[Migration] Skipping mock users to preserve clean administrator database.');
 
   // 2. Courses
   const rawCourses = readJsonFile('courses.json');
@@ -136,52 +115,11 @@ export async function migrateJsonToMongo() {
     );
   }
 
-  // 5. Enrollments
-  const rawEnrollments = readJsonFile('enrollments.json');
-  console.log(`[Migration] Migrating ${rawEnrollments.length} Enrollments...`);
-  for (const e of rawEnrollments) {
-    await Enrollment.findByIdAndUpdate(
-      toObjectId(e._id),
-      {
-        _id: toObjectId(e._id),
-        userId: toObjectId(e.userId),
-        courseId: toObjectId(e.courseId),
-        enrolledAt: e.enrolledAt ? new Date(e.enrolledAt) : new Date(),
-        completedLessonIds: (e.completedLessonIds || []).map((id: string) => toObjectId(id)),
-        currentLessonId: e.currentLessonId ? toObjectId(e.currentLessonId) : undefined,
-        isCompleted: e.isCompleted || false,
-        testScore: e.testScore,
-        testPassed: e.testPassed,
-        certificateId: e.certificateId ? toObjectId(e.certificateId) : undefined,
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-  }
+  // 5. Enrollments - Skipped to preserve clean database
+  console.log('[Migration] Skipping mock enrollments.');
 
-  // 6. Certificates
-  const rawCertificates = readJsonFile('certificates.json');
-  console.log(`[Migration] Migrating ${rawCertificates.length} Certificates...`);
-  for (const cert of rawCertificates) {
-    await Certificate.findByIdAndUpdate(
-      toObjectId(cert._id),
-      {
-        _id: toObjectId(cert._id),
-        userId: toObjectId(cert.userId),
-        courseId: toObjectId(cert.courseId),
-        courseTitle: cert.courseTitle,
-        category: cert.category,
-        studentName: cert.studentName,
-        issueDate: cert.issueDate ? new Date(cert.issueDate) : new Date(),
-        credentialId: cert.credentialId,
-        score: cert.score,
-        grade: cert.grade,
-        verificationKey: cert.verificationKey,
-        instructorName: cert.instructorName,
-        directorName: cert.directorName,
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-  }
+  // 6. Certificates - Skipped to preserve clean database
+  console.log('[Migration] Skipping mock certificates.');
 
   // 7. Tests
   const rawTests = readJsonFile('tests.json');

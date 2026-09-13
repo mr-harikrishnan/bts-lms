@@ -176,7 +176,30 @@ export const AdminOverviewPage: React.FC = () => {
         </div>
 
         {/* Quick Management Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Link
+            to="/dashboard"
+            className="group bg-linear-to-br from-sky-50 to-white p-5 rounded-2xl border border-sky-200 hover:border-sky-400 shadow-xs transition-all flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-sky-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-sky-950">
+                    User Console
+                  </h3>
+                  <span className="px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 text-[9px] font-mono uppercase font-bold">
+                    Portal
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500">Open learner view</p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-sky-600 group-hover:translate-x-1 transition-transform" />
+          </Link>
+
           <Link
             to="/admin/courses"
             className="group bg-white p-5 rounded-2xl border border-stone-200/80 hover:border-stone-400/80 shadow-xs transition-all flex items-center justify-between"
@@ -189,7 +212,7 @@ export const AdminOverviewPage: React.FC = () => {
                 <h3 className="text-sm font-bold text-stone-900 group-hover:text-stone-700">
                   Course Catalog
                 </h3>
-                <p className="text-xs text-stone-500">Create, edit, and organize curriculum</p>
+                <p className="text-xs text-stone-500">Create & edit courses</p>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-stone-400 group-hover:translate-x-1 transition-transform" />
@@ -205,9 +228,9 @@ export const AdminOverviewPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-stone-900 group-hover:text-stone-700">
-                  Student Management
+                  User Accounts
                 </h3>
-                <p className="text-xs text-stone-500">Inspect accounts, manage privileges</p>
+                <p className="text-xs text-stone-500">Manage privileges</p>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-stone-400 group-hover:translate-x-1 transition-transform" />
@@ -219,13 +242,13 @@ export const AdminOverviewPage: React.FC = () => {
           >
             <div className="flex items-center gap-3.5">
               <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <GraduationCap className="w-5 h-5" />
+                <Award className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-stone-900 group-hover:text-stone-700">
-                  Manual Enrollments
+                  Enrollments
                 </h3>
-                <p className="text-xs text-stone-500">Assign course access by student email</p>
+                <p className="text-xs text-stone-500">Grant student seats</p>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-stone-400 group-hover:translate-x-1 transition-transform" />
