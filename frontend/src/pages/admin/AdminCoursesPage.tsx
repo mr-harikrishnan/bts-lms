@@ -18,6 +18,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  Clock,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { courseService, adminService, categoryService } from "@/services/apiClient";
@@ -37,6 +38,40 @@ interface ModuleDraft {
   moduleNumber: string;
   title: string;
   lessons: LessonDraft[];
+}
+
+function parseDurationToMinutes(str: string): number {
+  if (!str || typeof str !== "string") return 0;
+  const s = str.trim().toLowerCase();
+
+  const hms = s.match(/^(\d+):(\d{2}):(\d{2})$/);
+  if (hms) return parseInt(hms[1], 10) * 60 + parseInt(hms[2], 10) + Math.ceil(parseInt(hms[3], 10) / 60);
+
+  const ms = s.match(/^(\d+):(\d{2})$/);
+  if (ms) return parseInt(ms[1], 10) + Math.ceil(parseInt(ms[2], 10) / 60);
+
+  let total = 0;
+  const hr = s.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hours?)/);
+  if (hr) total += Math.round(parseFloat(hr[1]) * 60);
+
+  const min = s.match(/(\d+(?:\.\d+)?)\s*(?:m|min|mins|minutes?)/);
+  if (min) total += Math.round(parseFloat(min[1]));
+
+  if (!hr && !min && /^\d+$/.test(s)) total += parseInt(s, 10);
+  return total;
+}
+
+function formatMinutesToDuration(totalMinutes: number, weeks = 0): string {
+  if (totalMinutes <= 0) return "0 Mins";
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  let timeStr = "";
+  if (hrs > 0 && mins > 0) timeStr = `${hrs} Hrs ${mins} Mins`;
+  else if (hrs > 0) timeStr = `${hrs} Hrs`;
+  else timeStr = `${mins} Mins`;
+
+  if (weeks > 0) return `${weeks} Weeks (${timeStr})`;
+  return timeStr;
 }
 
 export const AdminCoursesPage: React.FC = () => {
@@ -101,6 +136,23 @@ export const AdminCoursesPage: React.FC = () => {
       ],
     },
   ]);
+
+  const totalCurriculumMinutes = modulesDraft.reduce(
+    (acc, m) => acc + m.lessons.reduce((s, l) => s + parseDurationToMinutes(l.duration), 0),
+    0
+  );
+  const computedDuration = formatMinutesToDuration(totalCurriculumMinutes, formData.durationWeeks);
+
+  // Automatically update course duration from video lessons
+  useEffect(() => {
+    if (!editingCourse && totalCurriculumMinutes > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        duration: computedDuration,
+        hoursLive: Math.ceil(totalCurriculumMinutes / 60),
+      }));
+    }
+  }, [totalCurriculumMinutes, formData.durationWeeks, editingCourse]);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -766,9 +818,17 @@ export const AdminCoursesPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                        Duration Text *
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-stone-700 uppercase tracking-wider">
+                          Duration Text *
+                        </label>
+                        {totalCurriculumMinutes > 0 && (
+                          <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-0.5">
+                            <Clock className="w-2.5 h-2.5 text-emerald-600" />
+                            Auto: {computedDuration}
+                          </span>
+                        )}
+                      </div>
                       <input
                         type="text"
                         required
@@ -993,10 +1053,18 @@ export const AdminCoursesPage: React.FC = () => {
               {/* ================= STEP 3: CURRICULUM BUILDER ================= */}
               {currentStep === 3 && !editingCourse && (
                 <div className="space-y-5">
-                  <div className="flex items-center justify-between pb-2 border-b border-stone-100">
-                    <div className="text-xs font-semibold text-stone-800 flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-stone-500" />
-                      <span>Modules & Lessons Builder ({modulesDraft.length} Modules, {totalDraftLessons} Lessons)</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-stone-100">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <div className="text-xs font-semibold text-stone-800 flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-stone-500" />
+                        <span>Modules & Lessons Builder ({modulesDraft.length} Modules, {totalDraftLessons} Lessons)</span>
+                      </div>
+                      {totalCurriculumMinutes > 0 && (
+                        <span className="text-[11px] bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-2xs">
+                          <Clock className="w-3 h-3 text-emerald-600" />
+                          Video Total: {computedDuration}
+                        </span>
+                      )}
                     </div>
                     <button
                       type="button"

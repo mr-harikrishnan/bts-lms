@@ -14,10 +14,27 @@ import { apiSuccess, apiError } from '../utils/apiResponse.js';
 import { toObjectId } from '../utils/objectId.js';
 import { PAYMENT_STATUS, ORDER_STATUS } from '../constants/orderStatus.js';
 import { hashPassword } from '../utils/password.js';
+import { calculateCurriculumDuration } from '../utils/duration.js';
 
 // ==========================================
-// 1. COURSE CRUD OPERATIONS
-// ==========================================
+// Helper to synchronize course duration, hoursLive, and lessonCount automatically from child lessons
+async function syncCourseDurationMetrics(courseId: any) {
+  try {
+    const cOid = toObjectId(courseId);
+    if (!cOid) return;
+    const lessons = await Lesson.find({ courseId: cOid }).select('duration');
+    const course = await Course.findById(cOid);
+    if (!course) return;
+
+    const { hoursLive, formattedDuration } = calculateCurriculumDuration(lessons, course.durationWeeks);
+    course.lessonCount = lessons.length;
+    course.hoursLive = hoursLive;
+    course.duration = formattedDuration;
+    await course.save();
+  } catch (err) {
+    console.error('Failed to sync course duration metrics:', err);
+  }
+}
 
 export async function createCourse(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -75,9 +92,8 @@ export async function createCourseWithCurriculum(req: Request, res: Response, ne
         });
       }
 
-      // Update course lessonCount
-      course.lessonCount = totalLessons;
-      await course.save();
+      // Automatically sync course duration, hoursLive, and lessonCount from lessons
+      await syncCourseDurationMetrics(course._id);
     }
 
     apiSuccess(
@@ -282,8 +298,8 @@ export async function createLesson(req: Request, res: Response, next: NextFuncti
       order: order ?? 0,
     });
 
-    // Update lesson count in course
-    await Course.findByIdAndUpdate(course._id, { $inc: { lessonCount: 1 } });
+    // Automatically recalculate course duration, hoursLive, and lessonCount
+    await syncCourseDurationMetrics(course._id);
 
     apiSuccess(res, lesson, 201, 'Lesson created successfully.');
   } catch (error) {
@@ -345,6 +361,10 @@ export async function updateLesson(req: Request, res: Response, next: NextFuncti
       apiError(res, 'Lesson not found.', 404);
       return;
     }
+
+    // Automatically recalculate course duration metrics
+    await syncCourseDurationMetrics(lesson.courseId);
+
     apiSuccess(res, lesson, 200, 'Lesson updated successfully.');
   } catch (error) {
     next(error);
@@ -360,8 +380,8 @@ export async function deleteLesson(req: Request, res: Response, next: NextFuncti
       return;
     }
 
-    // Decrement course lessonCount
-    await Course.findByIdAndUpdate(lesson.courseId, { $inc: { lessonCount: -1 } });
+    // Automatically recalculate course duration metrics
+    await syncCourseDurationMetrics(lesson.courseId);
 
     apiSuccess(res, { message: 'Lesson deleted successfully.' });
   } catch (error) {
