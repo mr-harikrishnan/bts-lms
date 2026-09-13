@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 import { GuestGuard } from "@/components/auth/GuestGuard";
 
@@ -9,8 +10,9 @@ export const LoginPage: React.FC = () => {
   const redirectTarget = searchParams.get("redirect") || "/dashboard";
   const { login } = useBstorm();
 
-  const [email, setEmail] = useState("hari.prasath@example.com");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,18 +44,6 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    navigate(redirectTarget, { replace: true });
-  };
-
-  const handleQuickDemo = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    const success = await login("hari.prasath@example.com", "password123");
-    if (!success) {
-      setError("Unable to authenticate demo account. Please try again.");
-      setIsSubmitting(false);
-      return;
-    }
     navigate(redirectTarget, { replace: true });
   };
 
@@ -139,14 +129,28 @@ export const LoginPage: React.FC = () => {
                     Forgot password?
                   </Link>
                 </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full h-11 px-3.5 rounded-xl bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 text-sm border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-medium"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full h-11 pl-3.5 pr-11 rounded-xl bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 text-sm border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer p-1"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -171,27 +175,6 @@ export const LoginPage: React.FC = () => {
                 )}
               </button>
             </form>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-3 text-slate-400 font-medium">Or</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              disabled={isSubmitting}
-              onClick={handleQuickDemo}
-              className="w-full h-11 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 text-emerald-800 border border-emerald-200/80 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs disabled:opacity-60"
-            >
-              <span className="material-symbols-outlined text-[18px] text-emerald-700">
-                bolt
-              </span>
-              <span>Instant Demo Login (1-Click)</span>
-            </button>
           </div>
         </main>
 

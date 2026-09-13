@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "test": "tsx --test tests/*.test.ts",
     "seed": "tsx src/scripts/seedDatabase.ts",
+    "clean:db": "tsx src/scripts/cleanDatabase.ts",
     "migrate:json": "tsx src/scripts/migrateJsonToMongo.ts"
   },
   "dependencies": {
