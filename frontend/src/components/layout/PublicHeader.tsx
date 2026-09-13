@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 
 export const PublicHeader: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useBstorm();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="sticky top-0 left-0 right-0 h-16 sm:h-[68px] bg-white/95 backdrop-blur-md border-b border-stone-200/80 z-50 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
@@ -32,19 +35,41 @@ export const PublicHeader: React.FC = () => {
         {/* Center Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 text-[13px] font-medium text-stone-600">
           <Link
-            className="px-3.5 py-1.5 rounded-md hover:text-[#2D3536] hover:bg-stone-100/70 transition-colors"
+            className={`px-3.5 py-1.5 rounded-md transition-colors ${
+              isActive("/")
+                ? "text-[#2D3536] font-semibold bg-stone-100/90"
+                : "hover:text-[#2D3536] hover:bg-stone-100/70"
+            }`}
+            to="/"
+          >
+            Home
+          </Link>
+          <Link
+            className={`px-3.5 py-1.5 rounded-md transition-colors ${
+              isActive("/courses")
+                ? "text-[#2D3536] font-semibold bg-stone-100/90"
+                : "hover:text-[#2D3536] hover:bg-stone-100/70"
+            }`}
             to="/courses"
           >
             Courses
           </Link>
           <Link
-            className="px-3.5 py-1.5 rounded-md hover:text-[#2D3536] hover:bg-stone-100/70 transition-colors"
+            className={`px-3.5 py-1.5 rounded-md transition-colors ${
+              isActive("/about")
+                ? "text-[#2D3536] font-semibold bg-stone-100/90"
+                : "hover:text-[#2D3536] hover:bg-stone-100/70"
+            }`}
             to="/about"
           >
             About
           </Link>
           <Link
-            className="px-3.5 py-1.5 rounded-md hover:text-[#2D3536] hover:bg-stone-100/70 transition-colors"
+            className={`px-3.5 py-1.5 rounded-md transition-colors ${
+              isActive("/contact")
+                ? "text-[#2D3536] font-semibold bg-stone-100/90"
+                : "hover:text-[#2D3536] hover:bg-stone-100/70"
+            }`}
             to="/contact"
           >
             Contact
@@ -92,9 +117,20 @@ export const PublicHeader: React.FC = () => {
       {mobileOpen && (
         <div className="md:hidden bg-white border-b border-stone-200 px-6 py-4 flex flex-col gap-3 shadow-md">
           <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className={`text-sm font-medium py-1.5 border-b border-stone-100 ${
+              isActive("/") ? "text-[#2D3536] font-semibold" : "text-stone-700"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
             to="/courses"
             onClick={() => setMobileOpen(false)}
-            className="text-sm font-medium text-stone-700 py-1.5 border-b border-stone-100"
+            className={`text-sm font-medium py-1.5 border-b border-stone-100 ${
+              isActive("/courses") ? "text-[#2D3536] font-semibold" : "text-stone-700"
+            }`}
           >
             Courses
           </Link>
