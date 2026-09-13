@@ -27,11 +27,7 @@ export async function seedDatabase() {
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
   console.log('[Seed] Verified Administrator account: admin@gmail.com / Admin@123');
-
-  // Then run JSON migration to ensure all course data is in MongoDB
-  await migrateJsonToMongo();
-
-  console.log('[Seed] Database seeding completed successfully.');
+  console.log('[Seed] Database user verification completed successfully.');
 }
 
 if (process.argv[1] && process.argv[1].endsWith('seedDatabase.ts')) {
