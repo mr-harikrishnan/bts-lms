@@ -68,7 +68,7 @@ describe('Comprehensive CRUD & Validation Suite for All Collections', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'AB', // too short (< 3)
-          category: 'Invalid Category',
+          category: 'A', // too short (< 2)
           price: -50,
         });
 

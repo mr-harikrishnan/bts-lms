@@ -44,8 +44,8 @@ export function validateCourseCreate(data: any): ValidatorResult {
     errors.push("Course 'title' is required and must be between 3 and 200 characters.");
   }
 
-  if (!category || !COURSE_CATEGORIES.includes(category)) {
-    errors.push(`Course 'category' is required and must be one of: ${COURSE_CATEGORIES.join(', ')}.`);
+  if (!category || typeof category !== 'string' || category.trim().length < 2) {
+    errors.push("Course 'category' is required and must be at least 2 characters long.");
   }
 
   if (!level || !COURSE_LEVELS.includes(level)) {
@@ -118,10 +118,10 @@ export function validateCourseUpdate(data: any): ValidatorResult {
   }
 
   if (data.category !== undefined) {
-    if (!COURSE_CATEGORIES.includes(data.category)) {
-      errors.push(`Course 'category' must be one of: ${COURSE_CATEGORIES.join(', ')}.`);
+    if (typeof data.category !== 'string' || data.category.trim().length < 2) {
+      errors.push("Course 'category' must be at least 2 characters long.");
     } else {
-      sanitized.category = data.category;
+      sanitized.category = data.category.trim();
     }
   }
 
@@ -874,3 +874,158 @@ export function validateCertificateUpdate(data: any): ValidatorResult {
     sanitized: errors.length === 0 ? sanitized : undefined,
   };
 }
+
+// ---------------- CATEGORY VALIDATORS ----------------
+
+export function validateCategoryCreate(data: any): ValidatorResult {
+  const errors: string[] = [];
+
+  if (!data || typeof data !== 'object') {
+    return { valid: false, errors: ['Request body must be an object.'] };
+  }
+
+  const { name, slug, description, icon, order } = data;
+
+  if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 100) {
+    errors.push("Category 'name' is required and must be between 2 and 100 characters.");
+  }
+
+  if (slug !== undefined && (typeof slug !== 'string' || slug.trim().length < 2)) {
+    errors.push("Category 'slug' must be at least 2 characters long if provided.");
+  }
+
+  const sanitized = {
+    name: name?.trim(),
+    slug: slug ? slug.trim().toLowerCase() : undefined,
+    description: typeof description === 'string' ? description.trim() : '',
+    icon: typeof icon === 'string' ? icon.trim() : '',
+    order: typeof order === 'number' ? order : 0,
+  };
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    sanitized: errors.length === 0 ? sanitized : undefined,
+  };
+}
+
+export function validateCategoryUpdate(data: any): ValidatorResult {
+  const errors: string[] = [];
+
+  if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+    return { valid: false, errors: ['At least one field is required for update.'] };
+  }
+
+  const sanitized: Record<string, any> = {};
+
+  if (data.name !== undefined) {
+    if (typeof data.name !== 'string' || data.name.trim().length < 2 || data.name.trim().length > 100) {
+      errors.push("Category 'name' must be between 2 and 100 characters.");
+    } else {
+      sanitized.name = data.name.trim();
+    }
+  }
+
+  if (data.slug !== undefined) {
+    if (typeof data.slug !== 'string' || data.slug.trim().length < 2) {
+      errors.push("Category 'slug' must be at least 2 characters long.");
+    } else {
+      sanitized.slug = data.slug.trim().toLowerCase();
+    }
+  }
+
+  if (data.description !== undefined) sanitized.description = String(data.description).trim();
+  if (data.icon !== undefined) sanitized.icon = String(data.icon).trim();
+  if (data.order !== undefined) sanitized.order = Number(data.order) || 0;
+  if (data.isActive !== undefined) sanitized.isActive = Boolean(data.isActive);
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    sanitized: errors.length === 0 ? sanitized : undefined,
+  };
+}
+
+// ---------------- COURSE + CURRICULUM BATCH VALIDATOR ----------------
+
+export function validateCourseWithCurriculumCreate(data: any): ValidatorResult {
+  const baseResult = validateCourseCreate(data);
+  if (!baseResult.valid) {
+    return baseResult;
+  }
+
+  const errors: string[] = [];
+  const sanitizedModules: any[] = [];
+
+  if (data.modules !== undefined) {
+    if (!Array.isArray(data.modules)) {
+      errors.push("Field 'modules' must be an array of module items.");
+    } else {
+      data.modules.forEach((m: any, mIdx: number) => {
+        if (!m || typeof m !== 'object') {
+          errors.push(`Module #${mIdx + 1} must be an object.`);
+          return;
+        }
+        if (!m.title || typeof m.title !== 'string' || m.title.trim().length < 2) {
+          errors.push(`Module #${mIdx + 1} is missing a valid title.`);
+        }
+
+        const sanitizedLessons: any[] = [];
+        if (m.lessons !== undefined) {
+          if (!Array.isArray(m.lessons)) {
+            errors.push(`Module #${mIdx + 1} 'lessons' must be an array.`);
+          } else {
+            m.lessons.forEach((l: any, lIdx: number) => {
+              if (!l || typeof l !== 'object') {
+                errors.push(`Module #${mIdx + 1} Lesson #${lIdx + 1} must be an object.`);
+                return;
+              }
+              if (!l.title || typeof l.title !== 'string' || l.title.trim().length < 2) {
+                errors.push(`Module #${mIdx + 1} Lesson #${lIdx + 1} is missing a valid title.`);
+              }
+              if (!l.duration || typeof l.duration !== 'string' || l.duration.trim().length === 0) {
+                errors.push(`Module #${mIdx + 1} Lesson #${lIdx + 1} is missing duration.`);
+              }
+
+              sanitizedLessons.push({
+                lessonNumber: l.lessonNumber ? String(l.lessonNumber).trim() : `${mIdx + 1}.${lIdx + 1}`,
+                title: String(l.title).trim(),
+                duration: String(l.duration).trim(),
+                videoUrl: l.videoUrl ? String(l.videoUrl).trim() : '',
+                overview: Array.isArray(l.overview) ? l.overview.filter((o: any) => typeof o === 'string').map((o: string) => o.trim()) : [],
+                takeaways: Array.isArray(l.takeaways)
+                  ? l.takeaways.filter((t: any) => t && t.title && t.desc).map((t: any) => ({ title: String(t.title).trim(), desc: String(t.desc).trim() }))
+                  : [],
+                order: typeof l.order === 'number' ? l.order : lIdx,
+              });
+            });
+          }
+        }
+
+        sanitizedModules.push({
+          moduleNumber: m.moduleNumber ? String(m.moduleNumber).trim() : `Module 0${mIdx + 1}`,
+          title: String(m.title).trim(),
+          order: typeof m.order === 'number' ? m.order : mIdx,
+          lessons: sanitizedLessons,
+        });
+      });
+    }
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  const totalLessons = sanitizedModules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
+  const sanitized = {
+    ...baseResult.sanitized,
+    lessonCount: totalLessons > 0 ? totalLessons : baseResult.sanitized?.lessonCount || 0,
+    modules: sanitizedModules,
+  };
+
+  return {
+    valid: true,
+    sanitized,
+  };
+}
+

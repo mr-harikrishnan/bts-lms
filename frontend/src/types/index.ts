@@ -2,7 +2,18 @@ export type CourseCategory =
   | "All Tracks"
   | "Digital Marketing"
   | "Content Creation"
-  | "Web Development";
+  | "Web Development"
+  | (string & {});
+
+export interface CategoryItem {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  order?: number;
+  isActive?: boolean;
+}
 
 export interface LessonTakeaway {
   title: string;
@@ -19,6 +30,7 @@ export interface Lesson {
   videoUrl?: string;
   overview: string[];
   takeaways: LessonTakeaway[];
+  order?: number;
 }
 
 export interface CourseModule {
@@ -26,13 +38,14 @@ export interface CourseModule {
   courseId?: string;
   moduleNumber: string; // e.g. "Module 01"
   title: string;
+  order?: number;
   lessons: Lesson[];
 }
 
 export interface Course {
   _id: string;
   title: string;
-  category: "Digital Marketing" | "Content Creation" | "Web Development";
+  category: string;
   level: "Beginner-Friendly" | "Intermediate" | "Advanced";
   duration: string; // e.g. "16 Weeks (52 Hrs)"
   durationWeeks: number;

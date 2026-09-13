@@ -6,6 +6,7 @@ import { adminLimiter } from '../../middleware/rateLimit.middleware.js';
 import { validateObjectIdParam, validateBody } from '../../middleware/validation.middleware.js';
 import {
   validateCourseCreate,
+  validateCourseWithCurriculumCreate,
   validateCourseUpdate,
   validateModuleCreate,
   validateModuleUpdate,
@@ -35,6 +36,11 @@ router.get('/stats', adminController.getAdminStats);
 // 1. Course Management CRUD
 // ==========================================
 router.post('/courses', validateBody(validateCourseCreate), adminController.createCourse);
+router.post(
+  '/courses/with-curriculum',
+  validateBody(validateCourseWithCurriculumCreate),
+  adminController.createCourseWithCurriculum
+);
 router.get('/courses/:courseId', validateObjectIdParam('courseId'), adminController.getCourseById);
 router.put(
   '/courses/:courseId',

@@ -9,7 +9,7 @@ export interface IInstructor {
 export interface ICourse extends Document {
   _id: mongoose.Types.ObjectId;
   title: string;
-  category: 'Digital Marketing' | 'Content Creation' | 'Web Development';
+  category: string;
   level: 'Beginner-Friendly' | 'Intermediate' | 'Advanced';
   duration: string;
   durationWeeks: number;
@@ -45,7 +45,7 @@ const courseSchema = new Schema<ICourse>(
     category: {
       type: String,
       required: [true, 'Category is required'],
-      enum: ['Digital Marketing', 'Content Creation', 'Web Development'],
+      trim: true,
       index: true,
     },
     level: {

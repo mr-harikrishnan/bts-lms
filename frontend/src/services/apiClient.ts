@@ -15,6 +15,7 @@ import {
   AdminUserItem,
   AdminEnrollmentItem,
   AdminPaymentItem,
+  CategoryItem,
 } from "@/types";
 
 const API_BASE =
@@ -132,6 +133,26 @@ async function request<T>(endpoint: string, options: CustomRequestInit = {}): Pr
 
   return data.data;
 }
+
+export const categoryService = {
+  async getAll(): Promise<CategoryItem[]> {
+    const result = await request<CategoryItem[]>("/categories");
+    return Array.isArray(result) ? result : [];
+  },
+
+  async create(data: { name: string; slug?: string; description?: string }): Promise<CategoryItem> {
+    return request<CategoryItem>("/categories", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async delete(categoryId: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/categories/${categoryId}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 export const courseService = {
   async getAll(params?: CourseFilterParams): Promise<Course[]> {
@@ -410,6 +431,13 @@ export const adminService = {
 
   async createCourse(data: Partial<Course>): Promise<Course> {
     return request<Course>("/admin/courses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async createCourseWithCurriculum(data: any): Promise<{ course: Course; modules: CourseModule[] }> {
+    return request<{ course: Course; modules: CourseModule[] }>("/admin/courses/with-curriculum", {
       method: "POST",
       body: JSON.stringify(data),
     });

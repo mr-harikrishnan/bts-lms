@@ -9,12 +9,14 @@ import certificateRoutes from './certificate.routes.js';
 import testRoutes from './test.routes.js';
 import paymentRoutes from './payment.routes.js';
 import adminRoutes from './admin.routes.js';
+import categoryRoutes from './category.routes.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/user', userRoutes); // Alias for user profile & enrolled operations
+router.use('/categories', categoryRoutes);
 router.use('/courses', courseRoutes);
 router.use('/modules', moduleRoutes);
 router.use('/lessons', lessonRoutes);

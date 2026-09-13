@@ -28,6 +28,72 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
   }
 }
 
+export async function createCourseWithCurriculum(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { modules, ...courseData } = req.body;
+
+    // 1. Create Course
+    const course = await Course.create(courseData);
+
+    const createdModules: any[] = [];
+    let totalLessons = 0;
+
+    // 2. Create Modules & Lessons if provided
+    if (Array.isArray(modules) && modules.length > 0) {
+      for (let mIdx = 0; mIdx < modules.length; mIdx++) {
+        const m = modules[mIdx];
+        const newModule = await Module.create({
+          courseId: course._id,
+          moduleNumber: m.moduleNumber || `Module 0${mIdx + 1}`,
+          title: m.title,
+          order: m.order ?? mIdx,
+        });
+
+        const createdLessons: any[] = [];
+        if (Array.isArray(m.lessons) && m.lessons.length > 0) {
+          for (let lIdx = 0; lIdx < m.lessons.length; lIdx++) {
+            const l = m.lessons[lIdx];
+            const newLesson = await Lesson.create({
+              courseId: course._id,
+              moduleId: newModule._id,
+              lessonNumber: l.lessonNumber || `${mIdx + 1}.${lIdx + 1}`,
+              title: l.title,
+              duration: l.duration,
+              videoUrl: l.videoUrl || '',
+              overview: l.overview || [],
+              takeaways: l.takeaways || [],
+              order: l.order ?? lIdx,
+            });
+            createdLessons.push(newLesson);
+            totalLessons++;
+          }
+        }
+
+        createdModules.push({
+          ...newModule.toJSON(),
+          lessons: createdLessons,
+        });
+      }
+
+      // Update course lessonCount
+      course.lessonCount = totalLessons;
+      await course.save();
+    }
+
+    apiSuccess(
+      res,
+      {
+        course,
+        modules: createdModules,
+      },
+      201,
+      'Course and full curriculum published successfully.'
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getCourseById(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const courseId = req.params.courseId as string;
