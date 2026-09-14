@@ -39,6 +39,51 @@ interface ModuleDraft {
   lessons: LessonDraft[];
 }
 
+function computeTotalDurationFromModules(modules: ModuleDraft[], weeks = 0) {
+  let totalMinutes = 0;
+  for (const m of modules) {
+    for (const l of m.lessons) {
+      if (l.duration) {
+        const str = l.duration.trim().toLowerCase();
+        const hms = str.match(/^(\d+):(\d{2}):(\d{2})$/);
+        if (hms) {
+          totalMinutes += parseInt(hms[1], 10) * 60 + parseInt(hms[2], 10) + Math.ceil(parseInt(hms[3], 10) / 60);
+          continue;
+        }
+        const ms = str.match(/^(\d+):(\d{2})$/);
+        if (ms) {
+          totalMinutes += parseInt(ms[1], 10) + Math.ceil(parseInt(ms[2], 10) / 60);
+          continue;
+        }
+        const hrMatch = str.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hours?)/);
+        if (hrMatch) {
+          totalMinutes += Math.round(parseFloat(hrMatch[1]) * 60);
+        }
+        const minMatch = str.match(/(\d+(?:\.\d+)?)\s*(?:m|min|mins|minutes?)/);
+        if (minMatch) {
+          totalMinutes += Math.round(parseFloat(minMatch[1]));
+        }
+        if (!hrMatch && !minMatch && /^\d+$/.test(str)) {
+          totalMinutes += parseInt(str, 10);
+        }
+      }
+    }
+  }
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  let timeStr = "";
+  if (hrs > 0 && mins > 0) timeStr = `${hrs} Hrs ${mins} Mins`;
+  else if (hrs > 0) timeStr = `${hrs} Hrs`;
+  else timeStr = `${mins || 0} Mins`;
+
+  const formatted = weeks && weeks > 0 ? `${weeks} Weeks (${timeStr})` : timeStr;
+
+  return {
+    hoursLive: Math.ceil(totalMinutes / 60) || 1,
+    formattedDuration: formatted || "1 Hr",
+  };
+}
+
 export const AdminCoursesPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -314,15 +359,20 @@ export const AdminCoursesPage: React.FC = () => {
         ? Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)
         : 0;
 
+    const { hoursLive: autoHours, formattedDuration: autoDuration } = computeTotalDurationFromModules(
+      modulesDraft,
+      Number(formData.durationWeeks) || 0
+    );
+
     const payload: any = {
       title: formData.title.trim(),
       category: formData.category.trim(),
       level: formData.level,
       price: Number(formData.price),
       originalPrice: Number(formData.originalPrice) || Number(formData.price),
-      duration: formData.duration.trim(),
+      duration: autoDuration || formData.duration,
       durationWeeks: Number(formData.durationWeeks) || 0,
-      hoursLive: Number(formData.hoursLive) || 0,
+      hoursLive: autoHours || formData.hoursLive,
       description: formData.description.trim(),
       thumbnail: formData.thumbnail.trim(),
       previewVideoUrl: formData.previewVideoUrl.trim(),
@@ -764,21 +814,7 @@ export const AdminCoursesPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                        Duration Text *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.duration}
-                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                        placeholder="e.g. 14 Weeks (38 Hrs)"
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
-                      />
-                    </div>
-
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
                         Duration (Weeks)
@@ -788,19 +824,7 @@ export const AdminCoursesPage: React.FC = () => {
                         min={1}
                         value={formData.durationWeeks}
                         onChange={(e) => setFormData({ ...formData, durationWeeks: Number(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                        Live Hours
-                      </label>
-                      <input
-                        type="number"
-                        min={0}
-                        value={formData.hoursLive}
-                        onChange={(e) => setFormData({ ...formData, hoursLive: Number(e.target.value) })}
+                        placeholder="e.g. 8"
                         className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
                       />
                     </div>

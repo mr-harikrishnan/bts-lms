@@ -10,6 +10,7 @@ import {
   LogOut,
   Shield,
   Menu,
+  LifeBuoy,
   X,
   ChevronRight,
 } from "lucide-react";
@@ -38,6 +39,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     { label: "Learners", to: "/admin/users", icon: Users },
     { label: "Enrollments", to: "/admin/enrollments", icon: GraduationCap },
     { label: "Transactions", to: "/admin/payments", icon: CreditCard },
+    { label: "Support Tickets", to: "/admin/tickets", icon: LifeBuoy },
   ];
 
   const isActive = (item: typeof navItems[0]) => {
@@ -45,7 +47,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     return pathname === item.to || pathname.startsWith(item.to + "/");
   };
 
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const handleLogout = async () => {
+    setShowLogoutConfirm(false);
     await logout();
     navigate("/", { replace: true });
   };
@@ -155,9 +160,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </div>
             </div>
             <button
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               title="Sign Out"
-              className="p-1.5 rounded-lg text-stone-400 hover:text-red-400 hover:bg-stone-700/60 transition-colors"
+              className="p-1.5 rounded-lg text-stone-400 hover:text-red-400 hover:bg-stone-700/60 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -197,6 +202,37 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         {/* Content Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">{children}</main>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-white rounded-2xl border border-stone-200 shadow-2xl p-6 text-center">
+            <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4">
+              <LogOut className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-stone-900 mb-1.5">Sign Out Administrator?</h3>
+            <p className="text-xs text-stone-500 mb-6 leading-relaxed">
+              Are you sure you want to end your administrative session?
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-stone-600 hover:bg-stone-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-5 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors shadow-xs cursor-pointer"
+              >
+                Yes, Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

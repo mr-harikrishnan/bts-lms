@@ -16,6 +16,8 @@ import {
   AdminEnrollmentItem,
   AdminPaymentItem,
   CategoryItem,
+  NotificationItem,
+  TicketItem,
 } from "@/types";
 
 const API_BASE =
@@ -159,10 +161,15 @@ export const courseService = {
     const query = new URLSearchParams();
     if (params) {
       if (params.category) query.set("category", params.category);
+      if (params.categories && params.categories.length > 0) {
+        query.set("categories", params.categories.join(","));
+      }
       if (params.level) query.set("level", params.level);
       if (params.duration) query.set("duration", params.duration);
       if (params.search) query.set("search", params.search);
       if (params.sort) query.set("sort", params.sort);
+      if (params.minPrice !== undefined) query.set("minPrice", String(params.minPrice));
+      if (params.maxPrice !== undefined) query.set("maxPrice", String(params.maxPrice));
       if (params.featured !== undefined) query.set("featured", String(params.featured));
     }
     const qs = query.toString();
@@ -423,6 +430,13 @@ export const adminService = {
     });
   },
 
+  async updateUser(userId: string, payload: Partial<AdminUserItem> & { password?: string }): Promise<AdminUserItem> {
+    return request<AdminUserItem>(`/admin/users/${userId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  },
+
   async deleteUser(userId: string): Promise<{ message: string }> {
     return request<{ message: string }>(`/admin/users/${userId}`, {
       method: "DELETE",
@@ -500,6 +514,76 @@ export const adminService = {
   async processRefund(paymentId: string): Promise<{ message: string }> {
     return request<{ message: string }>(`/admin/payments/${paymentId}/refund`, {
       method: "POST",
+    });
+  },
+};
+
+export const notificationService = {
+  async getAll(): Promise<NotificationItem[]> {
+    const result = await request<NotificationItem[]>("/notifications");
+    return Array.isArray(result) ? result : [];
+  },
+
+  async markAsRead(notificationId: string): Promise<{ success: boolean }> {
+    return request<{ success: boolean }>(`/notifications/${notificationId}/read`, {
+      method: "PATCH",
+    });
+  },
+
+  async markAllAsRead(): Promise<{ success: boolean }> {
+    return request<{ success: boolean }>("/notifications/read-all", {
+      method: "POST",
+    });
+  },
+
+  async delete(notificationId: string): Promise<{ success: boolean; message: string }> {
+    return request<{ success: boolean; message: string }>(`/notifications/${notificationId}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+export const ticketService = {
+  async create(data: { subject: string; description: string; priority?: string }): Promise<TicketItem> {
+    return request<TicketItem>("/tickets", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getMyTickets(): Promise<TicketItem[]> {
+    const result = await request<TicketItem[]>("/tickets");
+    return Array.isArray(result) ? result : [];
+  },
+
+  async getById(ticketId: string): Promise<TicketItem> {
+    return request<TicketItem>(`/tickets/${ticketId}`);
+  },
+
+  async reply(ticketId: string, message: string): Promise<TicketItem> {
+    return request<TicketItem>(`/tickets/${ticketId}/reply`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+  },
+
+  async getAllAdmin(status?: string): Promise<TicketItem[]> {
+    const qs = status && status !== "all" ? `?status=${encodeURIComponent(status)}` : "";
+    const result = await request<TicketItem[]>(`/admin/tickets${qs}`);
+    return Array.isArray(result) ? result : [];
+  },
+
+  async replyAdmin(ticketId: string, message: string): Promise<TicketItem> {
+    return request<TicketItem>(`/admin/tickets/${ticketId}/reply`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+  },
+
+  async updateStatus(ticketId: string, status: string): Promise<TicketItem> {
+    return request<TicketItem>(`/admin/tickets/${ticketId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
     });
   },
 };

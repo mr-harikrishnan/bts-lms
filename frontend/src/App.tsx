@@ -28,6 +28,7 @@ const CertificatesPage = lazy(() => import("@/pages/CertificatesPage").then((m) 
 const CertificateDetailPage = lazy(() => import("@/pages/CertificateDetailPage").then((m) => ({ default: m.CertificateDetailPage })));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const SettingsProfilePage = lazy(() => import("@/pages/SettingsProfilePage"));
+const HelpTicketsPage = lazy(() => import("@/pages/HelpTicketsPage"));
 
 // Admin Management Console Pages
 const AdminOverviewPage = lazy(() => import("@/pages/admin/AdminOverviewPage").then((m) => ({ default: m.AdminOverviewPage })));
@@ -35,6 +36,7 @@ const AdminCoursesPage = lazy(() => import("@/pages/admin/AdminCoursesPage").the
 const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage").then((m) => ({ default: m.AdminUsersPage })));
 const AdminEnrollmentsPage = lazy(() => import("@/pages/admin/AdminEnrollmentsPage").then((m) => ({ default: m.AdminEnrollmentsPage })));
 const AdminPaymentsPage = lazy(() => import("@/pages/admin/AdminPaymentsPage").then((m) => ({ default: m.AdminPaymentsPage })));
+const AdminTicketsPage = lazy(() => import("@/pages/admin/AdminTicketsPage").then((m) => ({ default: m.AdminTicketsPage })));
 
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
@@ -194,6 +196,14 @@ export default function App() {
               </AuthGuard>
             }
           />
+          <Route
+            path="/help"
+            element={
+              <AuthGuard>
+                <HelpTicketsPage />
+              </AuthGuard>
+            }
+          />
 
           {/* Secure Administrative Console Routes */}
           <Route
@@ -233,6 +243,14 @@ export default function App() {
             element={
               <AdminGuard>
                 <AdminPaymentsPage />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/tickets"
+            element={
+              <AdminGuard>
+                <AdminTicketsPage />
               </AdminGuard>
             }
           />

@@ -20,13 +20,13 @@ export function createApp(): Application {
   // Body parsers with size limit & raw body capture for webhooks
   app.use(
     express.json({
-      limit: '15kb',
+      limit: '10mb',
       verify: (req: any, _res, buf) => {
         req.rawBody = buf;
       },
     })
   );
-  app.use(express.urlencoded({ extended: true, limit: '15kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use(cookieParser());
 
   // Structured request logging

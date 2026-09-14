@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as adminController from '../../controllers/admin.controller.js';
+import * as ticketController from '../../controllers/ticket.controller.js';
 import { requireAuth } from '../../middleware/auth.middleware.js';
 import { requireAdmin } from '../../middleware/admin.middleware.js';
 import { adminLimiter } from '../../middleware/rateLimit.middleware.js';
@@ -21,6 +22,10 @@ import {
   validateCertificateCreate,
   validateCertificateUpdate,
 } from '../../validators/crud.validator.js';
+import {
+  validateTicketReply,
+  validateTicketStatusUpdate,
+} from '../../validators/ticket.validator.js';
 
 const router = Router();
 
@@ -151,6 +156,22 @@ router.post(
   '/payments/:paymentId/refund',
   validateObjectIdParam('paymentId'),
   adminController.processRefund
+);
+
+// ==========================================
+// 9. Support Ticket Resolution & Audit
+// ==========================================
+router.get('/tickets', ticketController.getAdminTickets);
+router.get('/tickets/:id', ticketController.getTicketDetails);
+router.post(
+  '/tickets/:id/reply',
+  validateBody(validateTicketReply),
+  ticketController.replyAsAdmin
+);
+router.patch(
+  '/tickets/:id/status',
+  validateBody(validateTicketStatusUpdate),
+  ticketController.updateStatus
 );
 
 export default router;

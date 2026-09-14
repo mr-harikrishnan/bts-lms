@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useBstorm } from "@/context/BstormContext";
 import { GuestGuard } from "@/components/auth/GuestGuard";
 
@@ -102,17 +102,16 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                   Email Address
                 </label>
                 <input
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@gmail.com"
+                  placeholder="hari@gmail.com"
                   className="w-full h-11 px-3.5 rounded-xl bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 text-sm border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-medium"
                 />
               </div>
@@ -124,15 +123,14 @@ export const LoginPage: React.FC = () => {
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-emerald-700 hover:underline cursor-pointer font-medium"
+                    className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold"
                   >
-                    Forgot password?
+                    Forgot?
                   </Link>
                 </div>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -160,9 +158,7 @@ export const LoginPage: React.FC = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <span className="material-symbols-outlined text-[18px] animate-spin">
-                      sync
-                    </span>
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
                     <span>Signing In...</span>
                   </>
                 ) : (

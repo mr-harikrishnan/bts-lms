@@ -81,6 +81,7 @@ export interface User {
   college: string;
   district: string;
   state: string;
+  gender?: string;
   rollNumber: string;
   grantName: string;
   avatar: string;
@@ -233,10 +234,52 @@ export type ApiResult<T> = ApiResponse<T> | ApiErrorResponse;
 
 export interface CourseFilterParams {
   category?: string;
+  categories?: string[];
   level?: string;
   duration?: string;
   search?: string;
   sort?: string;
   featured?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+export interface NotificationItem {
+  _id: string;
+  title: string;
+  message: string;
+  type: 'course_new' | 'ticket_reply' | 'system';
+  courseId?: { _id: string; title: string; category?: string; thumbnail?: string; price?: number } | string | null;
+  ticketId?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'medium' | 'high';
+
+export interface TicketReplyItem {
+  _id?: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'student' | 'admin';
+  message: string;
+  createdAt: string;
+}
+
+export interface TicketItem {
+  _id: string;
+  ticketId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  subject: string;
+  description: string;
+  status: TicketStatus;
+  priority: TicketPriority;
+  replies: TicketReplyItem[];
+  closedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 

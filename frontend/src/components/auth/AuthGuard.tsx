@@ -13,8 +13,14 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   useEffect(() => {
     if (isHydrated && !user.isLoggedIn) {
-      const redirectUrl = `/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
-      navigate(redirectUrl, { replace: true });
+      const isExplicitLogout = sessionStorage.getItem("just_logged_out") === "true";
+      if (isExplicitLogout) {
+        sessionStorage.removeItem("just_logged_out");
+        navigate("/login", { replace: true });
+      } else {
+        const redirectUrl = `/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+        navigate(redirectUrl, { replace: true });
+      }
     }
   }, [isHydrated, user.isLoggedIn, navigate, location]);
 

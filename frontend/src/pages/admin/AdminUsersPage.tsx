@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ShieldAlert,
   UserPlus,
+  Edit2,
   X,
   Eye,
   EyeOff,
@@ -184,6 +185,67 @@ export const AdminUsersPage: React.FC = () => {
     }
   };
 
+  // Edit User State & Handlers
+  const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    email: "",
+    role: "student" as "student" | "admin",
+    college: "",
+    district: "",
+    state: "",
+    rollNumber: "",
+    password: "",
+  });
+
+  const openEditModal = (u: AdminUserItem) => {
+    setEditingUser(u);
+    setEditForm({
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      college: u.college || "",
+      district: u.district || "",
+      state: u.state || "",
+      rollNumber: u.rollNumber || "",
+      password: "",
+    });
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    if (!editForm.name.trim() || !editForm.email.trim()) {
+      setAlertMsg({ type: "error", text: "Name and email are required." });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const payload: any = {
+        name: editForm.name.trim(),
+        email: editForm.email.trim(),
+        role: editForm.role,
+        college: editForm.college.trim(),
+        district: editForm.district.trim(),
+        state: editForm.state.trim(),
+        rollNumber: editForm.rollNumber.trim(),
+      };
+      if (editForm.password.trim()) {
+        payload.password = editForm.password.trim();
+      }
+
+      await adminService.updateUser(editingUser._id, payload);
+      setAlertMsg({ type: "success", text: `User ${editForm.name} updated successfully.` });
+      setEditingUser(null);
+      await loadUsers();
+    } catch (err: any) {
+      setAlertMsg({ type: "error", text: err?.message || "Failed to update user." });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <AdminLayout
       title="User & Access Control"
@@ -350,6 +412,14 @@ export const AdminUsersPage: React.FC = () => {
 
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => openEditModal(u)}
+                              className="p-1.5 rounded-lg border border-stone-200 text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors"
+                              title="Edit User Details"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+
                             <button
                               onClick={() => setConfirmRoleUser(u)}
                               disabled={isSelf}
@@ -587,6 +657,159 @@ export const AdminUsersPage: React.FC = () => {
                   className="px-4 py-2 rounded-xl text-xs font-medium bg-[#2D3536] text-white hover:bg-stone-800 transition-colors disabled:opacity-50"
                 >
                   {isProcessing ? "Creating Account..." : "Create User"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-stone-200 shadow-2xl p-6 overflow-hidden">
+            <div className="flex items-center justify-between pb-4 border-b border-stone-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                  <Edit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-stone-900">Edit User Account</h3>
+                  <p className="text-xs text-stone-500">Update learner information, roll number, or role</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateUser} className="space-y-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    Role
+                  </label>
+                  <select
+                    value={editForm.role}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, role: e.target.value as "student" | "admin" })
+                    }
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  >
+                    <option value="student">Student (Learner)</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    Reset Password (Optional)
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Leave blank to keep current"
+                    value={editForm.password}
+                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                  College / Institution
+                </label>
+                <input
+                  type="text"
+                  value={editForm.college}
+                  onChange={(e) => setEditForm({ ...editForm, college: e.target.value })}
+                  className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    District
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.district}
+                    onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.state}
+                    onChange={(e) => setEditForm({ ...editForm, state: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                    Roll Number
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.rollNumber}
+                    onChange={(e) => setEditForm({ ...editForm, rollNumber: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isProcessing}
+                  className="px-4 py-2 rounded-xl text-xs font-medium bg-[#2D3536] text-white hover:bg-stone-800 transition-colors disabled:opacity-50"
+                >
+                  {isProcessing ? "Saving Changes..." : "Save Changes"}
                 </button>
               </div>
             </form>

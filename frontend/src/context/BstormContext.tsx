@@ -1,14 +1,16 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
-import { User, EnrolledCourseProgress, Certificate, Course } from "@/types";
-import { authService, courseService, userService } from "@/services/apiClient";
+import { User, EnrolledCourseProgress, Certificate, Course, NotificationItem } from "@/types";
+import { authService, courseService, userService, notificationService } from "@/services/apiClient";
 
 interface BstormContextType {
   user: User;
   courses: Course[];
   enrolledCourses: EnrolledCourseProgress[];
   certificates: Certificate[];
+  notifications: NotificationItem[];
+  unreadNotificationsCount: number;
   isHydrated: boolean;
   isLoading: boolean;
   login: (email: string, password?: string) => Promise<boolean>;
@@ -34,6 +36,12 @@ interface BstormContextType {
   getCertificateByCourseId: (courseId: string) => Certificate | undefined;
   getCertificateById: (certId: string) => Certificate | undefined;
   refreshData: () => Promise<void>;
+  refreshCourses: () => Promise<void>;
+  refreshEnrolled: () => Promise<void>;
+  refreshNotifications: () => Promise<void>;
+  markNotificationRead: (id: string) => Promise<void>;
+  markAllNotificationsRead: () => Promise<void>;
+  clearNotification: (id: string) => Promise<void>;
 }
 
 const GUEST_USER: User = {
@@ -58,8 +66,52 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseProgress[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const refreshNotifications = useCallback(async () => {
+    try {
+      const list = await notificationService.getAll();
+      setNotifications(list);
+    } catch (e) {
+      console.error("Failed to load notifications:", e);
+    }
+  }, []);
+
+  const markNotificationRead = async (id: string) => {
+    try {
+      await notificationService.markAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      );
+    } catch (e) {
+      console.error("Failed to mark notification read:", e);
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    try {
+      await notificationService.markAllAsRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    } catch (e) {
+      console.error("Failed to mark all notifications read:", e);
+    }
+  };
+
+  const clearNotification = async (notificationId: string) => {
+    try {
+      await notificationService.delete(notificationId);
+      setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+    } catch (e) {
+      console.error("Failed to clear notification:", e);
+    }
+  };
+
+  const unreadNotificationsCount = useMemo(
+    () => notifications.filter((n) => !n.isRead).length,
+    [notifications]
+  );
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -69,8 +121,31 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       ]);
       setEnrolledCourses(enrollmentList);
       setCertificates(certList);
+      await refreshNotifications().catch(() => {});
     } catch (e) {
       console.error("Failed to load user progress and credentials:", e);
+    }
+  }, [refreshNotifications]);
+
+  const refreshCourses = useCallback(async () => {
+    try {
+      const list = await courseService.getAll();
+      setCourses(list);
+    } catch (e) {
+      console.error("Failed to refresh courses:", e);
+    }
+  }, []);
+
+  const refreshEnrolled = useCallback(async () => {
+    try {
+      const [enrollmentList, certList] = await Promise.all([
+        userService.getCourses().catch(() => []),
+        userService.getCertificates().catch(() => []),
+      ]);
+      setEnrolledCourses(enrollmentList);
+      setCertificates(certList);
+    } catch (e) {
+      console.error("Failed to refresh enrolled courses:", e);
     }
   }, []);
 
@@ -91,6 +166,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(GUEST_USER);
         setEnrolledCourses([]);
         setCertificates([]);
+        setNotifications([]);
       }
     } catch (e) {
       console.error("Refresh data error:", e);
@@ -123,6 +199,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser({ ...result.user, isLoggedIn: true });
       setEnrolledCourses([]);
       setCertificates([]);
+      setNotifications([]);
       return true;
     } catch (e) {
       console.error("Signup API request failed:", e);
@@ -132,6 +209,13 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async (): Promise<void> => {
     try {
+      sessionStorage.setItem("just_logged_out", "true");
+      sessionStorage.removeItem("redirect_url");
+      sessionStorage.removeItem("auth_redirect");
+      sessionStorage.removeItem("return_to");
+      sessionStorage.removeItem("prev_route");
+      localStorage.removeItem("last_route");
+      localStorage.removeItem("redirect_after_login");
       await authService.logout();
     } catch (e) {
       console.error("Logout API request failed:", e);
@@ -139,15 +223,22 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(GUEST_USER);
       setEnrolledCourses([]);
       setCertificates([]);
+      setNotifications([]);
     }
   };
 
   const updateProfile = async (data: Partial<User>): Promise<void> => {
     try {
       const updated = await userService.updateProfile(data);
-      setUser(updated);
+      // Retain isLoggedIn: true to avoid breaking the session
+      setUser((prev) => ({
+        ...prev,
+        ...updated,
+        isLoggedIn: true,
+      }));
     } catch (e) {
       console.error("Profile update API request failed:", e);
+      throw e;
     }
   };
 
@@ -259,6 +350,8 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       courses,
       enrolledCourses: user.isLoggedIn ? enrolledCourses : [],
       certificates: user.isLoggedIn ? certificates : [],
+      notifications: user.isLoggedIn ? notifications : [],
+      unreadNotificationsCount: user.isLoggedIn ? unreadNotificationsCount : 0,
       isHydrated,
       isLoading,
       login,
@@ -275,8 +368,27 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
       getCertificateByCourseId,
       getCertificateById,
       refreshData,
+      refreshCourses,
+      refreshEnrolled,
+      refreshNotifications,
+      markNotificationRead,
+      markAllNotificationsRead,
+      clearNotification,
     }),
-    [user, courses, enrolledCourses, certificates, isHydrated, isLoading, refreshData]
+    [
+      user,
+      courses,
+      enrolledCourses,
+      certificates,
+      notifications,
+      unreadNotificationsCount,
+      isHydrated,
+      isLoading,
+      refreshData,
+      refreshCourses,
+      refreshEnrolled,
+      refreshNotifications,
+    ]
   );
 
   return (

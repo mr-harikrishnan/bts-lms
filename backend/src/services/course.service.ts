@@ -6,8 +6,11 @@ import { ROLES } from '../constants/roles.js';
 import { toObjectId } from '../utils/objectId.js';
 
 export async function getAllCourses(filters: {
-  category?: string;
+  category?: string | string[];
+  categories?: string | string[];
   level?: string;
+  minPrice?: number | string;
+  maxPrice?: number | string;
   search?: string;
   sort?: string;
   featured?: boolean;
@@ -16,12 +19,43 @@ export async function getAllCourses(filters: {
 }) {
   const query: Record<string, any> = {};
 
-  if (filters.category && filters.category !== 'All Tracks') {
-    query.category = filters.category;
+  // Handle single or multi-category filtering
+  const rawCategories = filters.categories || filters.category;
+  if (rawCategories) {
+    let catArray: string[] = [];
+    if (Array.isArray(rawCategories)) {
+      catArray = rawCategories.map((c) => String(c).trim()).filter(Boolean);
+    } else if (typeof rawCategories === 'string' && rawCategories.includes(',')) {
+      catArray = rawCategories.split(',').map((c) => c.trim()).filter(Boolean);
+    } else if (typeof rawCategories === 'string' && rawCategories !== 'All Tracks') {
+      catArray = [rawCategories.trim()];
+    }
+
+    // Filter out 'All Tracks'
+    catArray = catArray.filter((c) => c !== 'All Tracks');
+
+    if (catArray.length === 1) {
+      query.category = catArray[0];
+    } else if (catArray.length > 1) {
+      query.category = { $in: catArray };
+    }
   }
+
   if (filters.level) {
     query.level = filters.level;
   }
+
+  // Price range filtering
+  if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+    query.price = {};
+    if (filters.minPrice !== undefined && filters.minPrice !== '') {
+      query.price.$gte = Number(filters.minPrice);
+    }
+    if (filters.maxPrice !== undefined && filters.maxPrice !== '') {
+      query.price.$lte = Number(filters.maxPrice);
+    }
+  }
+
   if (filters.featured !== undefined) {
     query.featured = filters.featured;
   }

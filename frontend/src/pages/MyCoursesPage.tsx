@@ -1,13 +1,32 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { RotateCw } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { CourseCardSkeleton } from "@/components/dashboard/DashboardSkeletons";
 
 export const MyCoursesPage: React.FC = () => {
-  const { enrolledCourses, courses, getCourseProgress, certificates, isLoading } = useBstorm();
+  const {
+    enrolledCourses,
+    courses,
+    getCourseProgress,
+    certificates,
+    isLoading,
+    refreshEnrolled,
+  } = useBstorm();
   const [activeTab, setActiveTab] = useState<"in-progress" | "completed">("in-progress");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshEnrolled();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -52,7 +71,7 @@ export const MyCoursesPage: React.FC = () => {
       <AppShell>
         <div className="flex flex-col gap-6">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-stone-200">
             <div>
               <div className="mb-1">
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
@@ -67,13 +86,16 @@ export const MyCoursesPage: React.FC = () => {
               </p>
             </div>
 
-            <Link
-              to="/courses"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm self-start md:self-auto"
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="self-start md:self-center inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+              title="Refresh Enrolled Courses"
             >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              <span>Enroll in More Tracks</span>
-            </Link>
+              <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`} />
+              <span>Refresh</span>
+            </button>
           </div>
 
           {/* Status Tabs */}
@@ -108,7 +130,12 @@ export const MyCoursesPage: React.FC = () => {
           </div>
 
           {/* Course List */}
-          {currentList.length > 0 ? (
+          {isRefreshing ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CourseCardSkeleton />
+              <CourseCardSkeleton />
+            </div>
+          ) : currentList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {currentList.map(({ course, progress, cert, isCompleted }) => (
                 <div

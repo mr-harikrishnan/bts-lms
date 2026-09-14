@@ -61,12 +61,43 @@ export function validateSignup(data: any): ValidatorResult {
   }
 
   // 2. Format check
+  const rawName = String(data.name).trim();
+  if (!/^[A-Za-z\s]+$/.test(rawName)) {
+    errors.push('Full Name must contain only letters and spaces (no numbers or special characters)');
+  }
+
+  // Capitalize first letter of each word in name
+  const formattedName = rawName
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+
   const email = String(data.email).trim().toLowerCase();
   if (!EMAIL_REGEX.test(email)) {
     errors.push('Invalid email format');
   }
+
+  if (data.college && !/^[A-Za-z\s.,'-]+$/.test(String(data.college).trim())) {
+    errors.push('College / Institution must contain letters only (no numbers allowed)');
+  }
+
+  if (data.district && !/^[A-Za-z\s.,'-]+$/.test(String(data.district).trim())) {
+    errors.push('District must contain letters only (no numbers allowed)');
+  }
+
+  const rawDistrict = data.district ? String(data.district).trim() : '';
+  const formattedDistrict = rawDistrict
+    ? rawDistrict.charAt(0).toUpperCase() + rawDistrict.slice(1)
+    : '';
+
   if (data.password.length < 6) {
     errors.push('Password must be at least 6 characters long');
+  }
+
+  const validGenders = ['Male', 'Female', 'Other', 'Prefer not to say', ''];
+  const gender = data.gender ? String(data.gender).trim() : '';
+  if (gender && !validGenders.includes(gender)) {
+    errors.push('Invalid gender selected');
   }
 
   if (errors.length > 0) {
@@ -77,12 +108,13 @@ export function validateSignup(data: any): ValidatorResult {
   return {
     valid: true,
     sanitized: {
-      name: data.name.trim(),
+      name: formattedName,
       email,
       password: data.password,
       college: data.college ? String(data.college).trim() : '',
-      district: data.district ? String(data.district).trim() : '',
+      district: formattedDistrict,
       state: data.state ? String(data.state).trim() : '',
+      gender,
       rollNumber: data.rollNumber ? String(data.rollNumber).trim() : '',
       grantName: data.grantName ? String(data.grantName).trim() : '',
       avatar: data.avatar ? String(data.avatar).trim() : '',

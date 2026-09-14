@@ -10,6 +10,7 @@ export interface IUser extends Document {
   college?: string;
   district?: string;
   state?: string;
+  gender?: string;
   rollNumber?: string;
   grantName?: string;
   avatar?: string;
@@ -60,6 +61,12 @@ const userSchema = new Schema<IUser>(
     state: {
       type: String,
       trim: true,
+      default: '',
+    },
+    gender: {
+      type: String,
+      trim: true,
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say', ''],
       default: '',
     },
     rollNumber: {

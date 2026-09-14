@@ -15,6 +15,7 @@ import { toObjectId } from '../utils/objectId.js';
 import { PAYMENT_STATUS, ORDER_STATUS } from '../constants/orderStatus.js';
 import { hashPassword } from '../utils/password.js';
 import { calculateCurriculumDuration } from '../utils/duration.js';
+import { createCourseNotification } from '../services/notification.service.js';
 
 // ==========================================
 // Helper to synchronize course duration, hoursLive, and lessonCount automatically from child lessons
@@ -39,6 +40,8 @@ async function syncCourseDurationMetrics(courseId: any) {
 export async function createCourse(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const course = await Course.create(req.body);
+    // Broadcast notification to all learners
+    createCourseNotification(course._id.toString(), course.title).catch(() => {});
     apiSuccess(res, course, 201, 'Course created successfully.');
   } catch (error) {
     next(error);
@@ -96,6 +99,9 @@ export async function createCourseWithCurriculum(req: Request, res: Response, ne
       await syncCourseDurationMetrics(course._id);
     }
 
+    // Broadcast notification to all learners
+    createCourseNotification(course._id.toString(), course.title).catch(() => {});
+
     apiSuccess(
       res,
       {
@@ -136,7 +142,9 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
       apiError(res, 'Course not found.', 404);
       return;
     }
-    apiSuccess(res, course, 200, 'Course updated successfully.');
+    await syncCourseDurationMetrics(course._id);
+    const updated = await Course.findById(course._id);
+    apiSuccess(res, updated || course, 200, 'Course updated successfully.');
   } catch (error) {
     next(error);
   }
@@ -257,6 +265,7 @@ export async function deleteModule(req: Request, res: Response, next: NextFuncti
 
     // Cascade delete lessons under this module
     await Lesson.deleteMany({ moduleId: moduleOid });
+    await syncCourseDurationMetrics(mod.courseId);
 
     apiSuccess(res, { message: 'Module and associated lessons deleted successfully.' });
   } catch (error) {

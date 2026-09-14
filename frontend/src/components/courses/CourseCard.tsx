@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { Clock } from "lucide-react";
 import { Course } from "@/types";
 import { useBstorm } from "@/context/BstormContext";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -27,31 +28,43 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     }
   };
 
+  const calculatedHours = course.hoursLive
+    ? `${course.hoursLive} Hours`
+    : course.duration || "Self-Paced";
+
   return (
     <article className="flex flex-col bg-white rounded-2xl shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden border border-slate-200/80 ring-1 ring-slate-900/5">
-      {/* Clean 16:9 Thumbnail Header (No Floating Chips) */}
-      <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+      {/* Thumbnail Banner */}
+      <div className="relative aspect-video overflow-hidden bg-slate-100">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           src={course.thumbnail}
-          alt={course.title}
+          loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-3 right-3">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold shadow-xs backdrop-blur-md ${getCategoryBadgeClass(
+              course.category
+            )}`}
+          >
+            {course.category}
+          </span>
+        </div>
       </div>
 
-      {/* Card Content Area */}
-      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+      {/* Card Body */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
+          {/* Enrolled Progress Bar */}
           {enrolled ? (
-            /* Enrolled Status Header */
-            <div className="flex items-center justify-between text-xs mb-2.5">
-              <span className="font-semibold text-emerald-700">
-                Enrolled ({percentage}% Complete)
-              </span>
-              <span className="text-slate-400 font-medium">
-                {completedCount}/{totalCount} Lessons
-              </span>
+            <div className="mb-4">
+              <div className="flex justify-between text-xs text-slate-500 mb-1 font-medium">
+                <span>Progress</span>
+                <span className="font-bold text-emerald-700">{percentage}%</span>
+              </div>
+              <ProgressBar progress={percentage} />
             </div>
           ) : (
             /* Category & Meta Header (Clean Text, No Chips) */
@@ -64,8 +77,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
                   Upcoming Soon
                 </span>
               ) : (
-                <span className="text-slate-400 font-medium">
-                  {course.duration} • {course.lessonCount} Lessons
+                <span className="text-slate-400 font-medium flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{calculatedHours}</span>
+                  <span>•</span>
+                  <span>{course.lessonCount || 0} Lessons</span>
                 </span>
               )}
             </div>
@@ -80,7 +96,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           <div className="flex items-center gap-2 mt-2 text-xs text-slate-500 font-medium">
             <span className="text-slate-700 font-semibold">{course.level}</span>
             <span>•</span>
-            <span>{course.durationWeeks} Weeks</span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-slate-400" />
+              {calculatedHours}
+            </span>
             <span>•</span>
             <span>Self-Paced</span>
           </div>

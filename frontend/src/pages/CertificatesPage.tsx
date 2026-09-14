@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { RotateCw } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBstorm } from "@/context/BstormContext";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export const CertificatesPage: React.FC = () => {
-  const { certificates, user, isLoading } = useBstorm();
+  const { certificates, user, isLoading, refreshData } = useBstorm();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshData();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -47,14 +58,36 @@ export const CertificatesPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-xl border border-surface-container text-secondary text-sm font-semibold">
-              <span className="material-symbols-outlined text-[18px]">verified</span>
-              <span>Cryptographically Signed</span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+                title="Refresh Certificates"
+              >
+                <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`} />
+                <span>Refresh</span>
+              </button>
+
+              <div className="flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-xl border border-surface-container text-secondary text-sm font-semibold">
+                <span className="material-symbols-outlined text-[18px]">verified</span>
+                <span>Cryptographically Signed</span>
+              </div>
             </div>
           </div>
 
           {/* Certificates Grid */}
-          {certificates.length > 0 ? (
+          {isRefreshing ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="h-64 bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] animate-pulse"
+                />
+              ))}
+            </div>
+          ) : certificates.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {certificates.map((cert) => (
                 <div
