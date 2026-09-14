@@ -498,7 +498,7 @@ export const AdminUsersPage: React.FC = () => {
 
       {/* Add New User Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-white rounded-2xl border border-stone-200 shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between p-5 border-b border-stone-200">
               <div className="flex items-center gap-3">
@@ -666,7 +666,7 @@ export const AdminUsersPage: React.FC = () => {
 
       {/* Edit User Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-white rounded-2xl border border-stone-200 shadow-2xl p-6 overflow-hidden">
             <div className="flex items-center justify-between pb-4 border-b border-stone-100">
               <div className="flex items-center gap-2.5">
@@ -819,7 +819,7 @@ export const AdminUsersPage: React.FC = () => {
 
       {/* Role Confirmation Dialog */}
       {confirmRoleUser && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-2xl p-6">
             <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
               <Shield className="w-6 h-6" />
@@ -859,7 +859,7 @@ export const AdminUsersPage: React.FC = () => {
 
       {/* Delete User Dialog */}
       {deletingUser && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-2xl p-6">
             <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
               <AlertTriangle className="w-6 h-6" />

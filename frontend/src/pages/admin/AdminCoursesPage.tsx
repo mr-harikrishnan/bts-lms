@@ -18,6 +18,9 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  Clock,
+  Loader2,
+  RotateCw,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { courseService, adminService, categoryService } from "@/services/apiClient";
@@ -39,7 +42,7 @@ interface ModuleDraft {
   lessons: LessonDraft[];
 }
 
-function computeTotalDurationFromModules(modules: ModuleDraft[], weeks = 0) {
+function computeTotalDurationFromModules(modules: ModuleDraft[]) {
   let totalMinutes = 0;
   for (const m of modules) {
     for (const l of m.lessons) {
@@ -63,7 +66,11 @@ function computeTotalDurationFromModules(modules: ModuleDraft[], weeks = 0) {
         if (minMatch) {
           totalMinutes += Math.round(parseFloat(minMatch[1]));
         }
-        if (!hrMatch && !minMatch && /^\d+$/.test(str)) {
+        const secMatch = str.match(/(\d+(?:\.\d+)?)\s*(?:s|sec|secs|seconds?)/);
+        if (secMatch && !hrMatch && !minMatch) {
+          totalMinutes += Math.max(1, Math.round(parseFloat(secMatch[1]) / 60));
+        }
+        if (!hrMatch && !minMatch && !secMatch && /^\d+$/.test(str)) {
           totalMinutes += parseInt(str, 10);
         }
       }
@@ -73,15 +80,62 @@ function computeTotalDurationFromModules(modules: ModuleDraft[], weeks = 0) {
   const mins = totalMinutes % 60;
   let timeStr = "";
   if (hrs > 0 && mins > 0) timeStr = `${hrs} Hrs ${mins} Mins`;
-  else if (hrs > 0) timeStr = `${hrs} Hrs`;
+  else if (hrs > 0) timeStr = `${hrs} Hours`;
   else timeStr = `${mins || 0} Mins`;
-
-  const formatted = weeks && weeks > 0 ? `${weeks} Weeks (${timeStr})` : timeStr;
 
   return {
     hoursLive: Math.ceil(totalMinutes / 60) || 1,
-    formattedDuration: formatted || "1 Hr",
+    formattedDuration: timeStr || "0 Mins",
   };
+}
+
+async function detectVideoDuration(url: string): Promise<string | null> {
+  if (!url || typeof url !== "string" || !url.trim()) return null;
+  const cleanUrl = url.trim();
+
+  // 1. Direct browser HTML5 video probe for mp4, webm, Cloudinary, S3, direct files
+  const probeDirectVideo = (mediaUrl: string): Promise<number | null> => {
+    return new Promise((resolve) => {
+      try {
+        const v = document.createElement("video");
+        v.preload = "metadata";
+        v.src = mediaUrl;
+        v.onloadedmetadata = () => {
+          if (v.duration && isFinite(v.duration) && v.duration > 0) {
+            resolve(Math.round(v.duration));
+          } else {
+            resolve(null);
+          }
+        };
+        v.onerror = () => resolve(null);
+        setTimeout(() => resolve(null), 3500);
+      } catch {
+        resolve(null);
+      }
+    });
+  };
+
+  const directSeconds = await probeDirectVideo(cleanUrl);
+  if (directSeconds && directSeconds > 0) {
+    const hrs = Math.floor(directSeconds / 3600);
+    const mins = Math.floor((directSeconds % 3600) / 60);
+    const secs = directSeconds % 60;
+    if (hrs > 0) return mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`;
+    if (mins > 0) return `${mins} mins`;
+    return `${secs} secs`;
+  }
+
+  // 2. YouTube, Vimeo, or backend metadata probe
+  try {
+    const res = await adminService.probeVideoDuration(cleanUrl);
+    if (res && res.formatted) {
+      return res.formatted;
+    }
+  } catch (err) {
+    console.warn("External video duration probe returned fallback:", err);
+  }
+
+  return null;
 }
 
 export const AdminCoursesPage: React.FC = () => {
@@ -112,9 +166,9 @@ export const AdminCoursesPage: React.FC = () => {
     level: "Beginner-Friendly" as Course["level"],
     price: 1999,
     originalPrice: 3999,
-    duration: "8 Weeks (32 Hrs)",
-    durationWeeks: 8,
-    hoursLive: 32,
+    duration: "0 Hours",
+    durationWeeks: 0,
+    hoursLive: 0,
     description: "",
     thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600",
     previewVideoUrl: "",
@@ -127,6 +181,48 @@ export const AdminCoursesPage: React.FC = () => {
     capstoneTitle: "Full-Stack Production Capstone Project",
     capstoneDesc: "Architect, build, and deploy a complete real-world application to production.",
   });
+
+  const [probingVideoKeys, setProbingVideoKeys] = useState<Record<string, boolean>>({});
+
+  const handleVideoUrlChange = async (mIdx: number, lIdx: number, url: string) => {
+    updateLessonField(mIdx, lIdx, "videoUrl", url);
+    if (!url.trim()) {
+      updateLessonField(mIdx, lIdx, "duration", "");
+      return;
+    }
+    const key = `${mIdx}-${lIdx}`;
+    setProbingVideoKeys((prev) => ({ ...prev, [key]: true }));
+    try {
+      const detected = await detectVideoDuration(url);
+      if (detected) {
+        updateLessonField(mIdx, lIdx, "duration", detected);
+      }
+    } finally {
+      setProbingVideoKeys((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  };
+
+  const handleRecheckDuration = async (mIdx: number, lIdx: number, url: string) => {
+    if (!url.trim()) return;
+    const key = `${mIdx}-${lIdx}`;
+    setProbingVideoKeys((prev) => ({ ...prev, [key]: true }));
+    try {
+      const detected = await detectVideoDuration(url);
+      if (detected) {
+        updateLessonField(mIdx, lIdx, "duration", detected);
+      }
+    } finally {
+      setProbingVideoKeys((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  };
 
   // Curriculum State for Step 3
   const [modulesDraft, setModulesDraft] = useState<ModuleDraft[]>([
@@ -187,9 +283,9 @@ export const AdminCoursesPage: React.FC = () => {
       level: "Beginner-Friendly",
       price: 1999,
       originalPrice: 3999,
-      duration: "8 Weeks (32 Hrs)",
-      durationWeeks: 8,
-      hoursLive: 32,
+      duration: "0 Hours",
+      durationWeeks: 0,
+      hoursLive: 0,
       description: "",
       thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600",
       previewVideoUrl: "",
@@ -210,7 +306,7 @@ export const AdminCoursesPage: React.FC = () => {
           {
             lessonNumber: "1.1",
             title: "Introduction & Architecture Overview",
-            duration: "15 mins",
+            duration: "",
             videoUrl: "",
             overviewText: "Platform tour, environment setup, essential tooling",
             takeawayTitle: "Core Foundations",
@@ -232,9 +328,9 @@ export const AdminCoursesPage: React.FC = () => {
       level: c.level,
       price: c.price,
       originalPrice: c.originalPrice,
-      duration: c.duration,
-      durationWeeks: c.durationWeeks || 8,
-      hoursLive: c.hoursLive || 32,
+      duration: c.duration || "0 Hours",
+      durationWeeks: 0,
+      hoursLive: c.hoursLive || 0,
       description: c.description,
       thumbnail: c.thumbnail,
       previewVideoUrl: c.previewVideoUrl || "",
@@ -285,7 +381,7 @@ export const AdminCoursesPage: React.FC = () => {
           {
             lessonNumber: `${nextNum}.1`,
             title: "Lesson Introduction",
-            duration: "20 mins",
+            duration: "",
             videoUrl: "",
             overviewText: "Key concepts and practical implementation",
             takeawayTitle: "Lesson Takeaway",
@@ -306,7 +402,7 @@ export const AdminCoursesPage: React.FC = () => {
     updated[mIdx].lessons.push({
       lessonNumber: `${mIdx + 1}.${nextLessonNum}`,
       title: `Lesson ${nextLessonNum}`,
-      duration: "20 mins",
+      duration: "",
       videoUrl: "",
       overviewText: "Overview points",
       takeawayTitle: "Key Concept",
@@ -359,9 +455,16 @@ export const AdminCoursesPage: React.FC = () => {
         ? Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)
         : 0;
 
+    const sanitizedModules = modulesDraft.map((m, mIdx) => ({
+      ...m,
+      lessons: m.lessons.map((l, lIdx) => ({
+        ...l,
+        duration: l.duration?.trim() || "10 mins",
+      })),
+    }));
+
     const { hoursLive: autoHours, formattedDuration: autoDuration } = computeTotalDurationFromModules(
-      modulesDraft,
-      Number(formData.durationWeeks) || 0
+      sanitizedModules
     );
 
     const payload: any = {
@@ -370,9 +473,9 @@ export const AdminCoursesPage: React.FC = () => {
       level: formData.level,
       price: Number(formData.price),
       originalPrice: Number(formData.originalPrice) || Number(formData.price),
-      duration: autoDuration || formData.duration,
-      durationWeeks: Number(formData.durationWeeks) || 0,
-      hoursLive: autoHours || formData.hoursLive,
+      duration: autoDuration || formData.duration || "Self-Paced",
+      durationWeeks: 0,
+      hoursLive: autoHours || formData.hoursLive || 1,
       description: formData.description.trim(),
       thumbnail: formData.thumbnail.trim(),
       previewVideoUrl: formData.previewVideoUrl.trim(),
@@ -395,13 +498,13 @@ export const AdminCoursesPage: React.FC = () => {
       } else {
         // Multi-Step Curriculum formatting
         const formattedModules = modulesDraft.map((m, mIndex) => ({
-          moduleNumber: m.moduleNumber.trim(),
-          title: m.title.trim(),
+          moduleNumber: m.moduleNumber.trim() || `Module 0${mIndex + 1}`,
+          title: m.title.trim() || `Module ${mIndex + 1}`,
           order: mIndex,
           lessons: m.lessons.map((l, lIndex) => ({
-            lessonNumber: l.lessonNumber.trim(),
-            title: l.title.trim(),
-            duration: l.duration.trim(),
+            lessonNumber: l.lessonNumber.trim() || `${mIndex + 1}.${lIndex + 1}`,
+            title: l.title.trim() || `Lesson ${lIndex + 1}`,
+            duration: l.duration.trim() || "10 mins",
             videoUrl: l.videoUrl.trim(),
             overview: l.overviewText.split(",").map((o) => o.trim()).filter(Boolean),
             takeaways: l.takeawayTitle
@@ -609,7 +712,7 @@ export const AdminCoursesPage: React.FC = () => {
 
       {/* Quick Add Category Modal */}
       {catModalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-sm bg-white rounded-2xl border border-stone-200 shadow-2xl p-5">
             <div className="flex items-center justify-between mb-4 border-b border-stone-100 pb-3">
               <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
@@ -667,7 +770,7 @@ export const AdminCoursesPage: React.FC = () => {
 
       {/* Multi-Step Course Creation / Edit Wizard Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-3xl bg-white rounded-2xl border border-stone-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-stone-200 bg-stone-50/50">
@@ -811,22 +914,6 @@ export const AdminCoursesPage: React.FC = () => {
                         <option value="Intermediate">Intermediate</option>
                         <option value="Advanced">Advanced</option>
                       </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                        Duration (Weeks)
-                      </label>
-                      <input
-                        type="number"
-                        min={1}
-                        value={formData.durationWeeks}
-                        onChange={(e) => setFormData({ ...formData, durationWeeks: Number(e.target.value) })}
-                        placeholder="e.g. 8"
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
-                      />
                     </div>
                   </div>
 
@@ -1089,7 +1176,7 @@ export const AdminCoursesPage: React.FC = () => {
                                   className="w-full px-2 py-1 text-xs bg-stone-50 border border-stone-200 rounded-md"
                                 />
                               </div>
-                              <div className="sm:col-span-7">
+                              <div className="sm:col-span-9">
                                 <label className="block text-[10px] text-stone-400 font-semibold uppercase">Title</label>
                                 <input
                                   type="text"
@@ -1097,16 +1184,6 @@ export const AdminCoursesPage: React.FC = () => {
                                   onChange={(e) => updateLessonField(mIdx, lIdx, "title", e.target.value)}
                                   placeholder="Lesson Title..."
                                   className="w-full px-2 py-1 text-xs bg-stone-50 border border-stone-200 rounded-md font-medium text-stone-900"
-                                />
-                              </div>
-                              <div className="sm:col-span-2">
-                                <label className="block text-[10px] text-stone-400 font-semibold uppercase">Duration</label>
-                                <input
-                                  type="text"
-                                  value={lesson.duration}
-                                  onChange={(e) => updateLessonField(mIdx, lIdx, "duration", e.target.value)}
-                                  placeholder="e.g. 18 mins"
-                                  className="w-full px-2 py-1 text-xs bg-stone-50 border border-stone-200 rounded-md"
                                 />
                               </div>
                               <div className="sm:col-span-1 flex items-end justify-end">
@@ -1125,14 +1202,44 @@ export const AdminCoursesPage: React.FC = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-stone-100">
                               <div>
-                                <label className="block text-[10px] text-stone-400 font-semibold uppercase">Video URL (YouTube/Vimeo/MP4)</label>
-                                <input
-                                  type="text"
-                                  value={lesson.videoUrl}
-                                  onChange={(e) => updateLessonField(mIdx, lIdx, "videoUrl", e.target.value)}
-                                  placeholder="https://..."
-                                  className="w-full px-2 py-1 text-xs bg-stone-50 border border-stone-200 rounded-md font-mono"
-                                />
+                                <div className="flex items-center justify-between mb-1">
+                                  <label className="block text-[10px] text-stone-400 font-semibold uppercase">Video URL (YouTube/Vimeo/MP4)</label>
+                                  {probingVideoKeys[`${mIdx}-${lIdx}`] ? (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600">
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                      Detecting duration...
+                                    </span>
+                                  ) : lesson.duration ? (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                                      <Clock className="w-3 h-3" />
+                                      Auto Duration: {lesson.duration}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <div className="relative flex items-center">
+                                  <input
+                                    type="text"
+                                    value={lesson.videoUrl}
+                                    onChange={(e) => handleVideoUrlChange(mIdx, lIdx, e.target.value)}
+                                    onBlur={() => {
+                                      if (lesson.videoUrl && !lesson.duration) {
+                                        handleRecheckDuration(mIdx, lIdx, lesson.videoUrl);
+                                      }
+                                    }}
+                                    placeholder="Paste video URL to auto-detect duration..."
+                                    className="w-full px-2 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-md font-mono pr-7"
+                                  />
+                                  {lesson.videoUrl && !probingVideoKeys[`${mIdx}-${lIdx}`] && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRecheckDuration(mIdx, lIdx, lesson.videoUrl)}
+                                      title="Re-check video duration"
+                                      className="absolute right-1.5 p-1 text-stone-400 hover:text-stone-700 rounded-md"
+                                    >
+                                      <RotateCw className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                               <div>
                                 <label className="block text-[10px] text-stone-400 font-semibold uppercase">Overview Points (Comma-separated)</label>
@@ -1186,7 +1293,9 @@ export const AdminCoursesPage: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-stone-200 text-xs">
                       <div>
                         <span className="text-stone-400 text-[10px] block uppercase font-semibold">Duration</span>
-                        <span className="font-semibold text-stone-800">{formData.duration}</span>
+                        <span className="font-semibold text-stone-800">
+                          {computeTotalDurationFromModules(modulesDraft).formattedDuration || "Self-Paced"}
+                        </span>
                       </div>
                       <div>
                         <span className="text-stone-400 text-[10px] block uppercase font-semibold">Instructor</span>
@@ -1273,7 +1382,7 @@ export const AdminCoursesPage: React.FC = () => {
 
       {/* Delete Course Dialog */}
       {deletingCourse && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-2xl p-6">
             <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
               <AlertTriangle className="w-6 h-6" />

@@ -52,9 +52,7 @@ export function validateCourseCreate(data: any): ValidatorResult {
     errors.push(`Course 'level' is required and must be one of: ${COURSE_LEVELS.join(', ')}.`);
   }
 
-  if (!duration || typeof duration !== 'string' || duration.trim().length === 0) {
-    errors.push("Course 'duration' is required (e.g. '12 Weeks (40 Hrs)').");
-  }
+  const cleanDuration = typeof duration === 'string' && duration.trim() ? duration.trim() : 'Self-Paced';
 
   if (price === undefined || price === null || typeof price !== 'number' || price < 0) {
     errors.push("Course 'price' is required and must be a non-negative number.");
@@ -68,7 +66,7 @@ export function validateCourseCreate(data: any): ValidatorResult {
     title: title?.trim(),
     category,
     level,
-    duration: duration?.trim(),
+    duration: cleanDuration,
     price: Number(price),
     originalPrice: typeof originalPrice === 'number' && originalPrice >= 0 ? originalPrice : Number(price),
     description: description?.trim(),
@@ -332,16 +330,14 @@ export function validateLessonCreate(data: any): ValidatorResult {
     errors.push("Field 'title' is required and must be at least 2 characters long.");
   }
 
-  if (!duration || typeof duration !== 'string' || duration.trim().length === 0) {
-    errors.push("Field 'duration' is required (e.g. '18 mins').");
-  }
+  const cleanDuration = typeof duration === 'string' && duration.trim() ? duration.trim() : '10 mins';
 
   const sanitized: Record<string, any> = {
     courseId,
     moduleId,
     lessonNumber: lessonNumber?.trim(),
     title: title?.trim(),
-    duration: duration?.trim(),
+    duration: cleanDuration,
     videoUrl: typeof videoUrl === 'string' ? videoUrl.trim() : '',
     overview: Array.isArray(overview) ? overview.filter((o) => typeof o === 'string').map((o) => o.trim()) : [],
     takeaways: Array.isArray(takeaways)
@@ -983,14 +979,12 @@ export function validateCourseWithCurriculumCreate(data: any): ValidatorResult {
               if (!l.title || typeof l.title !== 'string' || l.title.trim().length < 2) {
                 errors.push(`Module #${mIdx + 1} Lesson #${lIdx + 1} is missing a valid title.`);
               }
-              if (!l.duration || typeof l.duration !== 'string' || l.duration.trim().length === 0) {
-                errors.push(`Module #${mIdx + 1} Lesson #${lIdx + 1} is missing duration.`);
-              }
+              const lessonDuration = typeof l.duration === 'string' && l.duration.trim() ? l.duration.trim() : '10 mins';
 
               sanitizedLessons.push({
                 lessonNumber: l.lessonNumber ? String(l.lessonNumber).trim() : `${mIdx + 1}.${lIdx + 1}`,
                 title: String(l.title).trim(),
-                duration: String(l.duration).trim(),
+                duration: lessonDuration,
                 videoUrl: l.videoUrl ? String(l.videoUrl).trim() : '',
                 overview: Array.isArray(l.overview) ? l.overview.filter((o: any) => typeof o === 'string').map((o: string) => o.trim()) : [],
                 takeaways: Array.isArray(l.takeaways)

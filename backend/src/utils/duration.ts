@@ -40,7 +40,107 @@ export function parseDurationToMinutes(durationStr: string): number {
 }
 
 /**
- * Formats total minutes into clean display format like "4 Hrs 15 Mins" or "12 Weeks (38 Hrs)"
+ * Formats total seconds into clean display format like "15 mins", "1h 20m", "45 secs"
+ */
+export function formatSecondsToDuration(totalSeconds: number): string {
+  if (totalSeconds <= 0) return '0 mins';
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = Math.floor(totalSeconds % 60);
+
+  if (hrs > 0) {
+    return mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`;
+  }
+  if (mins > 0) {
+    return `${mins} mins`;
+  }
+  return `${secs} secs`;
+}
+
+/**
+ * Parses ISO 8601 duration (e.g. PT15M33S, PT1H20M5S) to total seconds
+ */
+function parseISO8601Duration(iso: string): number {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/i);
+  if (!match) return 0;
+  const hours = parseInt(match[1] || '0', 10);
+  const minutes = parseInt(match[2] || '0', 10);
+  const seconds = parseInt(match[3] || '0', 10);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+/**
+ * Probes video URL (YouTube, Vimeo) to automatically determine video duration
+ */
+export async function probeVideoDuration(url: string): Promise<{ durationSeconds: number; formatted: string } | null> {
+  if (!url || typeof url !== 'string') return null;
+  const cleanUrl = url.trim();
+
+  // 1. YouTube
+  const ytMatch = cleanUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    try {
+      const videoId = ytMatch[1];
+      const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+        signal: AbortSignal.timeout(6000),
+      });
+      if (res.ok) {
+        const html = await res.text();
+        const approxMatch = html.match(/"approxDurationMs":"(\d+)"/);
+        if (approxMatch) {
+          const ms = parseInt(approxMatch[1], 10);
+          const totalSec = Math.round(ms / 1000);
+          return {
+            durationSeconds: totalSec,
+            formatted: formatSecondsToDuration(totalSec),
+          };
+        }
+        const metaMatch = html.match(/itemprop=["']duration["']\s+content=["']([^"']+)["']/i);
+        if (metaMatch) {
+          const totalSec = parseISO8601Duration(metaMatch[1]);
+          if (totalSec > 0) {
+            return {
+              durationSeconds: totalSec,
+              formatted: formatSecondsToDuration(totalSec),
+            };
+          }
+        }
+      }
+    } catch {
+      // Fallback on network timeout
+    }
+  }
+
+  // 2. Vimeo
+  if (/vimeo\.com\/(?:video\/)?(\d+)/.test(cleanUrl)) {
+    try {
+      const res = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(cleanUrl)}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) {
+        const data: any = await res.json();
+        if (data && typeof data.duration === 'number' && data.duration > 0) {
+          return {
+            durationSeconds: data.duration,
+            formatted: formatSecondsToDuration(data.duration),
+          };
+        }
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Formats total minutes into clean display format like "4.5 Hours" or "12 Hours" or "45 Mins"
  */
 export function formatMinutesToDuration(totalMinutes: number, weeks?: number): string {
   if (totalMinutes <= 0) return '0 Mins';
@@ -48,20 +148,13 @@ export function formatMinutesToDuration(totalMinutes: number, weeks?: number): s
   const hrs = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
 
-  let timePart = '';
   if (hrs > 0 && mins > 0) {
-    timePart = `${hrs} Hrs ${mins} Mins`;
+    return `${hrs} Hrs ${mins} Mins`;
   } else if (hrs > 0) {
-    timePart = `${hrs} Hrs`;
+    return `${hrs} Hours`;
   } else {
-    timePart = `${mins} Mins`;
+    return `${mins} Mins`;
   }
-
-  if (weeks && weeks > 0) {
-    return `${weeks} Weeks (${timePart})`;
-  }
-
-  return timePart;
 }
 
 /**
@@ -76,7 +169,7 @@ export function calculateCurriculumDuration(lessons: Array<{ duration?: string }
   }
 
   const hoursLive = Math.round((totalMinutes / 60) * 10) / 10;
-  const formatted = formatMinutesToDuration(totalMinutes, defaultWeeks);
+  const formatted = formatMinutesToDuration(totalMinutes);
 
   return {
     totalMinutes,

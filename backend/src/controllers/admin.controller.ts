@@ -14,7 +14,7 @@ import { apiSuccess, apiError } from '../utils/apiResponse.js';
 import { toObjectId } from '../utils/objectId.js';
 import { PAYMENT_STATUS, ORDER_STATUS } from '../constants/orderStatus.js';
 import { hashPassword } from '../utils/password.js';
-import { calculateCurriculumDuration } from '../utils/duration.js';
+import { calculateCurriculumDuration, probeVideoDuration } from '../utils/duration.js';
 import { createCourseNotification } from '../services/notification.service.js';
 
 // ==========================================
@@ -111,6 +111,24 @@ export async function createCourseWithCurriculum(req: Request, res: Response, ne
       201,
       'Course and full curriculum published successfully.'
     );
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function probeVideo(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const videoUrl = req.body?.videoUrl || req.query?.url;
+    if (!videoUrl || typeof videoUrl !== 'string') {
+      apiError(res, 'Field "videoUrl" is required.', 400);
+      return;
+    }
+    const result = await probeVideoDuration(videoUrl);
+    if (result) {
+      apiSuccess(res, result, 200, 'Video duration retrieved successfully.');
+    } else {
+      apiSuccess(res, { durationSeconds: 0, formatted: '' }, 200, 'Could not determine duration from URL.');
+    }
   } catch (error) {
     next(error);
   }

@@ -72,7 +72,7 @@ export const FeaturedCoursesGrid: React.FC = () => {
                 <div className="flex items-center gap-4 text-xs text-stone-500 font-medium py-3 border-y border-stone-100">
                   <span>{totalLessons} Lessons • {course.skills?.length || 5} Skills</span>
                   <span className="w-1 h-1 rounded-full bg-stone-300" />
-                  <span>{course.durationWeeks} Weeks</span>
+                  <span>{course.hoursLive ? `${course.hoursLive} Hours` : course.duration || "Self-Paced"}</span>
                 </div>
               </div>
 

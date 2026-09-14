@@ -457,6 +457,13 @@ export const adminService = {
     });
   },
 
+  async probeVideoDuration(videoUrl: string): Promise<{ durationSeconds: number; formatted: string }> {
+    return request<{ durationSeconds: number; formatted: string }>("/admin/courses/probe-video", {
+      method: "POST",
+      body: JSON.stringify({ videoUrl }),
+    });
+  },
+
   async updateCourse(courseId: string, data: Partial<Course>): Promise<Course> {
     return request<Course>(`/admin/courses/${courseId}`, {
       method: "PUT",

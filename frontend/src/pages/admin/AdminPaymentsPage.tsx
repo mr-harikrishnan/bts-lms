@@ -248,7 +248,7 @@ export const AdminPaymentsPage: React.FC = () => {
 
       {/* Refund Confirmation Dialog */}
       {refundingId && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-2xl p-6">
             <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
               <AlertTriangle className="w-6 h-6" />

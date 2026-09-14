@@ -381,7 +381,7 @@ export default function HelpTicketsPage() {
 
         {/* Raise New Ticket Modal */}
         {isNewModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/25 backdrop-blur-sm animate-fadeIn">
             <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
               <div className="p-5 px-6 border-b border-stone-100 flex items-center justify-between bg-stone-50/70">
                 <div className="flex items-center gap-2.5">

@@ -46,6 +46,7 @@ router.post(
   validateBody(validateCourseWithCurriculumCreate),
   adminController.createCourseWithCurriculum
 );
+router.post('/courses/probe-video', adminController.probeVideo);
 router.get('/courses/:courseId', validateObjectIdParam('courseId'), adminController.getCourseById);
 router.put(
   '/courses/:courseId',
