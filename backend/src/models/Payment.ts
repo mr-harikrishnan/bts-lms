@@ -43,13 +43,12 @@ const paymentSchema = new Schema<IPayment>(
     },
     razorpayPaymentId: {
       type: String,
-      required: [true, 'Razorpay Payment ID is required'],
       unique: true,
+      sparse: true,
       index: true,
     },
     razorpayOrderId: {
       type: String,
-      required: [true, 'Razorpay Order ID is required'],
       index: true,
     },
     razorpaySignature: {

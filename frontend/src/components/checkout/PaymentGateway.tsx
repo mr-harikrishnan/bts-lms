@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Course } from "@/types";
+import { Course, CouponValidationResult } from "@/types";
 import { useBstorm } from "@/context/BstormContext";
-import { paymentService } from "@/services/apiClient";
+import { paymentService, couponService } from "@/services/apiClient";
 
 interface PaymentGatewayProps {
   course: Course;
+  appliedCoupon?: CouponValidationResult | null;
 }
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -22,9 +23,14 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
+export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedCoupon }) => {
   const navigate = useNavigate();
   const { enrollCourse, user, refreshData } = useBstorm();
+
+  const isFree = Boolean(
+    appliedCoupon?.isFree || (appliedCoupon && appliedCoupon.finalPrice === 0) || course.price === 0
+  );
+  const payableAmount = appliedCoupon ? appliedCoupon.finalPrice : course.price;
 
   const [activeTab, setActiveTab] = useState<"upi" | "apps" | "card" | "netbanking">("upi");
   const [countdownSeconds, setCountdownSeconds] = useState(8 * 60 + 45); // 08:45
@@ -55,6 +61,31 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
+  const handleFreeEnrollment = async () => {
+    if (isProcessing) return;
+    setErrorMessage(null);
+
+    if (!user.isLoggedIn) {
+      navigate(`/login?redirect=${encodeURIComponent(`/checkout/${course._id}`)}`);
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      if (appliedCoupon) {
+        await couponService.redeemFree(course._id, appliedCoupon.code);
+      } else {
+        await enrollCourse(course._id);
+      }
+      await refreshData();
+      navigate(`/courses/${course._id}/learn`, { replace: true });
+    } catch (err: any) {
+      console.error("Free enrollment redemption error:", err);
+      setErrorMessage(err?.message || "Failed to complete free enrollment.");
+      setIsProcessing(false);
+    }
+  };
+
   const handleCompletePayment = async () => {
     if (isProcessing) return;
     setErrorMessage(null);
@@ -66,8 +97,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
 
     setIsProcessing(true);
     try {
-      // 1. Create order on backend (server-side price resolution)
-      const orderData = await paymentService.createOrder(course._id);
+      // 1. Create order on backend with optional coupon discount
+      const orderData = await paymentService.createOrder(course._id, appliedCoupon?.code);
 
       // 2. Load official Razorpay Checkout SDK
       const sdkLoaded = await loadRazorpayScript();
@@ -165,11 +196,70 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
         </div>
       </div>
 
-      {/* Payment Method Tabs */}
-      <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-surface-container-low p-1.5 rounded-xl"
-        role="tablist"
-      >
+      {/* Dynamic Free vs Paid Gateway Flow */}
+      {isFree ? (
+        <div className="bg-emerald-50/70 border-2 border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center ring-8 ring-emerald-100/50">
+            <span className="material-symbols-outlined text-[36px]">card_giftcard</span>
+          </div>
+          <div className="flex flex-col gap-2 max-w-lg">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full w-fit mx-auto">
+              100% Free Enrollment
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+              No Payment Required
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              {appliedCoupon ? (
+                <>
+                  Coupon code <strong className="font-mono text-emerald-900 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">{appliedCoupon.code}</strong> grants you full free access to <strong className="text-stone-900">{course.title}</strong>. No payment card or UPI transaction is required.
+                </>
+              ) : (
+                <>
+                  This course is complimentary! Click below to enroll immediately and access all lessons.
+                </>
+              )}
+            </p>
+          </div>
+
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px] text-red-500">error</span>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          <div className="w-full max-w-md pt-2 flex flex-col gap-3">
+            <button
+              type="button"
+              disabled={isProcessing}
+              onClick={handleFreeEnrollment}
+              className="w-full py-4 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-[0.99] disabled:opacity-50"
+            >
+              {isProcessing ? (
+                <>
+                  <span className="material-symbols-outlined text-[20px] animate-spin">sync</span>
+                  <span>Activating Free Enrollment...</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[20px]">auto_stories</span>
+                  <span>Complete Free Enrollment &amp; Start Course</span>
+                </>
+              )}
+            </button>
+            <span className="text-[11px] text-stone-500">
+              Instant activation • No credit card required • Lifetime access
+            </span>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Payment Method Tabs */}
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-surface-container-low p-1.5 rounded-xl"
+            role="tablist"
+          >
         <button
           onClick={() => setActiveTab("upi")}
           type="button"
@@ -635,7 +725,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
           ) : (
             <>
               <span className="material-symbols-outlined text-[22px]">lock</span>
-              <span>Complete Payment • ₹{course.price.toLocaleString()}</span>
+              <span>Complete Payment • ₹{payableAmount.toLocaleString()}</span>
             </>
           )}
         </button>
@@ -657,6 +747,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course }) => {
           </span>
         </div>
       </div>
+        </>
+      )}
 
       {/* Verified Trust Badges Footer */}
       <div className="grid grid-cols-3 gap-2 pt-4 bg-surface-container-low/60 p-3.5 rounded-xl border border-surface-container">

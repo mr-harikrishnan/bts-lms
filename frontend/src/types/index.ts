@@ -220,6 +220,7 @@ export interface TestSubmissionResult {
 export interface ApiResponse<T = unknown> {
   success: true;
   data: T;
+  message?: string;
 }
 
 export interface ApiErrorResponse {
@@ -281,5 +282,33 @@ export interface TicketItem {
   closedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type CouponDiscountType = 'fixed' | 'amount' | 'percentage';
+
+export interface CouponItem {
+  _id: string;
+  code: string;
+  courseId: string;
+  discountType: CouponDiscountType;
+  discountValue: number;
+  maxUses?: number | null;
+  usedCount: number;
+  isActive: boolean;
+  expiresAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  code: string;
+  discountType: CouponDiscountType;
+  discountValue: number;
+  originalPrice: number;
+  discountAmount: number;
+  finalPrice: number;
+  isFree: boolean;
+  message: string;
 }
 

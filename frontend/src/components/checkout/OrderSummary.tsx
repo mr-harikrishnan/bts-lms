@@ -1,12 +1,50 @@
-import React from "react";
-import { Course } from "@/types";
+import React, { useState } from "react";
+import { Course, CouponValidationResult } from "@/types";
+import { couponService } from "@/services/apiClient";
 
 interface OrderSummaryProps {
   course: Course;
+  appliedCoupon: CouponValidationResult | null;
+  onApplyCoupon: (coupon: CouponValidationResult | null) => void;
 }
 
-export const OrderSummary: React.FC<OrderSummaryProps> = ({ course }) => {
-  const discount = course.originalPrice - course.price;
+export const OrderSummary: React.FC<OrderSummaryProps> = ({
+  course,
+  appliedCoupon,
+  onApplyCoupon,
+}) => {
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [isValidating, setIsValidating] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const originalPrice = course.originalPrice || course.price || 0;
+  const currentPrice = course.price || 0;
+  const baseDiscount = originalPrice > currentPrice ? originalPrice - currentPrice : 0;
+  const finalPrice = appliedCoupon ? appliedCoupon.finalPrice : currentPrice;
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanCode = couponCodeInput.trim().toUpperCase();
+    if (!cleanCode) return;
+
+    setIsValidating(true);
+    setCouponError(null);
+    try {
+      const res = await couponService.validate(cleanCode, course._id);
+      onApplyCoupon(res);
+      setCouponCodeInput("");
+    } catch (err: any) {
+      setCouponError(err?.message || "Invalid coupon code for this course.");
+      onApplyCoupon(null);
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    onApplyCoupon(null);
+    setCouponError(null);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -59,13 +97,29 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ course }) => {
             </span>
           </div>
 
-          <div className="flex justify-between items-center font-body-sm text-body-sm text-secondary">
-            <div className="flex items-center gap-1.5">
-              <span>College Student Launch Discount</span>
-              <span className="material-symbols-outlined text-[15px]">info</span>
+          {baseDiscount > 0 && (
+            <div className="flex justify-between items-center font-body-sm text-body-sm text-secondary">
+              <div className="flex items-center gap-1.5">
+                <span>College Student Launch Discount</span>
+                <span className="material-symbols-outlined text-[15px]">info</span>
+              </div>
+              <span className="font-semibold">-₹{baseDiscount.toLocaleString()}</span>
             </div>
-            <span className="font-semibold">-₹{discount.toLocaleString()}</span>
-          </div>
+          )}
+
+          {appliedCoupon && (
+            <div className="flex justify-between items-center font-body-sm text-body-sm text-emerald-700 bg-emerald-50/70 px-2.5 py-1.5 rounded-lg border border-emerald-100">
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-emerald-600">
+                  sell
+                </span>
+                <span className="font-medium">Coupon Discount ({appliedCoupon.code})</span>
+              </div>
+              <span className="font-bold text-emerald-800">
+                -₹{appliedCoupon.discountAmount.toLocaleString()}
+              </span>
+            </div>
+          )}
 
           <div className="flex justify-between items-center font-body-sm text-body-sm text-on-surface-variant">
             <div className="flex items-center gap-1.5">
@@ -85,34 +139,83 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ course }) => {
                 Total Payable
               </span>
               <span className="font-caption text-caption text-outline">
-                Instant lifetime access upon payment
+                {finalPrice === 0
+                  ? "100% Free - Instant direct enrollment"
+                  : "Instant lifetime access upon payment"}
               </span>
             </div>
-            <span className="font-display text-display text-primary font-bold">
-              ₹{course.price.toLocaleString()}
-            </span>
+            <div className="flex flex-col items-end">
+              <span
+                className={`font-display text-display font-bold ${
+                  finalPrice === 0 ? "text-emerald-700" : "text-primary"
+                }`}
+              >
+                ₹{finalPrice.toLocaleString()}
+              </span>
+              {finalPrice === 0 && (
+                <span className="text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded-full mt-0.5">
+                  Free Enrollment
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Promo Code Section */}
-        <div className="p-3.5 bg-surface-container-low rounded-xl flex items-center justify-between gap-3 border border-surface-container">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="material-symbols-outlined text-secondary text-[20px]">
-              local_offer
-            </span>
-            <div className="flex flex-col truncate">
-              <span className="font-label-md text-label-md text-primary font-bold tracking-wide">
-                STUDENT2025
+        {/* Dynamic Coupon Code Section */}
+        {appliedCoupon ? (
+          <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3 transition-all">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="material-symbols-outlined text-emerald-700 text-[22px] shrink-0">
+                task_alt
               </span>
-              <span className="font-caption text-caption text-secondary">
-                Verified Student Discount Applied
-              </span>
+              <div className="flex flex-col truncate">
+                <span className="font-mono text-xs font-bold text-emerald-900 tracking-wider">
+                  {appliedCoupon.code}
+                </span>
+                <span className="text-[11px] text-emerald-700 leading-tight">
+                  {appliedCoupon.message}
+                </span>
+              </div>
             </div>
+            <button
+              onClick={handleRemoveCoupon}
+              className="text-xs font-semibold text-stone-500 hover:text-red-600 px-2 py-1 rounded-md hover:bg-white/80 transition-colors shrink-0"
+              title="Remove Coupon"
+            >
+              Remove
+            </button>
           </div>
-          <span className="font-label-sm text-label-sm px-2.5 py-1 bg-surface-container-lowest text-secondary font-semibold rounded-md shadow-sm border border-[#E5E7EB]">
-            Applied
-          </span>
-        </div>
+        ) : (
+          <div className="space-y-2">
+            <form onSubmit={handleApplyCoupon} className="flex gap-2">
+              <div className="relative flex-1">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-[18px]">
+                  sell
+                </span>
+                <input
+                  type="text"
+                  value={couponCodeInput}
+                  onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                  placeholder="Have a coupon code? (e.g. DSYHC)"
+                  className="w-full pl-9 pr-3 py-2 text-xs uppercase font-mono tracking-wider bg-surface-container-low border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isValidating || !couponCodeInput.trim()}
+                className="px-4 py-2 text-xs font-semibold bg-[#2D3536] text-white hover:bg-stone-800 disabled:opacity-40 rounded-xl transition-colors shadow-xs shrink-0"
+              >
+                {isValidating ? "Checking..." : "Apply"}
+              </button>
+            </form>
+            {couponError && (
+              <p className="text-[11px] text-red-600 font-medium px-1 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px]">error</span>
+                <span>{couponError}</span>
+              </p>
+            )}
+          </div>
+        )}
 
         {/* What's Included Tier Checklist */}
         <div className="flex flex-col gap-3 pt-2">
@@ -128,7 +231,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ course }) => {
                 check_circle
               </span>
               <span>
-                {course.modules.length} Step-by-Step Modules + Hands-on Practice Projects
+                {course.modules?.length ? `${course.modules.length} Step-by-Step Modules + ` : ""}Hands-on Practice Projects
               </span>
             </li>
             <li className="flex items-start gap-2.5 font-body-sm text-body-sm text-on-surface-variant">

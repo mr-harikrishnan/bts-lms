@@ -12,6 +12,7 @@ import adminRoutes from './admin.routes.js';
 import categoryRoutes from './category.routes.js';
 import notificationRoutes from './notification.routes.js';
 import ticketRoutes from './ticket.routes.js';
+import couponRoutes from './coupon.routes.js';
 
 const router = Router();
 
@@ -29,6 +30,7 @@ router.use('/payments', paymentRoutes);
 router.use('/admin', adminRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/tickets', ticketRoutes);
+router.use('/coupons', couponRoutes);
 
 export default router;
 

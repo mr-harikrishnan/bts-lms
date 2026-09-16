@@ -15,8 +15,9 @@ import {
   sendOrderConfirmationEmail,
   sendEnrollmentConfirmationEmail,
 } from './email.service.js';
+import { validateCoupon } from './coupon.service.js';
 
-export async function createPaymentOrder(userId: string, courseId: string) {
+export async function createPaymentOrder(userId: string, courseId: string, couponCode?: string) {
   const userOid = toObjectId(userId);
   const courseOid = toObjectId(courseId);
 
@@ -35,8 +36,27 @@ export async function createPaymentOrder(userId: string, courseId: string) {
     throw error;
   }
 
+  let finalPrice = course.price;
+  let appliedDiscount = 0;
+  let cleanCoupon = '';
+
+  if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+    cleanCoupon = couponCode.trim().toUpperCase();
+    const couponResult = await validateCoupon(cleanCoupon, courseId);
+    finalPrice = couponResult.finalPrice;
+    appliedDiscount = couponResult.discountAmount;
+
+    if (finalPrice <= 0) {
+      const error: any = new Error(
+        'This coupon provides 100% free enrollment. Please use instant free enrollment.'
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
   // Server-side price resolution in paise (never trust client amount)
-  const amountInPaise = Math.round(course.price * 100);
+  const amountInPaise = Math.round(finalPrice * 100);
 
   const internalOrder = await Order.create({
     userId: userOid,
@@ -48,6 +68,9 @@ export async function createPaymentOrder(userId: string, courseId: string) {
     notes: {
       courseTitle: course.title,
       studentId: userId,
+      couponCode: cleanCoupon || undefined,
+      discountAmount: appliedDiscount || undefined,
+      originalPrice: course.price,
     },
   });
 

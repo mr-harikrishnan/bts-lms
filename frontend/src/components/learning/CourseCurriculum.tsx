@@ -16,10 +16,12 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   completedLessonIds,
   onSelectLesson,
 }) => {
+  const modules = course.modules || [];
+
   // Determine which module contains currentLessonId
   const initialOpenModules: Record<string, boolean> = {};
-  course.modules.forEach((mod) => {
-    const hasCurrent = mod.lessons.some((l) => l._id === currentLessonId);
+  modules.forEach((mod) => {
+    const hasCurrent = (mod.lessons || []).some((l) => l._id === currentLessonId);
     initialOpenModules[mod._id] = hasCurrent;
   });
 
@@ -36,13 +38,13 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   const handleExpandCollapseAll = () => {
     const allOpen = Object.values(openModules).every(Boolean);
     const updated: Record<string, boolean> = {};
-    course.modules.forEach((mod) => {
+    modules.forEach((mod) => {
       updated[mod._id] = !allOpen;
     });
     setOpenModules(updated);
   };
 
-  const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const totalLessons = modules.reduce((acc, m) => acc + (m.lessons || []).length, 0);
   const completedCount = completedLessonIds.length;
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
@@ -89,7 +91,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
 
       {/* Modules List */}
       <div className="flex flex-col gap-3 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
-        {course.modules.map((module, modIdx) => {
+        {modules.map((module, modIdx) => {
           const isModuleActive = module.lessons.some((l) => l._id === currentLessonId);
           const completedInModule = module.lessons.filter((l) =>
             completedLessonIds.includes(l._id)

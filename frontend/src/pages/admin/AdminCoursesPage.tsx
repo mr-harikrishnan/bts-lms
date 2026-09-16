@@ -21,10 +21,16 @@ import {
   Clock,
   Loader2,
   RotateCw,
+  Ticket,
+  Copy,
+  CheckCheck,
+  ToggleLeft,
+  ToggleRight,
+  Percent,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { courseService, adminService, categoryService } from "@/services/apiClient";
-import { Course, CategoryItem } from "@/types";
+import { courseService, adminService, categoryService, couponService } from "@/services/apiClient";
+import { Course, CategoryItem, CouponItem, CouponDiscountType } from "@/types";
 
 interface LessonDraft {
   lessonNumber: string;
@@ -158,6 +164,114 @@ export const AdminCoursesPage: React.FC = () => {
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
   const [isCreatingCat, setIsCreatingCat] = useState(false);
+
+  // Course Coupons Modal State
+  const [couponCourse, setCouponCourse] = useState<Course | null>(null);
+  const [courseCoupons, setCourseCoupons] = useState<CouponItem[]>([]);
+  const [isCouponsLoading, setIsCouponsLoading] = useState(false);
+  const [isCreatingCoupon, setIsCreatingCoupon] = useState(false);
+  const [couponFeedback, setCouponFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [copiedCouponId, setCopiedCouponId] = useState<string | null>(null);
+  const [couponForm, setCouponForm] = useState({
+    code: "",
+    discountType: "fixed" as CouponDiscountType,
+    discountValue: 0,
+    maxUses: "" as string | number,
+    expiresAt: "",
+  });
+
+  const openCouponModal = async (course: Course) => {
+    setCouponCourse(course);
+    setCouponFeedback(null);
+    setCouponForm({
+      code: "",
+      discountType: "fixed",
+      discountValue: 0,
+      maxUses: "",
+      expiresAt: "",
+    });
+    setIsCouponsLoading(true);
+    try {
+      const data = await couponService.admin.getByCourse(course._id);
+      setCourseCoupons(Array.isArray(data) ? data.filter((c) => Boolean(c && c._id)) : []);
+    } catch (err: any) {
+      setCouponFeedback({ type: "error", message: err?.message || "Failed to load coupons." });
+    } finally {
+      setIsCouponsLoading(false);
+    }
+  };
+
+  const handleCreateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponCourse) return;
+    setIsCreatingCoupon(true);
+    setCouponFeedback(null);
+
+    try {
+      const payload = {
+        code: couponForm.code.trim() ? couponForm.code.trim().toUpperCase() : undefined,
+        courseId: couponCourse._id,
+        discountType: couponForm.discountType,
+        discountValue: Number(couponForm.discountValue) || 0,
+        maxUses: couponForm.maxUses !== "" ? Number(couponForm.maxUses) : null,
+        expiresAt: couponForm.expiresAt ? new Date(couponForm.expiresAt).toISOString() : null,
+      };
+
+      const newCoupon = await couponService.admin.create(payload);
+      if (newCoupon && newCoupon._id) {
+        setCourseCoupons((prev) => [
+          newCoupon,
+          ...prev.filter((c) => Boolean(c && c._id && c._id !== newCoupon._id)),
+        ]);
+        setCouponFeedback({
+          type: "success",
+          message: `Coupon '${newCoupon.code}' created successfully!`,
+        });
+      }
+      setCouponForm({
+        code: "",
+        discountType: "fixed",
+        discountValue: 0,
+        maxUses: "",
+        expiresAt: "",
+      });
+    } catch (err: any) {
+      setCouponFeedback({
+        type: "error",
+        message: err?.message || "Failed to create coupon.",
+      });
+    } finally {
+      setIsCreatingCoupon(false);
+    }
+  };
+
+  const handleToggleCoupon = async (couponId: string) => {
+    try {
+      const updated = await couponService.admin.toggle(couponId);
+      setCourseCoupons((prev) =>
+        prev.map((c) => (c._id === couponId ? updated : c))
+      );
+    } catch (err: any) {
+      setCouponFeedback({ type: "error", message: err?.message || "Failed to toggle coupon status." });
+    }
+  };
+
+  const handleDeleteCoupon = async (couponId: string) => {
+    if (!confirm("Are you sure you want to delete this coupon?")) return;
+    try {
+      await couponService.admin.delete(couponId);
+      setCourseCoupons((prev) => prev.filter((c) => c._id !== couponId));
+      setCouponFeedback({ type: "success", message: "Coupon deleted successfully." });
+    } catch (err: any) {
+      setCouponFeedback({ type: "error", message: err?.message || "Failed to delete coupon." });
+    }
+  };
+
+  const handleCopyCode = (code: string, id: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCouponId(id);
+    setTimeout(() => setCopiedCouponId(null), 2000);
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -685,6 +799,14 @@ export const AdminCoursesPage: React.FC = () => {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => openCouponModal(c)}
+                            className="p-1.5 text-amber-700 bg-amber-50 hover:bg-amber-100 hover:text-amber-900 rounded-lg border border-amber-200 transition-colors flex items-center gap-1"
+                            title="Manage Course Coupons & Discounts"
+                          >
+                            <Ticket className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-semibold hidden sm:inline">Coupons</span>
+                          </button>
                           <button
                             onClick={() => openEditModal(c)}
                             className="p-1.5 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg border border-stone-200"
@@ -1376,6 +1498,372 @@ export const AdminCoursesPage: React.FC = () => {
                 )}
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Course Coupons Modal (Peria Modal) */}
+      {couponCourse && (
+        <div className="fixed inset-0 bg-slate-900/25 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl bg-white rounded-2xl border border-stone-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-stone-200 bg-stone-50/70">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  <Ticket className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-stone-900">
+                    Course Coupons &amp; Discounts
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    {couponCourse.title} • Current Price:{" "}
+                    <span className="font-semibold text-stone-800">₹{couponCourse.price}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCouponCourse(null)}
+                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Feedback Banner */}
+            {couponFeedback && (
+              <div
+                className={`px-5 py-3 text-xs flex items-center justify-between border-b ${
+                  couponFeedback.type === "success"
+                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                    : "bg-red-50 text-red-800 border-red-200"
+                }`}
+              >
+                <span>{couponFeedback.message}</span>
+                <button
+                  onClick={() => setCouponFeedback(null)}
+                  className="text-stone-400 hover:text-stone-700 font-bold ml-3"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* Modal Content Split: Create Form (Left) & Existing Coupons (Right) */}
+            <div className="overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left Column: Create Form */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="border border-stone-200/80 rounded-2xl p-4 bg-stone-50/40 space-y-4">
+                  <div className="flex items-center justify-between border-b border-stone-200/60 pb-2.5">
+                    <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Create New Coupon</span>
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                        let rnd = "";
+                        for (let i = 0; i < 6; i++) rnd += chars[Math.floor(Math.random() * chars.length)];
+                        setCouponForm((prev) => ({ ...prev, code: rnd }));
+                      }}
+                      className="text-[11px] font-semibold text-amber-700 hover:text-amber-800 underline"
+                    >
+                      🎲 Randomize Code
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleCreateCoupon} className="space-y-3.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                        Coupon Code
+                      </label>
+                      <input
+                        type="text"
+                        value={couponForm.code}
+                        onChange={(e) =>
+                          setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })
+                        }
+                        placeholder="e.g. DSYHC (Leave blank to auto-generate)"
+                        className="w-full px-3 py-2 text-xs font-mono tracking-wider uppercase bg-white border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                      />
+                      <span className="text-[10px] text-stone-400 mt-0.5 block">
+                        If left blank, a random 6-character code will be generated.
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+                        Discount Type
+                      </label>
+                      <div className="grid grid-cols-3 gap-1 bg-stone-200/60 p-1 rounded-xl text-[11px] font-semibold">
+                        <button
+                          type="button"
+                          onClick={() => setCouponForm({ ...couponForm, discountType: "fixed" })}
+                          className={`py-1.5 rounded-lg transition-all text-center ${
+                            couponForm.discountType === "fixed"
+                              ? "bg-white text-stone-900 shadow-xs"
+                              : "text-stone-600 hover:text-stone-900"
+                          }`}
+                        >
+                          Fixed Price
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCouponForm({ ...couponForm, discountType: "amount" })}
+                          className={`py-1.5 rounded-lg transition-all text-center ${
+                            couponForm.discountType === "amount"
+                              ? "bg-white text-stone-900 shadow-xs"
+                              : "text-stone-600 hover:text-stone-900"
+                          }`}
+                        >
+                          ₹ Off
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCouponForm({ ...couponForm, discountType: "percentage" })}
+                          className={`py-1.5 rounded-lg transition-all text-center ${
+                            couponForm.discountType === "percentage"
+                              ? "bg-white text-stone-900 shadow-xs"
+                              : "text-stone-600 hover:text-stone-900"
+                          }`}
+                        >
+                          % Off
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                        {couponForm.discountType === "fixed"
+                          ? "Final Price (₹) *"
+                          : couponForm.discountType === "amount"
+                          ? "Discount Amount (₹) *"
+                          : "Discount Percentage (%) *"}
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={couponForm.discountType === "percentage" ? 100 : undefined}
+                        required
+                        value={couponForm.discountValue}
+                        onChange={(e) =>
+                          setCouponForm({ ...couponForm, discountValue: Number(e.target.value) })
+                        }
+                        placeholder={couponForm.discountType === "fixed" ? "Enter 0 for free enrollment" : "Value"}
+                        className="w-full px-3 py-2 text-xs bg-white border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400 font-semibold"
+                      />
+                    </div>
+
+                    {/* Zero Cost Free Notice */}
+                    {couponForm.discountType === "fixed" && Number(couponForm.discountValue) === 0 && (
+                      <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] leading-relaxed flex items-center gap-2">
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>
+                          <strong>100% Free Enrollment:</strong> Setting ₹0 lets learners bypass Razorpay and enroll instantly without entering payment details.
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                          Max Uses
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={couponForm.maxUses}
+                          onChange={(e) =>
+                            setCouponForm({ ...couponForm, maxUses: e.target.value })
+                          }
+                          placeholder="Unlimited"
+                          className="w-full px-3 py-2 text-xs bg-white border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                          Expiry Date
+                        </label>
+                        <input
+                          type="date"
+                          value={couponForm.expiresAt}
+                          onChange={(e) =>
+                            setCouponForm({ ...couponForm, expiresAt: e.target.value })
+                          }
+                          className="w-full px-2 py-2 text-xs bg-white border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Live Price Preview */}
+                    <div className="p-3 bg-white rounded-xl border border-stone-200/80 text-xs flex items-center justify-between">
+                      <span className="text-stone-500 text-[11px]">Learner Final Price:</span>
+                      <span className="font-bold text-sm text-stone-900">
+                        {(() => {
+                          const val = Number(couponForm.discountValue) || 0;
+                          let final = 0;
+                          if (couponForm.discountType === "fixed") final = val;
+                          else if (couponForm.discountType === "amount") final = Math.max(0, couponCourse.price - val);
+                          else if (couponForm.discountType === "percentage")
+                            final = Math.max(0, Math.round(couponCourse.price * (1 - val / 100)));
+
+                          return final === 0 ? (
+                            <span className="text-emerald-700 font-bold">₹0 (FREE ENROLLMENT)</span>
+                          ) : (
+                            `₹${final}`
+                          );
+                        })()}
+                      </span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isCreatingCoupon}
+                      className="w-full py-2.5 px-4 bg-[#2D3536] hover:bg-stone-800 text-white text-xs font-bold rounded-xl transition-colors shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isCreatingCoupon ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Creating Coupon...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Create Coupon</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* Right Column: Existing Coupons List */}
+              <div className="lg:col-span-7 space-y-3">
+                <div className="flex items-center justify-between pb-1">
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                    <span>Active Coupons</span>
+                    <span className="px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[10px] font-semibold">
+                      {courseCoupons.length}
+                    </span>
+                  </h4>
+                  <button
+                    onClick={() => openCouponModal(couponCourse)}
+                    disabled={isCouponsLoading}
+                    className="p-1.5 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition-colors"
+                    title="Refresh coupons"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isCouponsLoading ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
+
+                {isCouponsLoading ? (
+                  <div className="py-12 text-center text-xs text-stone-400 flex flex-col items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin text-stone-400" />
+                    <span>Loading course coupons...</span>
+                  </div>
+                ) : courseCoupons.length === 0 ? (
+                  <div className="py-12 text-center border-2 border-dashed border-stone-200 rounded-2xl p-6 flex flex-col items-center gap-2 text-stone-400">
+                    <Ticket className="w-8 h-8 text-stone-300" />
+                    <span className="text-xs font-medium text-stone-600">No coupons found for this course</span>
+                    <span className="text-[11px] text-stone-400 max-w-xs">
+                      Generate a code using the form to offer discounts or 100% free enrollment to learners.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-1">
+                    {courseCoupons
+                      .filter((coupon): coupon is CouponItem => Boolean(coupon && coupon._id))
+                      .map((coupon) => (
+                      <div
+                        key={coupon._id}
+                        className={`p-3.5 rounded-xl border transition-all flex flex-col gap-2.5 ${
+                          coupon.isActive
+                            ? "bg-white border-stone-200 shadow-xs"
+                            : "bg-stone-50/70 border-stone-200/60 opacity-60"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm font-bold text-stone-900 tracking-wider bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200">
+                              {coupon.code}
+                            </span>
+                            <button
+                              onClick={() => handleCopyCode(coupon.code, coupon._id)}
+                              className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors"
+                              title="Copy code"
+                            >
+                              {copiedCouponId === coupon._id ? (
+                                <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleToggleCoupon(coupon._id)}
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-colors ${
+                                coupon.isActive
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                                  : "bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200"
+                              }`}
+                              title={coupon.isActive ? "Click to deactivate" : "Click to activate"}
+                            >
+                              {coupon.isActive ? "Active" : "Inactive"}
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteCoupon(coupon._id)}
+                              className="p-1 text-red-400 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                              title="Delete coupon"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between text-xs text-stone-500 pt-1 border-t border-stone-100">
+                          <div>
+                            {coupon.discountType === "fixed" ? (
+                              coupon.discountValue === 0 ? (
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                  FREE ENROLLMENT (₹0)
+                                </span>
+                              ) : (
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">
+                                  Fixed Price: ₹{coupon.discountValue}
+                                </span>
+                              )
+                            ) : coupon.discountType === "amount" ? (
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">
+                                ₹{coupon.discountValue} OFF
+                              </span>
+                            ) : (
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">
+                                {coupon.discountValue}% OFF
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="text-[11px] text-stone-400">
+                            Used: <strong className="text-stone-700">{coupon.usedCount}</strong> /{" "}
+                            {coupon.maxUses ? coupon.maxUses : "∞"}
+                            {coupon.expiresAt && (
+                              <span className="ml-2">
+                                • Exp: {new Date(coupon.expiresAt).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

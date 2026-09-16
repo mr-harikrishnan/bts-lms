@@ -5,10 +5,11 @@ import { ERROR_CODES } from '../constants/errorCodes.js';
 
 export async function createOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { courseId } = req.body;
+    const { courseId, couponCode } = req.body;
     const orderData = await paymentService.createPaymentOrder(
       req.user!._id.toString(),
-      courseId
+      courseId,
+      couponCode
     );
     apiSuccess(res, orderData, 201, 'Payment order created.');
   } catch (error) {

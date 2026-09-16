@@ -18,6 +18,9 @@ import {
   CategoryItem,
   NotificationItem,
   TicketItem,
+  CouponItem,
+  CouponValidationResult,
+  CouponDiscountType,
 } from "@/types";
 
 const API_BASE =
@@ -124,13 +127,18 @@ async function request<T>(endpoint: string, options: CustomRequestInit = {}): Pr
     }
   }
 
-  const data: ApiResponse<T> | ApiErrorResponse = await response.json().catch(() => ({
+  const data: any = await response.json().catch(() => ({
     success: false,
     error: { message: `Network request failed with status ${response.status}` },
   }));
 
   if (!data.success) {
-    throw new Error(data.error?.message || "An unexpected API error occurred.");
+    const errorMsg =
+      data.message ||
+      data.error?.message ||
+      (typeof data.error === "string" ? data.error : null) ||
+      `Network request failed with status ${response.status}`;
+    throw new Error(errorMsg);
   }
 
   return data.data;
@@ -362,10 +370,10 @@ export interface RazorpayOrderData {
 }
 
 export const paymentService = {
-  async createOrder(courseId: string): Promise<RazorpayOrderData> {
+  async createOrder(courseId: string, couponCode?: string): Promise<RazorpayOrderData> {
     return request<RazorpayOrderData>("/payments/orders", {
       method: "POST",
-      body: JSON.stringify({ courseId }),
+      body: JSON.stringify({ courseId, couponCode }),
     });
   },
 
@@ -594,6 +602,56 @@ export const ticketService = {
     });
   },
 };
+
+export const couponService = {
+  async validate(code: string, courseId: string): Promise<CouponValidationResult> {
+    return request<CouponValidationResult>("/coupons/validate", {
+      method: "POST",
+      body: JSON.stringify({ code, courseId }),
+    });
+  },
+
+  async redeemFree(courseId: string, couponCode: string): Promise<{ success: boolean; message: string; enrollment: any }> {
+    return request<{ success: boolean; message: string; enrollment: any }>("/coupons/redeem-free", {
+      method: "POST",
+      body: JSON.stringify({ courseId, couponCode }),
+    });
+  },
+
+  admin: {
+    async getByCourse(courseId: string): Promise<CouponItem[]> {
+      const res = await request<CouponItem[]>(`/admin/coupons?courseId=${encodeURIComponent(courseId)}`);
+      return Array.isArray(res) ? res : [];
+    },
+
+    async create(data: {
+      code?: string;
+      courseId: string;
+      discountType: CouponDiscountType;
+      discountValue: number;
+      maxUses?: number | null;
+      expiresAt?: string | null;
+    }): Promise<CouponItem> {
+      return request<CouponItem>("/admin/coupons", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+
+    async delete(couponId: string): Promise<{ success: boolean; message: string }> {
+      return request<{ success: boolean; message: string }>(`/admin/coupons/${couponId}`, {
+        method: "DELETE",
+      });
+    },
+
+    async toggle(couponId: string): Promise<CouponItem> {
+      return request<CouponItem>(`/admin/coupons/${couponId}/toggle`, {
+        method: "PATCH",
+      });
+    },
+  },
+};
+
 
 
 

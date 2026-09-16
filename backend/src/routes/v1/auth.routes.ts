@@ -8,7 +8,7 @@ import {
   validateResetPassword,
 } from '../../validators/auth.validator.js';
 import { authLimiter, passwordResetLimiter } from '../../middleware/rateLimit.middleware.js';
-import { requireAuth } from '../../middleware/auth.middleware.js';
+import { requireAuth, optionalAuth } from '../../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -28,7 +28,7 @@ router.post(
 );
 router.post('/refresh', authController.refresh);
 router.get('/me', requireAuth, authController.me);
-router.post('/logout', requireAuth, authController.logout);
+router.post('/logout', optionalAuth, authController.logout);
 
 export default router;
 

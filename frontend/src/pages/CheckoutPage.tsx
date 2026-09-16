@@ -6,7 +6,7 @@ import { PaymentGateway } from "@/components/checkout/PaymentGateway";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { courseService } from "@/services/apiClient";
-import { Course } from "@/types";
+import { Course, CouponValidationResult } from "@/types";
 
 export const CheckoutPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -14,6 +14,7 @@ export const CheckoutPage: React.FC = () => {
 
   const [apiCourse, setApiCourse] = useState<Course | null>(null);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponValidationResult | null>(null);
 
   const contextCourse = courses.find((c) => c._id === courseId);
   const course = contextCourse || apiCourse;
@@ -171,12 +172,16 @@ export const CheckoutPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left: Payment Methods (7 Cols) */}
               <div className="lg:col-span-7">
-                <PaymentGateway course={course} />
+                <PaymentGateway course={course} appliedCoupon={appliedCoupon} />
               </div>
 
               {/* Right: Order Summary (5 Cols) */}
               <div className="lg:col-span-5">
-                <OrderSummary course={course} />
+                <OrderSummary
+                  course={course}
+                  appliedCoupon={appliedCoupon}
+                  onApplyCoupon={setAppliedCoupon}
+                />
               </div>
             </div>
           )}

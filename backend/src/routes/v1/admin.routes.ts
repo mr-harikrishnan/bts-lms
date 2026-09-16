@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as adminController from '../../controllers/admin.controller.js';
 import * as ticketController from '../../controllers/ticket.controller.js';
+import * as couponController from '../../controllers/coupon.controller.js';
 import { requireAuth } from '../../middleware/auth.middleware.js';
 import { requireAdmin } from '../../middleware/admin.middleware.js';
 import { adminLimiter } from '../../middleware/rateLimit.middleware.js';
@@ -174,5 +175,13 @@ router.patch(
   validateBody(validateTicketStatusUpdate),
   ticketController.updateStatus
 );
+
+// ==========================================
+// 10. Course Coupon Management
+// ==========================================
+router.get('/coupons', couponController.getAdminCoupons);
+router.post('/coupons', couponController.createAdminCoupon);
+router.delete('/coupons/:id', validateObjectIdParam('id'), couponController.deleteAdminCoupon);
+router.patch('/coupons/:id/toggle', validateObjectIdParam('id'), couponController.toggleAdminCoupon);
 
 export default router;
