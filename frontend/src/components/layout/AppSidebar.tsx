@@ -60,8 +60,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   const confirmLogout = async () => {
     setShowLogoutConfirm(false);
     if (onClose) onClose();
-    await logout();
-    navigate("/", { replace: true });
+    await logout("/");
   };
 
   return (

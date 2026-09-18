@@ -1,8 +1,23 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { User, EnrolledCourseProgress, Certificate, Course, NotificationItem } from "@/types";
 import { authService, courseService, userService, notificationService } from "@/services/apiClient";
+
+export const clearPersistedRoutes = () => {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem("redirect_url");
+    sessionStorage.removeItem("auth_redirect");
+    sessionStorage.removeItem("return_to");
+    sessionStorage.removeItem("prev_route");
+    localStorage.removeItem("last_route");
+    localStorage.removeItem("redirect_after_login");
+  } catch (e) {
+    console.error("Failed to clear persisted routes:", e);
+  }
+};
 
 interface BstormContextType {
   user: User;
@@ -13,9 +28,9 @@ interface BstormContextType {
   unreadNotificationsCount: number;
   isHydrated: boolean;
   isLoading: boolean;
-  login: (email: string, password?: string) => Promise<boolean>;
+  login: (email: string, password?: string) => Promise<User | null>;
   signup: (userData: Partial<User>) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: (redirectTo?: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   enrollCourse: (courseId: string) => Promise<void>;
   isEnrolled: (courseId: string) => boolean;
@@ -62,6 +77,7 @@ const BstormContext = createContext<BstormContextType | null>(null);
 export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User>(GUEST_USER);
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseProgress[]>([]);
@@ -181,15 +197,16 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshData();
   }, [refreshData]);
 
-  const login = async (email: string, password?: string): Promise<boolean> => {
+  const login = async (email: string, password?: string): Promise<User | null> => {
     try {
       const result = await authService.login(email, password);
-      setUser({ ...result.user, isLoggedIn: true });
+      const authUser = { ...result.user, isLoggedIn: true };
+      setUser(authUser);
       await fetchUserData();
-      return true;
+      return authUser;
     } catch (e) {
       console.error("Login API request failed:", e);
-      return false;
+      return null;
     }
   };
 
@@ -207,23 +224,24 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async (redirectTo: string = "/"): Promise<void> => {
     try {
-      sessionStorage.setItem("just_logged_out", "true");
-      sessionStorage.removeItem("redirect_url");
-      sessionStorage.removeItem("auth_redirect");
-      sessionStorage.removeItem("return_to");
-      sessionStorage.removeItem("prev_route");
-      localStorage.removeItem("last_route");
-      localStorage.removeItem("redirect_after_login");
-      await authService.logout();
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("just_logged_out", "true");
+        clearPersistedRoutes();
+      }
+      await authService.logout().catch((err) => {
+        console.warn("Logout API request failed:", err);
+      });
     } catch (e) {
       console.error("Logout API request failed:", e);
     } finally {
+      clearPersistedRoutes();
       setUser(GUEST_USER);
       setEnrolledCourses([]);
       setCertificates([]);
       setNotifications([]);
+      navigate(redirectTo, { replace: true });
     }
   };
 

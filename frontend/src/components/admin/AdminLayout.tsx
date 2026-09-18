@@ -51,8 +51,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const handleLogout = async () => {
     setShowLogoutConfirm(false);
-    await logout();
-    navigate("/", { replace: true });
+    await logout("/");
   };
 
   return (

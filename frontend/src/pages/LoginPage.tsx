@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useBstorm } from "@/context/BstormContext";
+import { useBstorm, clearPersistedRoutes } from "@/context/BstormContext";
 import { GuestGuard } from "@/components/auth/GuestGuard";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirectTarget = searchParams.get("redirect") || "/dashboard";
+  const [searchParams, setSearchParams] = useSearchParams();
   const { login } = useBstorm();
+
+  // If user arrived after sign-out/logout, immediately scrub any stored/persisted route params
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("just_logged_out") === "true") {
+      sessionStorage.removeItem("just_logged_out");
+      clearPersistedRoutes();
+      if (searchParams.has("redirect")) {
+        setSearchParams({}, { replace: true });
+      }
+    }
+  }, [searchParams, setSearchParams]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,14 +47,21 @@ export const LoginPage: React.FC = () => {
     setIsSubmitting(true);
     setError("");
 
-    const success = await login(trimmedEmail, trimmedPassword);
-    if (!success) {
+    const loggedInUser = await login(trimmedEmail, trimmedPassword);
+    if (!loggedInUser) {
       setError("Invalid credentials. Please verify your email and password.");
       setIsSubmitting(false);
       return;
     }
 
-    navigate(redirectTarget, { replace: true });
+    let target = searchParams.get("redirect") || "/dashboard";
+
+    // Security & Role Guard: Non-admin users must NEVER be routed to admin endpoints
+    if (loggedInUser.role !== "admin" && target.startsWith("/admin")) {
+      target = "/dashboard";
+    }
+
+    navigate(target, { replace: true });
   };
 
   return (

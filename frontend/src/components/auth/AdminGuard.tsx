@@ -14,6 +14,15 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
 
   useEffect(() => {
     if (isHydrated && !user.isLoggedIn) {
+      const isExplicitLogout =
+        typeof window !== "undefined" &&
+        sessionStorage.getItem("just_logged_out") === "true";
+
+      if (isExplicitLogout) {
+        navigate("/", { replace: true });
+        return;
+      }
+
       const redirectUrl = `/login?redirect=${encodeURIComponent(
         location.pathname + location.search
       )}`;
@@ -35,9 +44,15 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
 
   // 2. Unauthenticated: redirected via useEffect; render placeholder to prevent UI flash
   if (!user.isLoggedIn) {
+    const isExplicitLogout =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("just_logged_out") === "true";
+
     return (
       <div className="min-h-screen bg-stone-900 flex items-center justify-center p-6">
-        <p className="text-xs text-stone-400 font-mono">Redirecting to Secure Sign In...</p>
+        <p className="text-xs text-stone-400 font-mono">
+          {isExplicitLogout ? "Signing out..." : "Redirecting to Secure Sign In..."}
+        </p>
       </div>
     );
   }
@@ -78,8 +93,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
 
             <button
               onClick={async () => {
-                await logout();
-                navigate("/login?redirect=/admin", { replace: true });
+                await logout("/login");
               }}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs sm:text-sm font-medium transition-colors border border-stone-700"
             >
