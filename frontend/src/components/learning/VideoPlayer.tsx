@@ -11,6 +11,7 @@ interface VideoPlayerProps {
   course: Course;
   moduleNumber: string;
   onVideoEnded?: () => void;
+  onUserPlay?: () => void;
   overlaySlot?: React.ReactNode;
 }
 
@@ -19,6 +20,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   course,
   moduleNumber,
   onVideoEnded,
+  onUserPlay,
   overlaySlot,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -38,9 +40,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     (course as any).videoUrl ||
     FALLBACK_CLOUDINARY_VIDEO;
 
-  // When lesson changes, reset playback
+  // When lesson changes, reset playback and ensure video remains paused until manually played
   useEffect(() => {
     if (videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.currentTime = 0;
       setCurrentTime(0);
       setIsPlaying(false);
@@ -50,6 +53,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const handlePlayToggle = () => {
     if (!videoRef.current) return;
     if (videoRef.current.paused) {
+      // If video has ended or is near the end, restart from 0
+      if (totalDuration > 0 && videoRef.current.currentTime >= totalDuration - 0.5) {
+        videoRef.current.currentTime = 0;
+        setCurrentTime(0);
+      }
+      onUserPlay?.();
       videoRef.current.play().catch(() => {});
     } else {
       videoRef.current.pause();
@@ -116,6 +125,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const clickX = e.clientX - rect.left;
     const fraction = Math.max(0, Math.min(1, clickX / rect.width));
     videoRef.current.currentTime = fraction * totalDuration;
+    onUserPlay?.();
   };
 
   const handleFullscreenToggle = () => {
@@ -155,7 +165,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onClick={handlePlayToggle}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => {
+          setIsPlaying(true);
+          onUserPlay?.();
+        }}
         onPause={() => setIsPlaying(false)}
         onEnded={() => {
           setIsPlaying(false);

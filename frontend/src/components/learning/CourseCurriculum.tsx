@@ -158,7 +158,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
       </div>
 
       {/* ── Modules list ────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 max-h-[calc(100vh-270px)] overflow-y-auto">
+      <div className="flex flex-col gap-2 max-h-[calc(100vh-250px)] overflow-y-auto overscroll-contain pr-1">
         {modules.map((module, modIdx) => {
           const lessons = module.lessons || [];
           const completedInModule = lessons.filter((l) =>
@@ -276,7 +276,14 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
               {/* ── Module Body (lessons + test) ───────────────────── */}
               {isOpen && modUnlocked && (
                 <div className="flex flex-col border-t border-surface-container bg-surface-container-lowest">
-                  {filteredLessons.map((lesson, lessonIdx) => {
+                  {/* Independent scrollable subtopics/videos list */}
+                  <div
+                    tabIndex={0}
+                    aria-label={`${module.title} lessons list`}
+                    className="flex flex-col max-h-[300px] overflow-y-auto overscroll-contain focus:outline-none"
+                    style={{ scrollbarWidth: "thin" }}
+                  >
+                    {filteredLessons.map((lesson, lessonIdx) => {
                     const isPlaying = lesson._id === currentLessonId;
                     const isDone = completedLessonIds.includes(lesson._id);
                     const isUnlocked = unlockedLessonIds.has(lesson._id);
@@ -384,6 +391,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
                       </div>
                     );
                   })}
+                  </div>
 
                   {/* ── Module Assessment Row ──────────────────────────── */}
                   {/* Only shown if this module actually has a test configured */}

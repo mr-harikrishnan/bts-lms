@@ -471,6 +471,12 @@ export const CourseLearningPage: React.FC = () => {
     setAutoAdvance((p) => ({ ...p, active: false }));
   };
 
+  const handleUserPlay = () => {
+    if (autoAdvance.active) {
+      setAutoAdvance((p) => ({ ...p, active: false }));
+    }
+  };
+
   const handleModuleTestPassed = (moduleId: string, nextLessonId?: string) => {
     setCompletedModuleTestIds((prev) =>
       prev.includes(moduleId) ? prev : [...prev, moduleId]
@@ -622,6 +628,7 @@ export const CourseLearningPage: React.FC = () => {
                     course={course}
                     moduleNumber={currentModuleNumber}
                     onVideoEnded={handleVideoEnded}
+                    onUserPlay={handleUserPlay}
                     overlaySlot={
                       autoAdvance.active ? (
                         <VideoAutoAdvance

@@ -128,6 +128,7 @@ export async function gradeCourseTest(
       {
         testScore: score,
         testPassed: passed,
+        ...(passed ? { isCompleted: true } : {}),
         ...(certificate ? { certificateId: certificate._id } : {}),
       }
     );

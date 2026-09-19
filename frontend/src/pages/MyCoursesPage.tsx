@@ -58,7 +58,9 @@ export const MyCoursesPage: React.FC = () => {
         courses[0];
       const progress = getCourseProgress(cid);
       const cert = certificates.find((c) => c.courseId?.toString() === cid);
-      const isCompleted = enr.isCompleted || progress.percentage === 100 || !!cert;
+      // Course is completed only if enrollment is marked completed by backend or a verified certificate exists.
+      // (If a course has a final test, it remains in-progress until the student takes and passes the test).
+      const isCompleted = Boolean(enr.isCompleted || !!cert);
 
       return {
         enrollment: enr,

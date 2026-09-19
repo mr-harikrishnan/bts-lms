@@ -1,6 +1,7 @@
 import { Enrollment } from '../models/Enrollment.js';
 import { Course } from '../models/Course.js';
 import { Lesson } from '../models/Lesson.js';
+import { Test } from '../models/Test.js';
 import { toObjectId } from '../utils/objectId.js';
 
 export async function getUserEnrollments(userId: string) {
@@ -86,7 +87,15 @@ export async function markLessonComplete(userId: string, courseId: string, lesso
   enrollment.completedLessonIds = completedArray;
   enrollment.currentLessonId = lessonOid!;
   if (isAllComplete) {
-    enrollment.isCompleted = true;
+    // If the course has a final certification test, it should only be marked completed
+    // after the student passes the final test. If there is no final test, all videos completed = course completed.
+    const finalTest = await Test.findOne({
+      courseId: courseOid,
+      $or: [{ moduleId: null }, { moduleId: { $exists: false } }],
+    });
+    if (!finalTest) {
+      enrollment.isCompleted = true;
+    }
   }
 
   await enrollment.save();
