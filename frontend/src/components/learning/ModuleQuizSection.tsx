@@ -47,7 +47,12 @@ export const ModuleQuizSection: React.FC<ModuleQuizSectionProps> = ({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | number[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<TestSubmissionResult | null>(null);
+  const [isTestStarted, setIsTestStarted] = useState(false);
   const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState<number | null>(null);
+
+  useEffect(() => {
+    setIsTestStarted(false);
+  }, [moduleId]);
 
   // Fetch quiz on mount
   useEffect(() => {
@@ -342,6 +347,92 @@ export const ModuleQuizSection: React.FC<ModuleQuizSectionProps> = ({
                 </div>
               );
             })}
+          </div>
+        </div>
+      ) : !isTestStarted ? (
+        /* ─── UDEMY-STYLE START TEST BRIEFING SCREEN ──────────────── */
+        <div className="p-6 sm:p-8 flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-100">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                  {quiz.isOptional ? "Optional Knowledge Check" : "Required Module Assessment"}
+                </span>
+                <span className="text-xs text-stone-500 font-medium">
+                  {questions.length} Questions
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">
+                Ready to test your knowledge?
+              </h2>
+              <p className="text-sm text-stone-600 mt-1 max-w-xl">
+                You have completed all lessons in <strong>{moduleNumber}: {moduleTitle}</strong>. Take this assessment to test your understanding of the concepts covered.
+              </p>
+            </div>
+            <div className="flex flex-col items-center justify-center p-4 bg-stone-50 border border-stone-200 rounded-xl min-w-[140px] text-center shrink-0">
+              <span className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Passing Grade</span>
+              <span className="text-2xl font-black text-emerald-600">{quiz.passingScore}%</span>
+              <span className="text-[10px] text-stone-500 mt-0.5">or higher to pass</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200/80 flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 shrink-0">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-800">Curriculum Coverage</p>
+                <p className="text-[11px] text-stone-500 mt-0.5">Covers key takeaways and techniques from {moduleNumber}.</p>
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200/80 flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-blue-50 text-blue-700 shrink-0">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-800">Multiple Formats</p>
+                <p className="text-[11px] text-stone-500 mt-0.5">Single-choice and multi-selection questions with instant grading.</p>
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200/80 flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-purple-50 text-purple-700 shrink-0">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-800">Immediate Progress</p>
+                <p className="text-[11px] text-stone-500 mt-0.5">Score {quiz.passingScore}% or higher to record progress and unlock upcoming modules.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-stone-100">
+            <div className="text-xs text-stone-500">
+              {quiz.isOptional ? (
+                <span>This quiz is optional, but recommended to solidify your skills.</span>
+              ) : (
+                <span>Complete this test to proceed to the next module.</span>
+              )}
+            </div>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {quiz.isOptional && onSkip && (
+                <button
+                  type="button"
+                  onClick={onSkip}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-semibold text-xs hover:bg-stone-100 transition-colors"
+                >
+                  Skip Assessment
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsTestStarted(true)}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                <span>Start Test</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       ) : (

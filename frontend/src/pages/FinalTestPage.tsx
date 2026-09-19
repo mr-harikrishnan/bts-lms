@@ -9,12 +9,13 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 export const FinalTestPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
-  const { courses, recordTestResult } = useBstorm();
+  const { courses, recordTestResult, getEnrolledCourse, user } = useBstorm();
 
   const course = courses.find((c) => c._id === courseId);
   const [testData, setTestData] = useState<PublicCourseTest | null>(null);
   const [isLoadingTest, setIsLoadingTest] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [isTestStarted, setIsTestStarted] = useState(false);
 
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
@@ -81,9 +82,9 @@ export const FinalTestPage: React.FC = () => {
     }
   };
 
-  // Timer countdown
+  // Timer countdown - only begins once user clicks Start Test
   useEffect(() => {
-    if (!testData) return;
+    if (!testData || !isTestStarted) return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -95,7 +96,7 @@ export const FinalTestPage: React.FC = () => {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [testData]);
+  }, [testData, isTestStarted]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -159,6 +160,130 @@ export const FinalTestPage: React.FC = () => {
             >
               Browse Courses
             </Link>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
+  // Check lesson completion eligibility
+  const enrollment = courseId ? getEnrolledCourse(courseId) : undefined;
+  const totalLessons = course?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
+  const completedLessonsCount = enrollment?.completedLessonIds?.length || 0;
+  const isEligible = user.role === "admin" || (totalLessons > 0 && completedLessonsCount >= totalLessons);
+
+  if (!isEligible) {
+    return (
+      <AuthGuard>
+        <AppShell customBreadcrumb={customBreadcrumb}>
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-[#E5E7EB] flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[36px]">lock</span>
+            </div>
+            <h2 className="font-bold text-xl text-slate-900">
+              Final Certification Test Locked
+            </h2>
+            <p className="text-sm text-slate-600 max-w-md">
+              You must complete all lessons in <strong>{course.title}</strong> before taking the final certification assessment ({completedLessonsCount}/{totalLessons} lessons completed).
+            </p>
+            <Link
+              to={`/courses/${course._id}/learn`}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-secondary text-on-secondary font-bold text-sm hover:opacity-90 transition-all shadow-sm"
+            >
+              <span>Continue Learning</span>
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </Link>
+          </div>
+        </AppShell>
+      </AuthGuard>
+    );
+  }
+
+  // Udemy-style Start Test briefing screen
+  if (!isTestStarted) {
+    return (
+      <AuthGuard>
+        <AppShell customBreadcrumb={customBreadcrumb}>
+          <div className="max-w-3xl mx-auto bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] overflow-hidden shadow-sm">
+            {/* Header Banner */}
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-[#1a2744] p-8 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    Official Certification Exam
+                  </span>
+                </div>
+                <h1 className="text-2xl font-black tracking-tight">{testData.title}</h1>
+                <p className="text-sm text-slate-300">{course.title}</p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-4 bg-white/10 rounded-2xl border border-white/15 min-w-[130px] shrink-0 text-center">
+                <span className="text-[11px] uppercase tracking-wider text-slate-300 font-bold">Passing Grade</span>
+                <span className="text-3xl font-black text-amber-400">{testData.passingScore || 70}%</span>
+                <span className="text-[10px] text-slate-300 mt-0.5">Minimum required</span>
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-8 flex flex-col gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-secondary text-[24px]">quiz</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Format</h4>
+                    <p className="text-sm font-semibold text-slate-900 mt-0.5">{totalQuestions} Questions</p>
+                    <p className="text-[11px] text-slate-500">Multiple-choice format</p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-secondary text-[24px]">timer</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Time Limit</h4>
+                    <p className="text-sm font-semibold text-slate-900 mt-0.5">{testData.timeLimitMinutes} Minutes</p>
+                    <p className="text-[11px] text-slate-500">Timer begins when you click Start</p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-surface-container-low border border-stone-200 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-secondary text-[24px]">workspace_premium</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Reward</h4>
+                    <p className="text-sm font-semibold text-slate-900 mt-0.5">Verified Certificate</p>
+                    <p className="text-[11px] text-slate-500">Awarded immediately upon passing</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">info</span>
+                  Before You Begin
+                </h4>
+                <ul className="text-xs text-amber-900/90 space-y-2 list-disc list-inside leading-relaxed">
+                  <li>Ensure you have an uninterrupted internet connection for the next {testData.timeLimitMinutes} minutes.</li>
+                  <li>You can move back and forth between questions before submitting.</li>
+                  <li>Once the timer reaches 00:00, your test will automatically submit.</li>
+                </ul>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-stone-200">
+                <Link
+                  to={`/courses/${courseId}/learn`}
+                  className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl border border-stone-300 text-slate-700 text-xs font-semibold hover:bg-stone-100 transition-colors"
+                >
+                  Return to Learning Workspace
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsTestStarted(true)}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <span>Start Test</span>
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
           </div>
         </AppShell>
       </AuthGuard>

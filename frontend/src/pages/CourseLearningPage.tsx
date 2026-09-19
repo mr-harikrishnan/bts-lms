@@ -152,6 +152,7 @@ export const CourseLearningPage: React.FC = () => {
   const [completedModuleTestIds, setCompletedModuleTestIds] = useState<
     string[]
   >([]);
+  const [finalCourseTest, setFinalCourseTest] = useState<PublicCourseTest | null>(null);
   const [mainView, setMainView] = useState<MainView>({ type: "video" });
 
   // ── Fetch course ─────────────────────────────────────────────────────────
@@ -173,14 +174,14 @@ export const CourseLearningPage: React.FC = () => {
     return () => { mounted = false; };
   }, [courseId]);
 
-  // ── Fetch module tests (to know which modules have assessments) ───────────
+  // ── Fetch module tests & final course test ───────────────────────────────
   const fetchModuleTests = useCallback(
     async (course: Course) => {
       if (!course.modules?.length) return;
       setIsLoadingTests(true);
       const results: Record<string, PublicCourseTest | null> = {};
-      await Promise.all(
-        course.modules.map(async (mod) => {
+      await Promise.all([
+        ...course.modules.map(async (mod) => {
           try {
             const test = await courseService.getModuleTest(
               course._id,
@@ -191,8 +192,16 @@ export const CourseLearningPage: React.FC = () => {
             // 404 = no test for this module
             results[mod._id] = null;
           }
-        })
-      );
+        }),
+        (async () => {
+          try {
+            const finalTest = await courseService.getTest(course._id);
+            setFinalCourseTest(finalTest ?? null);
+          } catch {
+            setFinalCourseTest(null);
+          }
+        })(),
+      ]);
       setModuleTestMap(results);
       setIsLoadingTests(false);
     },
@@ -411,7 +420,9 @@ export const CourseLearningPage: React.FC = () => {
     }
 
     if (isLastLesson) {
-      navigate(`/test/${course._id}`);
+      if (finalCourseTest) {
+        navigate(`/test/${course._id}`);
+      }
       return;
     }
 
@@ -734,7 +745,7 @@ export const CourseLearningPage: React.FC = () => {
                         )
                       )}
 
-                      {isLastLesson && isCurrentCompleted && (
+                      {isLastLesson && isCurrentCompleted && Boolean(finalCourseTest) && (
                         <button
                           onClick={handleStartFinalTest}
                           className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:opacity-95 shadow-sm transition-all"
@@ -808,6 +819,7 @@ export const CourseLearningPage: React.FC = () => {
                   completedModuleTestIds={completedModuleTestIds}
                   moduleTestMap={moduleTestMap}
                   allModulesFullyDone={allModulesFullyDone}
+                  hasFinalTest={Boolean(finalCourseTest)}
                   activeTestModuleId={activeTestModuleId}
                   onSelectLesson={handleSelectLesson}
                   onStartModuleTest={handleStartModuleTest}

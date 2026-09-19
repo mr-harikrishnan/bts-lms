@@ -19,6 +19,8 @@ interface CourseCurriculumProps {
   moduleTestMap: Record<string, PublicCourseTest | null>;
   /** True when every module is fully done (videos + required tests) */
   allModulesFullyDone: boolean;
+  /** Whether the course has a final certification test configured */
+  hasFinalTest?: boolean;
   /** If a module quiz is currently being taken, its moduleId */
   activeTestModuleId?: string | null;
   onSelectLesson: (lessonId: string) => void;
@@ -36,6 +38,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   completedModuleTestIds,
   moduleTestMap,
   allModulesFullyDone,
+  hasFinalTest,
   activeTestModuleId,
   onSelectLesson,
   onStartModuleTest,
@@ -525,7 +528,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
         })}
 
         {/* ── Final Test ───────────────────────────────────────────── */}
-        {!filterQuery && (() => {
+        {hasFinalTest && !filterQuery && (() => {
           // Count how many modules actually have tests in this course
           const totalModulesWithTests = modules.filter((m) =>
             moduleHasTest(m._id)

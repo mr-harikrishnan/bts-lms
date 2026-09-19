@@ -34,6 +34,7 @@ import {
   CheckCircle2,
   Code2,
   FileQuestion,
+  AlertCircle,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { courseService, adminService, categoryService, couponService } from "@/services/apiClient";
@@ -185,6 +186,7 @@ export const AdminCoursesPage: React.FC = () => {
   const [deletingCourse, setDeletingCourse] = useState<Course | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Quick Category Modal State
   const [catModalOpen, setCatModalOpen] = useState(false);
@@ -741,6 +743,7 @@ export const AdminCoursesPage: React.FC = () => {
       },
     ]);
     setErrorMsg(null);
+    setValidationErrors({});
     setModalOpen(true);
   };
 
@@ -769,6 +772,7 @@ export const AdminCoursesPage: React.FC = () => {
       capstoneDesc: c.capstoneDesc || "Deploy a production-ready project to prove mastery.",
     });
     setErrorMsg(null);
+    setValidationErrors({});
     setModalOpen(true);
   };
 
@@ -960,21 +964,150 @@ export const AdminCoursesPage: React.FC = () => {
     setModulesDraft(updated);
   };
 
+  const validateStep = (step: number): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (step === 1 || editingCourse) {
+      if (!formData.title.trim()) {
+        errors.title = "Course title is required.";
+      } else if (formData.title.trim().length < 5) {
+        errors.title = "Course title must be at least 5 characters.";
+      }
+
+      if (!formData.category.trim()) {
+        errors.category = "Please select a course category.";
+      }
+
+      if (!formData.description.trim()) {
+        errors.description = "Course description is required.";
+      } else if (formData.description.trim().length < 15) {
+        errors.description = "Course description must be at least 15 characters.";
+      }
+
+      if (formData.thumbnail.trim()) {
+        try {
+          new URL(formData.thumbnail.trim());
+        } catch {
+          errors.thumbnail = "Please provide a valid image URL.";
+        }
+      }
+    }
+
+    if (step === 2 || editingCourse) {
+      if (
+        formData.price === undefined ||
+        formData.price === null ||
+        isNaN(Number(formData.price)) ||
+        Number(formData.price) < 0
+      ) {
+        errors.price = "Offer price must be a non-negative number.";
+      }
+
+      if (
+        formData.originalPrice === undefined ||
+        formData.originalPrice === null ||
+        isNaN(Number(formData.originalPrice)) ||
+        Number(formData.originalPrice) < 0
+      ) {
+        errors.originalPrice = "Original price must be a non-negative number.";
+      } else if (Number(formData.originalPrice) > 0 && Number(formData.originalPrice) < Number(formData.price)) {
+        errors.originalPrice = "Original price cannot be lower than the offer price.";
+      }
+
+      if (!formData.instructorName.trim()) {
+        errors.instructorName = "Instructor name is required.";
+      }
+
+      if (!formData.instructorTitle.trim()) {
+        errors.instructorTitle = "Instructor title is required.";
+      }
+
+      if (formData.instructorAvatar.trim()) {
+        try {
+          new URL(formData.instructorAvatar.trim());
+        } catch {
+          errors.instructorAvatar = "Please enter a valid avatar image URL.";
+        }
+      }
+
+      if (!formData.capstoneTitle.trim()) {
+        errors.capstoneTitle = "Capstone project title is required.";
+      }
+
+      if (!formData.capstoneDesc.trim()) {
+        errors.capstoneDesc = "Capstone project description is required.";
+      }
+    }
+
+    if (step === 3 && !editingCourse) {
+      if (modulesDraft.length === 0) {
+        errors.modules = "At least one module is required.";
+      }
+      modulesDraft.forEach((mod, mIdx) => {
+        if (!mod.title.trim()) {
+          errors[`module_${mIdx}_title`] = `Module #${mIdx + 1} title is required.`;
+        }
+        if (mod.lessons.length === 0) {
+          errors[`module_${mIdx}_lessons`] = `Module #${mIdx + 1} must contain at least 1 lesson.`;
+        }
+        mod.lessons.forEach((l, lIdx) => {
+          if (!l.title.trim()) {
+            errors[`lesson_${mIdx}_${lIdx}_title`] = `Lesson title is required.`;
+          }
+          if (!l.videoUrl.trim()) {
+            errors[`lesson_${mIdx}_${lIdx}_videoUrl`] = `Video URL is required.`;
+          }
+        });
+        if (mod.quiz?.hasQuiz) {
+          if (!mod.quiz.title.trim()) {
+            errors[`module_${mIdx}_quiz_title`] = "Quiz title is required.";
+          }
+          if (mod.quiz.questions.length === 0) {
+            errors[`module_${mIdx}_quiz_questions`] = "Please add at least 1 question.";
+          }
+          mod.quiz.questions.forEach((q, qIdx) => {
+            if (!q.question.trim()) {
+              errors[`module_${mIdx}_q_${qIdx}_question`] = "Question prompt is required.";
+            }
+            if (q.options.some((opt) => !opt.trim())) {
+              errors[`module_${mIdx}_q_${qIdx}_options`] = "All options must have text.";
+            }
+          });
+        }
+      });
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleNextStep = () => {
+    if (validateStep(currentStep)) {
+      setValidationErrors({});
+      setErrorMsg(null);
+      setCurrentStep((s) => (s + 1) as any);
+    } else {
+      setErrorMsg("Please resolve the highlighted validation errors before proceeding.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
-      setErrorMsg("Course title is required.");
-      setCurrentStep(1);
-      return;
-    }
-    if (!formData.category.trim()) {
-      setErrorMsg("Course category is required.");
-      setCurrentStep(1);
+    const isValid1 = validateStep(1);
+    const isValid2 = validateStep(2);
+    const isValid3 = editingCourse ? true : validateStep(3);
+
+    if (!isValid1 || !isValid2 || !isValid3) {
+      setErrorMsg("Please fix all validation errors before submitting.");
+      if (!isValid1) setCurrentStep(1);
+      else if (!isValid2) setCurrentStep(2);
+      else if (!isValid3) setCurrentStep(3);
       return;
     }
 
     setIsSubmitting(true);
     setErrorMsg(null);
+    setValidationErrors({});
 
     const skillsArray = formData.skillsText
       .split(",")
@@ -1374,8 +1507,10 @@ export const AdminCoursesPage: React.FC = () => {
               <div className="grid grid-cols-4 border-b border-stone-200 bg-stone-50/80 text-xs text-stone-600 font-medium">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(1)}
-                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 ${
+                  onClick={() => {
+                    setCurrentStep(1);
+                  }}
+                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                     currentStep === 1
                       ? "border-emerald-600 text-emerald-700 font-bold bg-white"
                       : "border-transparent text-stone-500 hover:text-stone-800"
@@ -1387,8 +1522,18 @@ export const AdminCoursesPage: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(2)}
-                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 ${
+                  onClick={() => {
+                    if (currentStep < 2) {
+                      if (!validateStep(1)) {
+                        setErrorMsg("Please resolve errors in Step 1 first.");
+                        return;
+                      }
+                    }
+                    setValidationErrors({});
+                    setErrorMsg(null);
+                    setCurrentStep(2);
+                  }}
+                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                     currentStep === 2
                       ? "border-emerald-600 text-emerald-700 font-bold bg-white"
                       : "border-transparent text-stone-500 hover:text-stone-800"
@@ -1400,8 +1545,22 @@ export const AdminCoursesPage: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(3)}
-                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 ${
+                  onClick={() => {
+                    if (!validateStep(1)) {
+                      setCurrentStep(1);
+                      setErrorMsg("Please resolve errors in Step 1 first.");
+                      return;
+                    }
+                    if (!validateStep(2)) {
+                      setCurrentStep(2);
+                      setErrorMsg("Please resolve errors in Step 2 first.");
+                      return;
+                    }
+                    setValidationErrors({});
+                    setErrorMsg(null);
+                    setCurrentStep(3);
+                  }}
+                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                     currentStep === 3
                       ? "border-emerald-600 text-emerald-700 font-bold bg-white"
                       : "border-transparent text-stone-500 hover:text-stone-800"
@@ -1413,8 +1572,27 @@ export const AdminCoursesPage: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(4)}
-                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 ${
+                  onClick={() => {
+                    if (!validateStep(1)) {
+                      setCurrentStep(1);
+                      setErrorMsg("Please resolve errors in Step 1 first.");
+                      return;
+                    }
+                    if (!validateStep(2)) {
+                      setCurrentStep(2);
+                      setErrorMsg("Please resolve errors in Step 2 first.");
+                      return;
+                    }
+                    if (!validateStep(3)) {
+                      setCurrentStep(3);
+                      setErrorMsg("Please resolve errors in Step 3 first.");
+                      return;
+                    }
+                    setValidationErrors({});
+                    setErrorMsg(null);
+                    setCurrentStep(4);
+                  }}
+                  className={`py-2.5 px-3 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                     currentStep === 4
                       ? "border-emerald-600 text-emerald-700 font-bold bg-white"
                       : "border-transparent text-stone-500 hover:text-stone-800"
@@ -1444,10 +1622,29 @@ export const AdminCoursesPage: React.FC = () => {
                       type="text"
                       required
                       value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, title: e.target.value });
+                        if (validationErrors.title) {
+                          setValidationErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.title;
+                            return next;
+                          });
+                        }
+                      }}
                       placeholder="e.g. Advanced Performance Marketing & Growth Systems"
-                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                      className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                        validationErrors.title
+                          ? "bg-red-50/30 border-2 border-red-500 text-stone-900 focus:border-red-600"
+                          : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                      }`}
                     />
+                    {validationErrors.title && (
+                      <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{validationErrors.title}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1466,8 +1663,21 @@ export const AdminCoursesPage: React.FC = () => {
                       </div>
                       <select
                         value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, category: e.target.value });
+                          if (validationErrors.category) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.category;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.category
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       >
                         {categories.map((cat) => (
                           <option key={cat._id} value={cat.name}>
@@ -1475,6 +1685,12 @@ export const AdminCoursesPage: React.FC = () => {
                           </option>
                         ))}
                       </select>
+                      {validationErrors.category && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.category}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1495,16 +1711,35 @@ export const AdminCoursesPage: React.FC = () => {
 
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                      Course Description * (min 10 chars)
+                      Course Description * (min 15 chars)
                     </label>
                     <textarea
                       required
                       rows={3}
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, description: e.target.value });
+                        if (validationErrors.description) {
+                          setValidationErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.description;
+                            return next;
+                          });
+                        }
+                      }}
                       placeholder="Comprehensive synopsis of what the learner will achieve..."
-                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400 resize-none"
+                      className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden resize-none transition-colors ${
+                        validationErrors.description
+                          ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                          : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                      }`}
                     />
+                    {validationErrors.description && (
+                      <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{validationErrors.description}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1515,10 +1750,29 @@ export const AdminCoursesPage: React.FC = () => {
                       <input
                         type="text"
                         value={formData.thumbnail}
-                        onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, thumbnail: e.target.value });
+                          if (validationErrors.thumbnail) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.thumbnail;
+                              return next;
+                            });
+                          }
+                        }}
                         placeholder="https://images.unsplash.com/..."
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.thumbnail
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.thumbnail && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.thumbnail}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1568,9 +1822,28 @@ export const AdminCoursesPage: React.FC = () => {
                         min={0}
                         required
                         value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, price: Number(e.target.value) });
+                          if (validationErrors.price) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.price;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.price
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.price && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.price}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1582,9 +1855,28 @@ export const AdminCoursesPage: React.FC = () => {
                         min={0}
                         required
                         value={formData.originalPrice}
-                        onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, originalPrice: Number(e.target.value) });
+                          if (validationErrors.originalPrice) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.originalPrice;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.originalPrice
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.originalPrice && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.originalPrice}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -1597,21 +1889,59 @@ export const AdminCoursesPage: React.FC = () => {
                         type="text"
                         required
                         value={formData.instructorName}
-                        onChange={(e) => setFormData({ ...formData, instructorName: e.target.value })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, instructorName: e.target.value });
+                          if (validationErrors.instructorName) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.instructorName;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.instructorName
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.instructorName && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.instructorName}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
                       <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                        Instructor Title
+                        Instructor Title *
                       </label>
                       <input
                         type="text"
                         value={formData.instructorTitle}
-                        onChange={(e) => setFormData({ ...formData, instructorTitle: e.target.value })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, instructorTitle: e.target.value });
+                          if (validationErrors.instructorTitle) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.instructorTitle;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.instructorTitle
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.instructorTitle && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.instructorTitle}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1621,36 +1951,93 @@ export const AdminCoursesPage: React.FC = () => {
                       <input
                         type="text"
                         value={formData.instructorAvatar}
-                        onChange={(e) => setFormData({ ...formData, instructorAvatar: e.target.value })}
-                        className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                        onChange={(e) => {
+                          setFormData({ ...formData, instructorAvatar: e.target.value });
+                          if (validationErrors.instructorAvatar) {
+                            setValidationErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.instructorAvatar;
+                              return next;
+                            });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                          validationErrors.instructorAvatar
+                            ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                            : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                        }`}
                       />
+                      {validationErrors.instructorAvatar && (
+                        <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{validationErrors.instructorAvatar}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                      Capstone Project Title
+                      Capstone Project Title *
                     </label>
                     <input
                       type="text"
                       value={formData.capstoneTitle}
-                      onChange={(e) => setFormData({ ...formData, capstoneTitle: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, capstoneTitle: e.target.value });
+                        if (validationErrors.capstoneTitle) {
+                          setValidationErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.capstoneTitle;
+                            return next;
+                          });
+                        }
+                      }}
                       placeholder="e.g. End-to-End Analytics Pipeline Deployment"
-                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                      className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                        validationErrors.capstoneTitle
+                          ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                          : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                      }`}
                     />
+                    {validationErrors.capstoneTitle && (
+                      <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{validationErrors.capstoneTitle}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                      Capstone Project Description
+                      Capstone Project Description *
                     </label>
                     <input
                       type="text"
                       value={formData.capstoneDesc}
-                      onChange={(e) => setFormData({ ...formData, capstoneDesc: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, capstoneDesc: e.target.value });
+                        if (validationErrors.capstoneDesc) {
+                          setValidationErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.capstoneDesc;
+                            return next;
+                          });
+                        }
+                      }}
                       placeholder="e.g. Build and deploy a portfolio-ready project showcasing complete mastery"
-                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-stone-400"
+                      className={`w-full px-3 py-2 text-xs rounded-xl focus:outline-hidden transition-colors ${
+                        validationErrors.capstoneDesc
+                          ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                          : "bg-stone-50 border border-stone-200 focus:border-stone-400"
+                      }`}
                     />
+                    {validationErrors.capstoneDesc && (
+                      <p className="mt-1 text-[11px] font-medium text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{validationErrors.capstoneDesc}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-6 pt-2">
@@ -1695,44 +2082,78 @@ export const AdminCoursesPage: React.FC = () => {
                     </button>
                   </div>
 
+                  {validationErrors.modules && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                      <span>{validationErrors.modules}</span>
+                    </div>
+                  )}
+
                   {modulesDraft.map((mod, mIdx) => (
                     <div key={mIdx} className="bg-stone-50 border border-stone-200/90 rounded-xl p-4 space-y-3.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 flex-1">
-                          <input
-                            type="text"
-                            value={mod.moduleNumber}
-                            onChange={(e) => updateModuleField(mIdx, "moduleNumber", e.target.value)}
-                            placeholder="e.g. Module 01"
-                            className="w-28 px-2.5 py-1.5 text-xs font-bold bg-white border border-stone-200 rounded-lg text-stone-800"
-                          />
-                          <input
-                            type="text"
-                            value={mod.title}
-                            onChange={(e) => updateModuleField(mIdx, "title", e.target.value)}
-                            placeholder="Module Title..."
-                            className="flex-1 px-3 py-1.5 text-xs font-semibold bg-white border border-stone-200 rounded-lg text-stone-900"
-                          />
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => addLessonToModule(mIdx)}
-                            className="px-2.5 py-1 text-[11px] bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 rounded-lg font-medium"
-                          >
-                            + Add Lesson
-                          </button>
-                          {modulesDraft.length > 1 && (
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2 flex-1">
+                            <input
+                              type="text"
+                              value={mod.moduleNumber}
+                              onChange={(e) => updateModuleField(mIdx, "moduleNumber", e.target.value)}
+                              placeholder="e.g. Module 01"
+                              className="w-28 px-2.5 py-1.5 text-xs font-bold bg-white border border-stone-200 rounded-lg text-stone-800"
+                            />
+                            <input
+                              type="text"
+                              value={mod.title}
+                              onChange={(e) => {
+                                updateModuleField(mIdx, "title", e.target.value);
+                                if (validationErrors[`module_${mIdx}_title`]) {
+                                  setValidationErrors((prev) => {
+                                    const next = { ...prev };
+                                    delete next[`module_${mIdx}_title`];
+                                    return next;
+                                  });
+                                }
+                              }}
+                              placeholder="Module Title... *"
+                              className={`flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg text-stone-900 transition-colors ${
+                                validationErrors[`module_${mIdx}_title`]
+                                  ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                                  : "bg-white border border-stone-200"
+                              }`}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
                             <button
                               type="button"
-                              onClick={() => removeModule(mIdx)}
-                              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
-                              title="Delete Module"
+                              onClick={() => addLessonToModule(mIdx)}
+                              className="px-2.5 py-1 text-[11px] bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 rounded-lg font-medium"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              + Add Lesson
                             </button>
-                          )}
+                            {modulesDraft.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeModule(mIdx)}
+                                className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
+                                title="Delete Module"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
                         </div>
+                        {validationErrors[`module_${mIdx}_title`] && (
+                          <p className="text-[11px] font-medium text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span>{validationErrors[`module_${mIdx}_title`]}</span>
+                          </p>
+                        )}
+                        {validationErrors[`module_${mIdx}_lessons`] && (
+                          <p className="text-[11px] font-medium text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span>{validationErrors[`module_${mIdx}_lessons`]}</span>
+                          </p>
+                        )}
                       </div>
 
                       {/* Lessons List in Module */}
@@ -1753,14 +2174,33 @@ export const AdminCoursesPage: React.FC = () => {
                                 />
                               </div>
                               <div className="sm:col-span-9">
-                                <label className="block text-[10px] text-stone-400 font-semibold uppercase">Title</label>
+                                <label className="block text-[10px] text-stone-400 font-semibold uppercase">Title *</label>
                                 <input
                                   type="text"
                                   value={lesson.title}
-                                  onChange={(e) => updateLessonField(mIdx, lIdx, "title", e.target.value)}
-                                  placeholder="Lesson Title..."
-                                  className="w-full px-2 py-1 text-xs bg-stone-50 border border-stone-200 rounded-md font-medium text-stone-900"
+                                  onChange={(e) => {
+                                    updateLessonField(mIdx, lIdx, "title", e.target.value);
+                                    if (validationErrors[`lesson_${mIdx}_${lIdx}_title`]) {
+                                      setValidationErrors((prev) => {
+                                        const next = { ...prev };
+                                        delete next[`lesson_${mIdx}_${lIdx}_title`];
+                                        return next;
+                                      });
+                                    }
+                                  }}
+                                  placeholder="Lesson Title... *"
+                                  className={`w-full px-2 py-1 text-xs rounded-md font-medium text-stone-900 transition-colors ${
+                                    validationErrors[`lesson_${mIdx}_${lIdx}_title`]
+                                      ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                                      : "bg-stone-50 border border-stone-200"
+                                  }`}
                                 />
+                                {validationErrors[`lesson_${mIdx}_${lIdx}_title`] && (
+                                  <p className="mt-1 text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3 shrink-0" />
+                                    <span>{validationErrors[`lesson_${mIdx}_${lIdx}_title`]}</span>
+                                  </p>
+                                )}
                               </div>
                               <div className="sm:col-span-1 flex items-end justify-end">
                                 {mod.lessons.length > 1 && (
@@ -1779,7 +2219,7 @@ export const AdminCoursesPage: React.FC = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-stone-100">
                               <div>
                                 <div className="flex items-center justify-between mb-1">
-                                  <label className="block text-[10px] text-stone-400 font-semibold uppercase">Video URL (YouTube/Vimeo/MP4)</label>
+                                  <label className="block text-[10px] text-stone-400 font-semibold uppercase">Video URL (YouTube/Vimeo/MP4) *</label>
                                   {probingVideoKeys[`${mIdx}-${lIdx}`] ? (
                                     <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600">
                                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -1796,14 +2236,27 @@ export const AdminCoursesPage: React.FC = () => {
                                   <input
                                     type="text"
                                     value={lesson.videoUrl}
-                                    onChange={(e) => handleVideoUrlChange(mIdx, lIdx, e.target.value)}
+                                    onChange={(e) => {
+                                      handleVideoUrlChange(mIdx, lIdx, e.target.value);
+                                      if (validationErrors[`lesson_${mIdx}_${lIdx}_videoUrl`]) {
+                                        setValidationErrors((prev) => {
+                                          const next = { ...prev };
+                                          delete next[`lesson_${mIdx}_${lIdx}_videoUrl`];
+                                          return next;
+                                        });
+                                      }
+                                    }}
                                     onBlur={() => {
                                       if (lesson.videoUrl && !lesson.duration) {
                                         handleRecheckDuration(mIdx, lIdx, lesson.videoUrl);
                                       }
                                     }}
-                                    placeholder="Paste video URL to auto-detect duration..."
-                                    className="w-full px-2 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-md font-mono pr-7"
+                                    placeholder="Paste video URL to auto-detect duration... *"
+                                    className={`w-full px-2 py-1.5 text-xs rounded-md font-mono pr-7 transition-colors ${
+                                      validationErrors[`lesson_${mIdx}_${lIdx}_videoUrl`]
+                                        ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                                        : "bg-stone-50 border border-stone-200"
+                                    }`}
                                   />
                                   {lesson.videoUrl && !probingVideoKeys[`${mIdx}-${lIdx}`] && (
                                     <button
@@ -1816,6 +2269,12 @@ export const AdminCoursesPage: React.FC = () => {
                                     </button>
                                   )}
                                 </div>
+                                {validationErrors[`lesson_${mIdx}_${lIdx}_videoUrl`] && (
+                                  <p className="mt-1 text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3 shrink-0" />
+                                    <span>{validationErrors[`lesson_${mIdx}_${lIdx}_videoUrl`]}</span>
+                                  </p>
+                                )}
                               </div>
                               <div>
                                 <label className="block text-[10px] text-stone-400 font-semibold uppercase">Overview Points (Comma-separated)</label>
@@ -1876,14 +2335,33 @@ export const AdminCoursesPage: React.FC = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                               <div className="sm:col-span-1">
-                                <label className="block text-[10px] text-stone-400 font-semibold uppercase mb-1">Quiz Title</label>
+                                <label className="block text-[10px] text-stone-400 font-semibold uppercase mb-1">Quiz Title *</label>
                                 <input
                                   type="text"
                                   value={mod.quiz.title}
-                                  onChange={(e) => updateQuizField(mIdx, "title", e.target.value)}
+                                  onChange={(e) => {
+                                    updateQuizField(mIdx, "title", e.target.value);
+                                    if (validationErrors[`module_${mIdx}_quiz_title`]) {
+                                      setValidationErrors((prev) => {
+                                        const next = { ...prev };
+                                        delete next[`module_${mIdx}_quiz_title`];
+                                        return next;
+                                      });
+                                    }
+                                  }}
                                   placeholder="e.g. Module 1 Knowledge Check"
-                                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg font-medium"
+                                  className={`w-full px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors ${
+                                    validationErrors[`module_${mIdx}_quiz_title`]
+                                      ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                                      : "bg-stone-50 border border-stone-200"
+                                  }`}
                                 />
+                                {validationErrors[`module_${mIdx}_quiz_title`] && (
+                                  <p className="mt-1 text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3 shrink-0" />
+                                    <span>{validationErrors[`module_${mIdx}_quiz_title`]}</span>
+                                  </p>
+                                )}
                               </div>
                               <div>
                                 <label className="block text-[10px] text-stone-400 font-semibold uppercase mb-1">Time Limit (Mins)</label>
@@ -1907,6 +2385,12 @@ export const AdminCoursesPage: React.FC = () => {
                                 />
                               </div>
                             </div>
+                            {validationErrors[`module_${mIdx}_quiz_questions`] && (
+                              <p className="text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                <span>{validationErrors[`module_${mIdx}_quiz_questions`]}</span>
+                              </p>
+                            )}
                             {/* Optional toggle */}
                             <label className="flex items-center gap-2 cursor-pointer select-none mt-1">
                               <input
@@ -1972,10 +2456,35 @@ export const AdminCoursesPage: React.FC = () => {
                                     <input
                                       type="text"
                                       value={q.question}
-                                      onChange={(e) => updateQuestionField(mIdx, qIdx, "question", e.target.value)}
-                                      placeholder="Question prompt..."
-                                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg font-medium text-stone-900"
+                                      onChange={(e) => {
+                                        updateQuestionField(mIdx, qIdx, "question", e.target.value);
+                                        if (validationErrors[`module_${mIdx}_q_${qIdx}_question`]) {
+                                          setValidationErrors((prev) => {
+                                            const next = { ...prev };
+                                            delete next[`module_${mIdx}_q_${qIdx}_question`];
+                                            return next;
+                                          });
+                                        }
+                                      }}
+                                      placeholder="Question prompt... *"
+                                      className={`w-full px-2.5 py-1.5 text-xs rounded-lg font-medium text-stone-900 transition-colors ${
+                                        validationErrors[`module_${mIdx}_q_${qIdx}_question`]
+                                          ? "bg-red-50/30 border-2 border-red-500 focus:border-red-600"
+                                          : "bg-white border border-stone-200"
+                                      }`}
                                     />
+                                    {validationErrors[`module_${mIdx}_q_${qIdx}_question`] && (
+                                      <p className="mt-1 text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3 shrink-0" />
+                                        <span>{validationErrors[`module_${mIdx}_q_${qIdx}_question`]}</span>
+                                      </p>
+                                    )}
+                                    {validationErrors[`module_${mIdx}_q_${qIdx}_options`] && (
+                                      <p className="mt-1 text-[10px] font-medium text-red-500 flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3 shrink-0" />
+                                        <span>{validationErrors[`module_${mIdx}_q_${qIdx}_options`]}</span>
+                                      </p>
+                                    )}
                                   </div>
 
                                   <div>
@@ -2168,8 +2677,8 @@ export const AdminCoursesPage: React.FC = () => {
                       {currentStep < 4 ? (
                         <button
                           type="button"
-                          onClick={() => setCurrentStep((s) => (s + 1) as any)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-[#2D3536] text-white hover:bg-stone-800 rounded-xl transition-colors shadow-xs"
+                          onClick={handleNextStep}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-[#2D3536] text-white hover:bg-stone-800 rounded-xl transition-colors shadow-xs cursor-pointer"
                         >
                           <span>Next Step</span>
                           <ArrowRight className="w-3.5 h-3.5" />
