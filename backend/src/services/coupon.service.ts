@@ -242,6 +242,21 @@ export async function redeemFreeCoupon(userId: string, courseId: string, couponC
     throw err;
   }
 
+  // Atomically increment usage with maxUses condition to eliminate race conditions
+  const updatedCoupon = await Coupon.findOneAndUpdate(
+    { _id: validation.coupon._id, $expr: { $lt: ['$usedCount', '$maxUses'] } },
+    { $inc: { usedCount: 1 } },
+    { new: true }
+  );
+
+  if (!updatedCoupon) {
+    const err: any = new Error(
+      `Coupon '${couponCode.trim().toUpperCase()}' has reached its maximum redemption limit.`
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
   // Directly create enrollment
   const enrollment = await enrollUser(userId, courseId);
 
@@ -272,9 +287,6 @@ export async function redeemFreeCoupon(userId: string, courseId: string, couponC
     status: PAYMENT_STATUS.CAPTURED,
     method: 'COUPON_FREE',
   });
-
-  // Increment usage
-  await Coupon.updateOne({ _id: validation.coupon._id }, { $inc: { usedCount: 1 } });
 
   return {
     success: true,

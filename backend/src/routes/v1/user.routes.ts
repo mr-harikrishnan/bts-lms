@@ -41,7 +41,6 @@ router.get(
   requireAuth,
   certificateController.getCertificateById
 );
-router.post('/certificates/generate', requireAuth, certificateController.generate);
 
 // User lookup by ID (with IDOR protection)
 router.get('/:id', validateObjectIdParam('id'), requireAuth, userController.getUserById);

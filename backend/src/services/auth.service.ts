@@ -132,8 +132,12 @@ export async function refreshAccessToken(refreshToken: string) {
   };
 }
 
-export async function logoutUser(userId: string) {
-  await User.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } });
+export async function logoutUser(userId?: string, refreshToken?: string) {
+  if (userId) {
+    await User.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } });
+  } else if (refreshToken) {
+    await User.findOneAndUpdate({ refreshToken }, { $unset: { refreshToken: 1 } });
+  }
   return true;
 }
 

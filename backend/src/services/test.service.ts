@@ -1,10 +1,38 @@
 import { Test, ITest } from '../models/Test.js';
 import { Enrollment } from '../models/Enrollment.js';
+import { Lesson } from '../models/Lesson.js';
+import { Course } from '../models/Course.js';
+import { ROLES } from '../constants/roles.js';
 import { toObjectId } from '../utils/objectId.js';
 import { generateCertificate } from './certificate.service.js';
 
-export async function getCourseTest(courseId: string, isPublic = true, moduleId?: string) {
+export async function getCourseTest(
+  courseId: string,
+  isPublic = true,
+  moduleId?: string,
+  userId?: string,
+  userRole?: string
+) {
   const courseOid = toObjectId(courseId);
+
+  // If userId is provided for a paid course, check enrollment
+  if (userId && userRole !== ROLES.ADMIN) {
+    const course = await Course.findById(courseOid);
+    if (course && course.price > 0) {
+      const enrollment = await Enrollment.findOne({
+        userId: toObjectId(userId),
+        courseId: courseOid,
+      });
+      if (!enrollment) {
+        const error: any = new Error(
+          'Forbidden: You must be actively enrolled in this course to view assessments.'
+        );
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+  }
+
   const query: any = { courseId: courseOid };
   if (moduleId) {
     query.moduleId = toObjectId(moduleId);
@@ -46,10 +74,54 @@ export async function gradeCourseTest(
   userId: string,
   courseId: string,
   answers: Record<string, any>,
-  moduleId?: string
+  moduleId?: string,
+  userRole?: string
 ) {
   const courseOid = toObjectId(courseId);
   const userOid = toObjectId(userId);
+
+  // 1. Enforce active enrollment verification
+  const enrollment = await Enrollment.findOne({ userId: userOid, courseId: courseOid });
+  if (!enrollment && userRole !== ROLES.ADMIN) {
+    const error: any = new Error(
+      'Forbidden: You must be actively enrolled in this course to submit assessments.'
+    );
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // 2. Enforce lesson progression checks
+  if (enrollment && userRole !== ROLES.ADMIN) {
+    if (moduleId) {
+      // Check that all lessons in this module are completed
+      const moduleLessons = await Lesson.find({
+        courseId: courseOid,
+        moduleId: toObjectId(moduleId),
+      }).select('_id');
+
+      if (moduleLessons.length > 0) {
+        const completedSet = new Set(enrollment.completedLessonIds.map((id) => id.toString()));
+        const allCompleted = moduleLessons.every((l) => completedSet.has(l._id.toString()));
+        if (!allCompleted) {
+          const error: any = new Error(
+            'Forbidden: You must complete all videos in this module before attempting the quiz.'
+          );
+          error.statusCode = 403;
+          throw error;
+        }
+      }
+    } else {
+      // Check that 100% of all lessons in the course are completed before final assessment
+      const totalLessons = await Lesson.countDocuments({ courseId: courseOid });
+      if (totalLessons > 0 && enrollment.completedLessonIds.length < totalLessons) {
+        const error: any = new Error(
+          'Forbidden: You must complete all course lessons before attempting the final certification assessment.'
+        );
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+  }
 
   const query: any = { courseId: courseOid };
   if (moduleId) {

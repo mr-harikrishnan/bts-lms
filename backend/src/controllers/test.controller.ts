@@ -4,7 +4,15 @@ import { apiSuccess } from '../utils/apiResponse.js';
 
 export async function getTest(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const test = await testService.getCourseTest(req.params.courseId as string, true);
+    const userId = req.user?._id?.toString();
+    const userRole = req.user?.role;
+    const test = await testService.getCourseTest(
+      req.params.courseId as string,
+      true,
+      undefined,
+      userId,
+      userRole
+    );
     if (!test) {
       res.status(404).json({
         success: false,
@@ -24,7 +32,9 @@ export async function submitTest(req: Request, res: Response, next: NextFunction
     const result = await testService.gradeCourseTest(
       req.user!._id.toString(),
       req.params.courseId as string,
-      answers
+      answers,
+      undefined,
+      req.user!.role
     );
     apiSuccess(res, result, 200, 'Assessment evaluated successfully.');
   } catch (error) {
@@ -35,7 +45,15 @@ export async function submitTest(req: Request, res: Response, next: NextFunction
 export async function getModuleTest(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { courseId, moduleId } = req.params;
-    const test = await testService.getCourseTest(courseId as string, true, moduleId as string);
+    const userId = req.user?._id?.toString();
+    const userRole = req.user?.role;
+    const test = await testService.getCourseTest(
+      courseId as string,
+      true,
+      moduleId as string,
+      userId,
+      userRole
+    );
     if (!test) {
       res.status(404).json({
         success: false,
@@ -57,7 +75,8 @@ export async function submitModuleTest(req: Request, res: Response, next: NextFu
       req.user!._id.toString(),
       courseId as string,
       answers,
-      moduleId as string
+      moduleId as string,
+      req.user!.role
     );
     apiSuccess(res, result, 200, 'Module quiz evaluated successfully.');
   } catch (error) {

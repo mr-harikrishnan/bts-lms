@@ -90,6 +90,8 @@ const certificateSchema = new Schema<ICertificate>(
   }
 );
 
+certificateSchema.index({ userId: 1, courseId: 1 }, { unique: true });
+
 certificateSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.__v;

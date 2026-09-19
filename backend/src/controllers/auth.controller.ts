@@ -87,12 +87,21 @@ export async function refresh(req: Request, res: Response, next: NextFunction): 
 
 export async function logout(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    if (req.user) {
-      await authService.logoutUser(req.user._id.toString());
+    const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+    const userId = req.user?._id?.toString();
+
+    if (userId || refreshToken) {
+      await authService.logoutUser(userId, refreshToken);
     }
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    const cookieOptions = {
+      httpOnly: true,
+      secure: env.isProduction,
+      sameSite: 'lax' as const,
+    };
+
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
 
     apiSuccess(res, { message: 'Logged out successfully.' });
   } catch (error) {

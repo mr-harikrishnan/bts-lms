@@ -22,6 +22,10 @@ export function validateCreateOrder(data: any): ValidatorResult {
     valid: true,
     sanitized: {
       courseId: data.courseId.trim(),
+      couponCode:
+        typeof data.couponCode === 'string' && data.couponCode.trim()
+          ? data.couponCode.trim().toUpperCase()
+          : undefined,
     },
   };
 }

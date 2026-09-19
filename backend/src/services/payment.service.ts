@@ -154,9 +154,9 @@ export async function verifyPaymentSignature(
     throw error;
   }
 
-  const expectedAmountInPaise = Math.round(course.price * 100);
-  if (order.amount !== expectedAmountInPaise) {
-    const error: any = new Error('Payment amount does not match the course price.');
+  // Verify order amount is valid and within course price limit
+  if (!order.amount || order.amount <= 0 || order.amount > Math.round(course.price * 100)) {
+    const error: any = new Error('Invalid payment order amount detected.');
     error.statusCode = 400;
     throw error;
   }
@@ -307,6 +307,40 @@ export async function handleRazorpayWebhook(rawBody: Buffer | string, signature:
         order.status = ORDER_STATUS.FAILED;
         await order.save();
       }
+    }
+  } else if (
+    event.event === 'refund.processed' ||
+    event.event === 'refund.created' ||
+    event.event === 'payment.refunded'
+  ) {
+    const paymentEntity = event.payload?.payment?.entity;
+    const refundEntity = event.payload?.refund?.entity;
+    const razorpayOrderId = paymentEntity?.order_id;
+    const razorpayPaymentId = paymentEntity?.id || refundEntity?.payment_id;
+
+    let order: any = null;
+    if (razorpayOrderId) {
+      order = await Order.findOne({ razorpayOrderId });
+    } else if (razorpayPaymentId) {
+      const paymentDoc = await Payment.findOne({ razorpayPaymentId });
+      if (paymentDoc) {
+        order = await Order.findById(paymentDoc.orderId);
+      }
+    }
+
+    if (order) {
+      order.status = ORDER_STATUS.REFUNDED;
+      await order.save();
+
+      if (razorpayPaymentId) {
+        await Payment.findOneAndUpdate(
+          { razorpayPaymentId },
+          { status: PAYMENT_STATUS.REFUNDED }
+        );
+      }
+
+      await Enrollment.deleteOne({ userId: order.userId, courseId: order.courseId });
+      logger.info(`Revoked enrollment for user '${order.userId}' on course '${order.courseId}' due to refund.`);
     }
   }
 

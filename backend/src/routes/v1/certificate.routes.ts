@@ -7,6 +7,5 @@ const router = Router();
 
 router.get('/', requireAuth, certificateController.getUserCertificates);
 router.get('/:certificateId', requireAuth, validateObjectIdParam('certificateId'), certificateController.getCertificateById);
-router.post('/generate', requireAuth, certificateController.generate);
 
 export default router;

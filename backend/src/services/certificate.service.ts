@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { Certificate } from '../models/Certificate.js';
 import { Course } from '../models/Course.js';
 import { User } from '../models/User.js';
+import { Enrollment } from '../models/Enrollment.js';
 import { toObjectId } from '../utils/objectId.js';
 import { ROLES } from '../constants/roles.js';
 
@@ -35,14 +36,21 @@ export async function generateCertificate(userId: string, courseId: string, scor
   const userOid = toObjectId(userId);
   const courseOid = toObjectId(courseId);
 
-  const [user, course] = await Promise.all([
+  const [user, course, enrollment] = await Promise.all([
     User.findById(userOid),
     Course.findById(courseOid),
+    Enrollment.findOne({ userId: userOid, courseId: courseOid }),
   ]);
 
   if (!user || !course) {
     const error: any = new Error('User or course not found for certificate generation.');
     error.statusCode = 404;
+    throw error;
+  }
+
+  if (!enrollment) {
+    const error: any = new Error('Forbidden: User is not actively enrolled in this course.');
+    error.statusCode = 403;
     throw error;
   }
 
