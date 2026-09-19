@@ -114,6 +114,9 @@ export async function toggleCouponStatus(couponId: string): Promise<ICoupon | nu
 
 export interface CouponValidationResult {
   valid: boolean;
+  code: string;
+  discountType: CouponDiscountType;
+  discountValue: number;
   coupon: {
     _id: string;
     code: string;
@@ -198,6 +201,9 @@ export async function validateCoupon(code: string, courseId: string): Promise<Co
 
   return {
     valid: true,
+    code: coupon.code,
+    discountType: coupon.discountType,
+    discountValue: coupon.discountValue,
     coupon: {
       _id: coupon._id.toString(),
       code: coupon.code,
@@ -274,5 +280,7 @@ export async function redeemFreeCoupon(userId: string, courseId: string, couponC
     success: true,
     message: `Enrolled successfully for free using coupon '${couponCode.trim().toUpperCase()}'!`,
     enrollment,
+    orderId: order._id.toString(),
+    receipt: order.receipt,
   };
 }

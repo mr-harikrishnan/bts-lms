@@ -6,7 +6,15 @@ import { toObjectId } from '../utils/objectId.js';
 export async function getUserEnrollments(userId: string) {
   const userOid = toObjectId(userId);
   const enrollments = await Enrollment.find({ userId: userOid }).populate('courseId');
-  return enrollments;
+  return enrollments.map((enr) => {
+    const obj = enr.toObject();
+    const populatedCourse = obj.courseId && typeof obj.courseId === 'object' ? obj.courseId : null;
+    return {
+      ...obj,
+      courseId: populatedCourse ? populatedCourse._id.toString() : obj.courseId.toString(),
+      course: populatedCourse,
+    };
+  });
 }
 
 export async function getUserCourseProgress(userId: string, courseId: string) {

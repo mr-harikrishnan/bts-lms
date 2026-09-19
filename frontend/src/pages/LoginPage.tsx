@@ -47,9 +47,9 @@ export const LoginPage: React.FC = () => {
     setIsSubmitting(true);
     setError("");
 
-    const loggedInUser = await login(trimmedEmail, trimmedPassword);
-    if (!loggedInUser) {
-      setError("Invalid credentials. Please verify your email and password.");
+    const result = await login(trimmedEmail, trimmedPassword);
+    if (!result.success || !result.user) {
+      setError(result.error || "Invalid credentials. Please verify your email and password.");
       setIsSubmitting(false);
       return;
     }
@@ -57,7 +57,7 @@ export const LoginPage: React.FC = () => {
     let target = searchParams.get("redirect") || "/dashboard";
 
     // Security & Role Guard: Non-admin users must NEVER be routed to admin endpoints
-    if (loggedInUser.role !== "admin" && target.startsWith("/admin")) {
+    if (result.user.role !== "admin" && target.startsWith("/admin")) {
       target = "/dashboard";
     }
 

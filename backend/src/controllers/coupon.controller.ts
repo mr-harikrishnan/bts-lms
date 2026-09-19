@@ -4,7 +4,8 @@ import { apiSuccess, apiError } from '../utils/apiResponse.js';
 
 export async function validateCoupon(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { courseId, code } = req.body;
+    const courseId = req.body.courseId;
+    const code = req.body.code || req.body.couponCode;
     if (!courseId || !code) {
       apiError(res, 'Both "courseId" and "code" are required.', 400);
       return;
@@ -23,7 +24,8 @@ export async function redeemFreeCoupon(req: Request, res: Response, next: NextFu
       apiError(res, 'Authentication required to redeem coupon.', 401);
       return;
     }
-    const { courseId, code } = req.body;
+    const courseId = req.body.courseId;
+    const code = req.body.code || req.body.couponCode;
     if (!courseId || !code) {
       apiError(res, 'Both "courseId" and "code" are required.', 400);
       return;

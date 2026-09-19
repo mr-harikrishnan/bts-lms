@@ -113,7 +113,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                 <span className="material-symbols-outlined text-[16px] text-emerald-600">
                   sell
                 </span>
-                <span className="font-medium">Coupon Discount ({appliedCoupon.code})</span>
+                <span className="font-medium">Coupon Discount ({appliedCoupon.code || appliedCoupon.coupon?.code})</span>
               </div>
               <span className="font-bold text-emerald-800">
                 -₹{appliedCoupon.discountAmount.toLocaleString()}
@@ -170,7 +170,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               </span>
               <div className="flex flex-col truncate">
                 <span className="font-mono text-xs font-bold text-emerald-900 tracking-wider">
-                  {appliedCoupon.code}
+                  {appliedCoupon.code || appliedCoupon.coupon?.code}
                 </span>
                 <span className="text-[11px] text-emerald-700 leading-tight">
                   {appliedCoupon.message}

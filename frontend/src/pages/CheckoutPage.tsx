@@ -7,6 +7,7 @@ import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { courseService } from "@/services/apiClient";
 import { Course, CouponValidationResult } from "@/types";
+import { EnrollmentSuccessModal, EnrollmentSuccessData } from "@/components/checkout/EnrollmentSuccessModal";
 
 export const CheckoutPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -15,6 +16,7 @@ export const CheckoutPage: React.FC = () => {
   const [apiCourse, setApiCourse] = useState<Course | null>(null);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponValidationResult | null>(null);
+  const [successData, setSuccessData] = useState<EnrollmentSuccessData | null>(null);
 
   const contextCourse = courses.find((c) => c._id === courseId);
   const course = contextCourse || apiCourse;
@@ -172,7 +174,11 @@ export const CheckoutPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left: Payment Methods (7 Cols) */}
               <div className="lg:col-span-7">
-                <PaymentGateway course={course} appliedCoupon={appliedCoupon} />
+                <PaymentGateway
+                  course={course}
+                  appliedCoupon={appliedCoupon}
+                  onEnrollmentSuccess={(data) => setSuccessData(data)}
+                />
               </div>
 
               {/* Right: Order Summary (5 Cols) */}
@@ -184,6 +190,15 @@ export const CheckoutPage: React.FC = () => {
                 />
               </div>
             </div>
+          )}
+
+          {/* Celebration Confetti Success Modal */}
+          {successData && (
+            <EnrollmentSuccessModal
+              isOpen={Boolean(successData)}
+              data={successData}
+              onClose={() => setSuccessData(null)}
+            />
           )}
         </div>
       </AppShell>

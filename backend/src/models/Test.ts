@@ -5,16 +5,20 @@ export interface ITestQuestion {
   question: string;
   codeSnippet?: string;
   options: string[];
-  correctIndex: number;
+  type?: 'mcq' | 'msq';
+  correctIndex?: number;
+  correctIndices?: number[];
   explanation: string;
 }
 
 export interface ITest extends Document {
   _id: mongoose.Types.ObjectId;
   courseId: mongoose.Types.ObjectId;
+  moduleId?: mongoose.Types.ObjectId | null;
   title: string;
   timeLimitMinutes: number;
   passingScore: number;
+  isOptional: boolean;
   questions: ITestQuestion[];
   createdAt: Date;
   updatedAt: Date;
@@ -38,9 +42,18 @@ const testQuestionSchema = new Schema<ITestQuestion>({
     required: true,
     validate: [(val: string[]) => val.length >= 2, 'Must have at least 2 options'],
   },
+  type: {
+    type: String,
+    enum: ['mcq', 'msq'],
+    default: 'mcq',
+  },
   correctIndex: {
     type: Number,
-    required: true,
+    default: 0,
+  },
+  correctIndices: {
+    type: [Number],
+    default: [],
   },
   explanation: {
     type: String,
@@ -54,7 +67,12 @@ const testSchema = new Schema<ITest>(
       type: Schema.Types.ObjectId,
       ref: 'Course',
       required: [true, 'Course reference is required'],
-      unique: true,
+      index: true,
+    },
+    moduleId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Module',
+      default: null,
       index: true,
     },
     title: {
@@ -72,12 +90,18 @@ const testSchema = new Schema<ITest>(
       min: 0,
       max: 100,
     },
+    isOptional: {
+      type: Boolean,
+      default: false,
+    },
     questions: [testQuestionSchema],
   },
   {
     timestamps: true,
   }
 );
+
+testSchema.index({ courseId: 1, moduleId: 1 }, { unique: true });
 
 testSchema.methods.toJSON = function () {
   const obj = this.toObject();

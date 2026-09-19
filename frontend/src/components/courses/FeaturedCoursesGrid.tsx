@@ -10,7 +10,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 export const FeaturedCoursesGrid: React.FC = () => {
-  const { courses, isLoading } = useBstorm();
+  const { courses, isLoading, isEnrolled, getCourseProgress, user } = useBstorm();
 
   // Primary 3 featured courses representing each track
   const featuredCourses = React.useMemo(() => {
@@ -42,13 +42,20 @@ export const FeaturedCoursesGrid: React.FC = () => {
           course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) ||
           course.lessonCount ||
           10;
+        const enrolled = user.isLoggedIn && isEnrolled(course._id);
+        const { percentage } = getCourseProgress(course._id);
+        const targetUrl = enrolled
+          ? `/courses/${course._id}/learn`
+          : user.isLoggedIn
+          ? `/checkout/${course._id}`
+          : `/login?redirect=/checkout/${course._id}`;
 
         return (
           <article
             key={course._id}
             className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group"
           >
-            <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+            <Link to={targetUrl} className="relative aspect-video w-full overflow-hidden bg-stone-100 block">
               <img
                 src={course.thumbnail}
                 alt={course.title}
@@ -58,13 +65,20 @@ export const FeaturedCoursesGrid: React.FC = () => {
                 {icon}
                 <span>{course.category}</span>
               </div>
-            </div>
+              {enrolled && (
+                <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-emerald-600 text-white text-xs font-bold shadow-xs">
+                  Enrolled ✓
+                </div>
+              )}
+            </Link>
 
             <div className="p-6 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-[#697C70] transition-colors mb-2 leading-snug">
-                  {course.title}
-                </h3>
+                <Link to={targetUrl} className="block">
+                  <h3 className="text-lg font-bold text-[#2D3536] group-hover:text-emerald-700 transition-colors mb-2 leading-snug">
+                    {course.title}
+                  </h3>
+                </Link>
                 <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4 line-clamp-3">
                   {course.description}
                 </p>
@@ -78,16 +92,34 @@ export const FeaturedCoursesGrid: React.FC = () => {
 
               <div className="pt-5 flex items-center justify-between">
                 <div>
-                  <span className="text-xs text-stone-400 block">Tuition</span>
-                  <span className="text-lg font-bold text-[#2D3536]">
-                    ₹{course.price.toLocaleString("en-IN")}
-                  </span>
+                  {enrolled ? (
+                    <span className="text-xs font-bold text-emerald-700">
+                      {percentage}% Completed
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-xs text-stone-400 block">Tuition</span>
+                      <span className="text-lg font-bold text-[#2D3536]">
+                        ₹{course.price.toLocaleString("en-IN")}
+                      </span>
+                    </>
+                  )}
                 </div>
                 <Link
-                  to={`/checkout/${course._id}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2D3536] text-white text-xs sm:text-sm font-medium hover:bg-stone-800 transition-colors shadow-xs"
+                  to={targetUrl}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-xs sm:text-sm font-medium transition-colors shadow-xs ${
+                    enrolled
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-[#2D3536] hover:bg-stone-800"
+                  }`}
                 >
-                  <span>Enroll Now</span>
+                  <span>
+                    {enrolled
+                      ? percentage > 0
+                        ? "Continue Learning"
+                        : "Start Learning"
+                      : "Enroll Now"}
+                  </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

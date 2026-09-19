@@ -170,31 +170,43 @@ export interface Certificate {
 }
 
 export interface TestQuestion {
+  _id?: string;
+  question: string;
+  codeSnippet?: string;
+  options: string[];
+  type?: "mcq" | "msq";
+  correctIndex?: number;
+  correctIndices?: number[];
+  explanation: string;
+}
+
+export interface PublicTestQuestion {
   _id: string;
   question: string;
   codeSnippet?: string;
   options: string[];
-  correctIndex: number;
-  explanation: string;
+  type?: "mcq" | "msq";
 }
-
-export type PublicTestQuestion = Omit<TestQuestion, "correctIndex" | "explanation">;
 
 export interface CourseTest {
   _id?: string;
   courseId: string;
+  moduleId?: string | null;
   title: string;
   timeLimitMinutes: number;
   passingScore: number; // e.g. 70
+  isOptional?: boolean;
   questions: TestQuestion[];
 }
 
 export interface PublicCourseTest {
   _id?: string;
   courseId: string;
+  moduleId?: string | null;
   title: string;
   timeLimitMinutes: number;
   passingScore: number;
+  isOptional?: boolean;
   questions: PublicTestQuestion[];
 }
 
@@ -205,7 +217,16 @@ export interface CourseProgressSummary {
 }
 
 export interface TestSubmissionRequest {
-  answers: Record<string, number>; // question _id -> selectedOptionIndex
+  answers: Record<string, number | number[]>; // question _id -> selected index (MCQ) or array of indices (MSQ)
+}
+
+export interface TestQuestionFeedback {
+  questionId: string;
+  correct: boolean;
+  explanation: string;
+  type?: "mcq" | "msq";
+  correctIndex?: number;
+  correctIndices?: number[];
 }
 
 export interface TestSubmissionResult {
@@ -215,6 +236,9 @@ export interface TestSubmissionResult {
   correctCount: number;
   totalQuestions: number;
   certificate?: Certificate;
+  feedback?: TestQuestionFeedback[];
+  isModuleTest?: boolean;
+  moduleId?: string | null;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -303,6 +327,13 @@ export interface CouponItem {
 export interface CouponValidationResult {
   valid: boolean;
   code: string;
+  coupon?: {
+    _id: string;
+    code: string;
+    courseId: string;
+    discountType: CouponDiscountType;
+    discountValue: number;
+  };
   discountType: CouponDiscountType;
   discountValue: number;
   originalPrice: number;

@@ -60,4 +60,18 @@ router.post(
   testController.submitTest
 );
 
+// Module assessment
+router.get(
+  '/:courseId/modules/:moduleId/test',
+  requireAuth,
+  validateObjectIdParam('courseId', 'moduleId'),
+  testController.getModuleTest
+);
+router.post(
+  '/:courseId/modules/:moduleId/test/submit',
+  requireAuth,
+  validateObjectIdParam('courseId', 'moduleId'),
+  testController.submitModuleTest
+);
+
 export default router;

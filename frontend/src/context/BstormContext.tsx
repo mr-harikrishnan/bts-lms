@@ -28,7 +28,10 @@ interface BstormContextType {
   unreadNotificationsCount: number;
   isHydrated: boolean;
   isLoading: boolean;
-  login: (email: string, password?: string) => Promise<User | null>;
+  login: (
+    email: string,
+    password?: string
+  ) => Promise<{ success: boolean; user?: User; error?: string }>;
   signup: (userData: Partial<User>) => Promise<boolean>;
   logout: (redirectTo?: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
@@ -129,13 +132,30 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     [notifications]
   );
 
+  const normalizeEnrollment = (item: any): EnrolledCourseProgress => {
+    if (!item) return item;
+    const courseIdStr =
+      item.courseId && typeof item.courseId === "object"
+        ? (item.courseId._id || item.courseId.id || "").toString()
+        : (item.courseId || "").toString();
+    return {
+      ...item,
+      courseId: courseIdStr,
+    };
+  };
+
+  const normalizeEnrollments = (list: any[]): EnrolledCourseProgress[] => {
+    if (!Array.isArray(list)) return [];
+    return list.map(normalizeEnrollment);
+  };
+
   const fetchUserData = useCallback(async () => {
     try {
       const [enrollmentList, certList] = await Promise.all([
         userService.getCourses().catch(() => []),
         userService.getCertificates().catch(() => []),
       ]);
-      setEnrolledCourses(enrollmentList);
+      setEnrolledCourses(normalizeEnrollments(enrollmentList));
       setCertificates(certList);
       await refreshNotifications().catch(() => {});
     } catch (e) {
@@ -158,7 +178,7 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
         userService.getCourses().catch(() => []),
         userService.getCertificates().catch(() => []),
       ]);
-      setEnrolledCourses(enrollmentList);
+      setEnrolledCourses(normalizeEnrollments(enrollmentList));
       setCertificates(certList);
     } catch (e) {
       console.error("Failed to refresh enrolled courses:", e);
@@ -197,16 +217,22 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshData();
   }, [refreshData]);
 
-  const login = async (email: string, password?: string): Promise<User | null> => {
+  const login = async (
+    email: string,
+    password?: string
+  ): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
       const result = await authService.login(email, password);
       const authUser = { ...result.user, isLoggedIn: true };
       setUser(authUser);
-      await fetchUserData();
-      return authUser;
-    } catch (e) {
+      await fetchUserData().catch((err) => {
+        console.warn("Background user data fetch error:", err);
+      });
+      return { success: true, user: authUser };
+    } catch (e: any) {
       console.error("Login API request failed:", e);
-      return null;
+      const message = e?.message || "Invalid credentials. Please verify your email and password.";
+      return { success: false, error: message };
     }
   };
 
@@ -261,22 +287,44 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const isEnrolled = (courseId: string): boolean => {
-    if (!user.isLoggedIn) return false;
-    return enrolledCourses.some((item) => item.courseId === courseId);
+    if (!user.isLoggedIn || !courseId) return false;
+    if (user.role === "admin") return true;
+    const targetId = courseId.toString();
+    return enrolledCourses.some((item) => {
+      const enrolledCourseId =
+        item.courseId && typeof item.courseId === "object"
+          ? ((item.courseId as any)._id || (item.courseId as any).id || "").toString()
+          : (item.courseId || "").toString();
+      return enrolledCourseId === targetId;
+    });
   };
 
   const getEnrolledCourse = (courseId: string): EnrolledCourseProgress | undefined => {
-    if (!user.isLoggedIn) return undefined;
-    return enrolledCourses.find((item) => item.courseId === courseId);
+    if (!user.isLoggedIn || !courseId) return undefined;
+    const targetId = courseId.toString();
+    return enrolledCourses.find((item) => {
+      const enrolledCourseId =
+        item.courseId && typeof item.courseId === "object"
+          ? ((item.courseId as any)._id || (item.courseId as any).id || "").toString()
+          : (item.courseId || "").toString();
+      return enrolledCourseId === targetId;
+    });
   };
 
   const enrollCourse = async (courseId: string): Promise<void> => {
     if (!user.isLoggedIn || isEnrolled(courseId)) return;
     try {
       const newEnrollment = await courseService.enroll(courseId);
+      const normalized = normalizeEnrollment(newEnrollment);
       setEnrolledCourses((prev) => {
-        const filtered = prev.filter((e) => e.courseId !== courseId);
-        return [...filtered, newEnrollment];
+        const filtered = prev.filter((e) => {
+          const eId =
+            e.courseId && typeof e.courseId === "object"
+              ? ((e.courseId as any)._id || (e.courseId as any).id || "").toString()
+              : (e.courseId || "").toString();
+          return eId !== courseId.toString();
+        });
+        return [...filtered, normalized];
       });
     } catch (e) {
       console.error("Course enrollment API request failed:", e);
@@ -284,12 +332,22 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const markLessonComplete = async (courseId: string, lessonId: string): Promise<void> => {
+    if (!user.isLoggedIn) return;
     try {
       const updated = await userService.markLessonComplete(courseId, lessonId);
+      const normalized = normalizeEnrollment(updated);
       setEnrolledCourses((prev) =>
-        prev.map((enrollment) =>
-          enrollment.courseId === courseId ? updated : enrollment
-        )
+        prev.map((enrollment) => {
+          const eId =
+            enrollment.courseId && typeof enrollment.courseId === "object"
+              ? (
+                  (enrollment.courseId as any)._id ||
+                  (enrollment.courseId as any).id ||
+                  ""
+                ).toString()
+              : (enrollment.courseId || "").toString();
+          return eId === courseId.toString() ? normalized : enrollment;
+        })
       );
     } catch (e) {
       console.error("Mark lesson complete API request failed:", e);
@@ -297,12 +355,22 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const setCurrentLesson = async (courseId: string, lessonId: string): Promise<void> => {
+    if (!user.isLoggedIn) return;
     try {
       const updated = await userService.updateCurrentLesson(courseId, lessonId);
+      const normalized = normalizeEnrollment(updated);
       setEnrolledCourses((prev) =>
-        prev.map((enrollment) =>
-          enrollment.courseId === courseId ? updated : enrollment
-        )
+        prev.map((enrollment) => {
+          const eId =
+            enrollment.courseId && typeof enrollment.courseId === "object"
+              ? (
+                  (enrollment.courseId as any)._id ||
+                  (enrollment.courseId as any).id ||
+                  ""
+                ).toString()
+              : (enrollment.courseId || "").toString();
+          return eId === courseId.toString() ? normalized : enrollment;
+        })
       );
     } catch (e) {
       console.error("Update current lesson API request failed:", e);
@@ -310,14 +378,27 @@ export const BstormProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getCourseProgress = (courseId: string) => {
-    const course = courses.find((c) => c._id === courseId);
-    const totalCount =
+    const targetId = courseId ? courseId.toString() : "";
+    const course = courses.find((c) => c._id?.toString() === targetId);
+    const moduleLessonsCount =
       course?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
-    if (!user.isLoggedIn) {
+    const totalCount =
+      moduleLessonsCount ||
+      course?.lessonCount ||
+      (course as any)?.totalLessons ||
+      (course as any)?.lessonsCount ||
+      0;
+    if (!user.isLoggedIn || !targetId) {
       return { completedCount: 0, totalCount, percentage: 0 };
     }
-    const enrollment = enrolledCourses.find((e) => e.courseId === courseId);
-    const completedCount = enrollment?.completedLessonIds.length || 0;
+    const enrollment = enrolledCourses.find((e) => {
+      const enrolledCourseId =
+        e.courseId && typeof e.courseId === "object"
+          ? ((e.courseId as any)._id || (e.courseId as any).id || "").toString()
+          : (e.courseId || "").toString();
+      return enrolledCourseId === targetId;
+    });
+    const completedCount = enrollment?.completedLessonIds?.length || 0;
     const percentage =
       totalCount > 0 ? Math.min(100, Math.round((completedCount / totalCount) * 100)) : 0;
 

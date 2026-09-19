@@ -90,6 +90,9 @@ router.delete('/lessons/:lessonId', validateObjectIdParam('lessonId'), adminCont
 // ==========================================
 router.post('/tests', validateBody(validateTestCreate), adminController.createTest);
 router.get('/tests', adminController.getAllTests);
+router.get('/courses/:courseId/tests', validateObjectIdParam('courseId'), adminController.getCourseTests);
+router.post('/courses/:courseId/test', validateObjectIdParam('courseId'), adminController.createTest);
+router.post('/courses/:courseId/modules/:moduleId/test', validateObjectIdParam('courseId', 'moduleId'), adminController.saveModuleTest);
 router.get('/tests/:testId', validateObjectIdParam('testId'), adminController.getTestById);
 router.put(
   '/tests/:testId',

@@ -3,16 +3,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Lesson, Course } from "@/types";
 
+const FALLBACK_CLOUDINARY_VIDEO =
+  "https://res.cloudinary.com/ddifxio8b/video/upload/v1788807587/12987350_3840_2160_30fps_doncq1.mp4";
+
 interface VideoPlayerProps {
   lesson: Lesson;
   course: Course;
   moduleNumber: string;
+  onVideoEnded?: () => void;
+  overlaySlot?: React.ReactNode;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   lesson,
   course,
   moduleNumber,
+  onVideoEnded,
+  overlaySlot,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,7 +32,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [ccEnabled, setCcEnabled] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const videoSrc = lesson.videoUrl || course.previewVideoUrl || "";
+  const videoSrc =
+    lesson.videoUrl ||
+    course.previewVideoUrl ||
+    (course as any).videoUrl ||
+    FALLBACK_CLOUDINARY_VIDEO;
 
   // When lesson changes, reset playback
   useEffect(() => {
@@ -137,6 +148,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <video
         ref={videoRef}
         src={videoSrc}
+        poster={course.thumbnail}
         className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         playsInline
         preload="metadata"
@@ -145,7 +157,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onLoadedMetadata={handleLoadedMetadata}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => {
+          setIsPlaying(false);
+          onVideoEnded?.();
+        }}
+        onError={(e) => {
+          console.warn("Video playback error on src:", videoSrc, e);
+          if (videoRef.current && videoRef.current.src !== FALLBACK_CLOUDINARY_VIDEO) {
+            videoRef.current.src = FALLBACK_CLOUDINARY_VIDEO;
+            videoRef.current.load();
+          }
+        }}
       />
 
       {/* Top Header Overlay */}
@@ -186,27 +208,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </button>
       </div>
 
-      {/* Instructor Floating Card */}
-      <div
-        className={`relative z-10 self-end mr-6 mb-2 flex items-center gap-3 bg-black/75 backdrop-blur-md border border-white/10 p-2 rounded-xl shadow-lg pointer-events-none transition-opacity duration-300 ${
-          isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-        }`}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt={course.instructor.name}
-          className="w-10 h-10 rounded-lg object-cover ring-1 ring-emerald-500/40"
-          src={course.instructor.avatar}
-        />
-        <div className="flex flex-col pr-2">
-          <span className="text-white text-xs font-semibold leading-tight">
-            {course.instructor.name}
-          </span>
-          <span className="text-white/60 text-[11px] leading-tight">
-            Course Instructor • Video Lesson
-          </span>
-        </div>
-      </div>
+      {/* Auto-advance overlay slot */}
+      {overlaySlot}
 
       {/* Custom Video Player Controls Overlay (Bottom) */}
       <div

@@ -46,20 +46,29 @@ export const MyCoursesPage: React.FC = () => {
   }
 
   // Map enrolled progress with course data
-  const enrolledWithData = enrolledCourses.map((enr) => {
-    const course = courses.find((c) => c._id === enr.courseId) || courses[0];
-    const progress = getCourseProgress(enr.courseId);
-    const cert = certificates.find((c) => c.courseId === enr.courseId);
-    const isCompleted = enr.isCompleted || progress.percentage === 100 || !!cert;
+  const enrolledWithData = enrolledCourses
+    .map((enr) => {
+      const cid =
+        enr.courseId && typeof enr.courseId === "object"
+          ? ((enr.courseId as any)._id || (enr.courseId as any).id || "").toString()
+          : (enr.courseId || "").toString();
+      const course =
+        courses.find((c) => c._id?.toString() === cid) ||
+        (typeof enr.courseId === "object" ? (enr.courseId as any) : undefined) ||
+        courses[0];
+      const progress = getCourseProgress(cid);
+      const cert = certificates.find((c) => c.courseId?.toString() === cid);
+      const isCompleted = enr.isCompleted || progress.percentage === 100 || !!cert;
 
-    return {
-      enrollment: enr,
-      course,
-      progress,
-      cert,
-      isCompleted,
-    };
-  }).filter((item) => !!item.course);
+      return {
+        enrollment: enr,
+        course,
+        progress,
+        cert,
+        isCompleted,
+      };
+    })
+    .filter((item) => !!item.course);
 
   const inProgressList = enrolledWithData.filter((item) => !item.isCompleted);
   const completedList = enrolledWithData.filter((item) => item.isCompleted);
@@ -143,16 +152,30 @@ export const MyCoursesPage: React.FC = () => {
                   className="bg-surface-container-lowest rounded-2xl border border-[#E5E7EB] p-5 shadow-sm flex flex-col justify-between gap-4 group hover:shadow-md transition-all"
                 >
                   <div className="flex flex-col sm:flex-row gap-4 items-start">
-                    <div className="w-full sm:w-40 aspect-video rounded-xl overflow-hidden shrink-0 relative bg-surface-container shadow-xs">
+                    {/* Clickable Thumbnail linking to Course Player */}
+                    <Link
+                      to={`/courses/${course._id}/learn`}
+                      className="w-full sm:w-40 aspect-video rounded-xl overflow-hidden shrink-0 relative bg-surface-container shadow-xs block group/thumb"
+                    >
                       <img
                         src={course.thumbnail}
                         alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
                       />
+                      <div className="absolute inset-0 bg-black/25 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md transform group-hover/thumb:scale-110 transition-transform">
+                          <span
+                            className="material-symbols-outlined text-[24px]"
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                          >
+                            play_arrow
+                          </span>
+                        </div>
+                      </div>
                       <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded bg-primary/80 backdrop-blur-sm text-on-primary font-caption text-[10px] font-mono">
                         {course.duration}
                       </span>
-                    </div>
+                    </Link>
 
                     <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -176,9 +199,13 @@ export const MyCoursesPage: React.FC = () => {
                         )}
                       </div>
 
-                      <h3 className="font-headline-sm text-headline-sm text-primary font-bold text-base leading-snug truncate">
+                      {/* Clickable Course Title */}
+                      <Link
+                        to={`/courses/${course._id}/learn`}
+                        className="font-headline-sm text-headline-sm text-primary font-bold text-base leading-snug truncate hover:text-emerald-700 transition-colors block"
+                      >
                         {course.title}
-                      </h3>
+                      </Link>
 
                       <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
                         {course.description}
@@ -221,7 +248,7 @@ export const MyCoursesPage: React.FC = () => {
                           </span>
                           <span>View Certificate</span>
                         </Link>
-                      ) : progress.completedCount >= progress.totalCount ? (
+                      ) : progress.totalCount > 0 && progress.completedCount >= progress.totalCount ? (
                         <Link
                           to={`/test/${course._id}`}
                           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shadow-sm"
@@ -234,11 +261,11 @@ export const MyCoursesPage: React.FC = () => {
                       ) : (
                         <Link
                           to={`/courses/${course._id}/learn`}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-all shadow-sm"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-label-md text-label-md font-semibold hover:bg-emerald-700 transition-all shadow-sm"
                         >
-                          <span>Continue Course</span>
+                          <span>{progress.completedCount > 0 ? "Continue Course" : "Start Learning"}</span>
                           <span className="material-symbols-outlined text-[16px]">
-                            arrow_forward
+                            {progress.completedCount > 0 ? "arrow_forward" : "play_circle"}
                           </span>
                         </Link>
                       )}

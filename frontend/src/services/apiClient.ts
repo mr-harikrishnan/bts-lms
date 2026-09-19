@@ -5,6 +5,7 @@ import {
   User,
   EnrolledCourseProgress,
   Certificate,
+  CourseTest,
   PublicCourseTest,
   TestSubmissionResult,
   CourseProgressSummary,
@@ -216,9 +217,24 @@ export const courseService = {
 
   async submitTest(
     courseId: string,
-    answers: Record<string, number>
+    answers: Record<string, number | number[]>
   ): Promise<TestSubmissionResult> {
     return request<TestSubmissionResult>(`/courses/${courseId}/test/submit`, {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    });
+  },
+
+  async getModuleTest(courseId: string, moduleId: string): Promise<PublicCourseTest> {
+    return request<PublicCourseTest>(`/courses/${courseId}/modules/${moduleId}/test`);
+  },
+
+  async submitModuleTest(
+    courseId: string,
+    moduleId: string,
+    answers: Record<string, number | number[]>
+  ): Promise<TestSubmissionResult> {
+    return request<TestSubmissionResult>(`/courses/${courseId}/modules/${moduleId}/test/submit`, {
       method: "POST",
       body: JSON.stringify({ answers }),
     });
@@ -531,6 +547,30 @@ export const adminService = {
       method: "POST",
     });
   },
+
+  async getCourseTests(courseId: string): Promise<CourseTest[]> {
+    return request<CourseTest[]>(`/admin/courses/${courseId}/tests`);
+  },
+
+  async saveCourseTest(courseId: string, testData: Partial<CourseTest>): Promise<CourseTest> {
+    return request<CourseTest>(`/admin/courses/${courseId}/test`, {
+      method: "POST",
+      body: JSON.stringify(testData),
+    });
+  },
+
+  async saveModuleTest(courseId: string, moduleId: string, testData: Partial<CourseTest>): Promise<CourseTest> {
+    return request<CourseTest>(`/admin/courses/${courseId}/modules/${moduleId}/test`, {
+      method: "POST",
+      body: JSON.stringify(testData),
+    });
+  },
+
+  async deleteTest(testId: string): Promise<{ success: boolean }> {
+    return request<{ success: boolean }>(`/admin/tests/${testId}`, {
+      method: "DELETE",
+    });
+  },
 };
 
 export const notificationService = {
@@ -605,17 +645,28 @@ export const ticketService = {
 
 export const couponService = {
   async validate(code: string, courseId: string): Promise<CouponValidationResult> {
-    return request<CouponValidationResult>("/coupons/validate", {
+    const res = await request<any>("/coupons/validate", {
       method: "POST",
-      body: JSON.stringify({ code, courseId }),
+      body: JSON.stringify({ code, courseId, couponCode: code }),
     });
+    const couponCode = res.code || res.coupon?.code || code;
+    return {
+      ...res,
+      code: couponCode,
+    };
   },
 
-  async redeemFree(courseId: string, couponCode: string): Promise<{ success: boolean; message: string; enrollment: any }> {
-    return request<{ success: boolean; message: string; enrollment: any }>("/coupons/redeem-free", {
-      method: "POST",
-      body: JSON.stringify({ courseId, couponCode }),
-    });
+  async redeemFree(
+    courseId: string,
+    couponCode: string
+  ): Promise<{ success: boolean; message: string; enrollment: any; orderId?: string; receipt?: string }> {
+    return request<{ success: boolean; message: string; enrollment: any; orderId?: string; receipt?: string }>(
+      "/coupons/redeem-free",
+      {
+        method: "POST",
+        body: JSON.stringify({ courseId, code: couponCode, couponCode }),
+      }
+    );
   },
 
   admin: {

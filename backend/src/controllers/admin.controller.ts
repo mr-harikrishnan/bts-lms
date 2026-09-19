@@ -16,6 +16,7 @@ import { PAYMENT_STATUS, ORDER_STATUS } from '../constants/orderStatus.js';
 import { hashPassword } from '../utils/password.js';
 import { calculateCurriculumDuration, probeVideoDuration } from '../utils/duration.js';
 import { createCourseNotification } from '../services/notification.service.js';
+import * as testService from '../services/test.service.js';
 
 // ==========================================
 // Helper to synchronize course duration, hoursLive, and lessonCount automatically from child lessons
@@ -422,7 +423,7 @@ export async function deleteLesson(req: Request, res: Response, next: NextFuncti
 
 export async function createTest(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { courseId, title, timeLimitMinutes, passingScore, questions } = req.body;
+    const { courseId, moduleId, title, timeLimitMinutes, passingScore, questions } = req.body;
     const courseOid = toObjectId(courseId);
 
     const course = await Course.findById(courseOid);
@@ -431,21 +432,35 @@ export async function createTest(req: Request, res: Response, next: NextFunction
       return;
     }
 
-    const existingTest = await Test.findOne({ courseId: courseOid });
-    if (existingTest) {
-      apiError(res, 'A test already exists for this course. Please update the existing test instead.', 409);
-      return;
-    }
-
-    const test = await Test.create({
-      courseId: courseOid,
+    const test = await testService.adminUpsertTest(courseId, moduleId || null, {
       title,
-      timeLimitMinutes: timeLimitMinutes ?? 20,
-      passingScore: passingScore ?? 70,
+      timeLimitMinutes,
+      passingScore,
       questions,
     });
 
-    apiSuccess(res, test, 201, 'Test created successfully.');
+    apiSuccess(res, test, 201, 'Test saved successfully.');
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getCourseTests(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const courseId = (req.params.courseId as string);
+    const tests = await testService.getCourseTestsForAdmin(courseId);
+    apiSuccess(res, tests);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function saveModuleTest(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const courseId = req.params.courseId as string;
+    const moduleId = (req.params.moduleId as string) || null;
+    const test = await testService.adminUpsertTest(courseId, moduleId, req.body);
+    apiSuccess(res, test, 200, 'Module test saved successfully.');
   } catch (error) {
     next(error);
   }

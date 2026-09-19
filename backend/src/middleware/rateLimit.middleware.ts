@@ -1,10 +1,11 @@
 import rateLimit from 'express-rate-limit';
 import { apiError } from '../utils/apiResponse.js';
 import { ERROR_CODES } from '../constants/errorCodes.js';
+import { env } from '../config/env.js';
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: env.isProduction ? 10 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -19,7 +20,7 @@ export const authLimiter = rateLimit({
 
 export const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: env.isProduction ? 20 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -34,7 +35,7 @@ export const paymentLimiter = rateLimit({
 
 export const passwordResetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: env.isProduction ? 5 : 100,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {

@@ -5,10 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Course, CouponValidationResult } from "@/types";
 import { useBstorm } from "@/context/BstormContext";
 import { paymentService, couponService } from "@/services/apiClient";
+import { EnrollmentSuccessModal, EnrollmentSuccessData } from "./EnrollmentSuccessModal";
 
 interface PaymentGatewayProps {
   course: Course;
   appliedCoupon?: CouponValidationResult | null;
+  onEnrollmentSuccess?: (data: EnrollmentSuccessData) => void;
 }
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -23,7 +25,11 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedCoupon }) => {
+export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
+  course,
+  appliedCoupon,
+  onEnrollmentSuccess,
+}) => {
   const navigate = useNavigate();
   const { enrollCourse, user, refreshData } = useBstorm();
 
@@ -38,6 +44,9 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedApp, setSelectedApp] = useState("gpay");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
+
+  // Success modal state if not handled by parent
+  const [modalData, setModalData] = useState<EnrollmentSuccessData | null>(null);
 
   // Form input states (clean, non-hardcoded)
   const [vpa, setVpa] = useState("");
@@ -72,16 +81,39 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
 
     setIsProcessing(true);
     try {
+      let res: any = null;
+      const codeToRedeem = appliedCoupon?.code || appliedCoupon?.coupon?.code;
       if (appliedCoupon) {
-        await couponService.redeemFree(course._id, appliedCoupon.code);
+        if (!codeToRedeem) {
+          throw new Error("Coupon code is missing. Please re-apply the coupon.");
+        }
+        res = await couponService.redeemFree(course._id, codeToRedeem);
       } else {
-        await enrollCourse(course._id);
+        res = await enrollCourse(course._id);
       }
       await refreshData();
-      navigate(`/courses/${course._id}/learn`, { replace: true });
+
+      const successPayload: EnrollmentSuccessData = {
+        courseId: course._id,
+        courseTitle: course.title,
+        courseThumbnail: course.thumbnail,
+        orderId: res?.orderId || res?.receipt || `FREE-${Date.now().toString(36).toUpperCase()}`,
+        receipt: res?.receipt,
+        isFree: true,
+        couponCode: codeToRedeem,
+        amount: 0,
+        userEmail: user?.email,
+      };
+
+      if (onEnrollmentSuccess) {
+        onEnrollmentSuccess(successPayload);
+      } else {
+        setModalData(successPayload);
+      }
     } catch (err: any) {
       console.error("Free enrollment redemption error:", err);
       setErrorMessage(err?.message || "Failed to complete free enrollment.");
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -98,7 +130,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
     setIsProcessing(true);
     try {
       // 1. Create order on backend with optional coupon discount
-      const orderData = await paymentService.createOrder(course._id, appliedCoupon?.code);
+      const couponCode = appliedCoupon?.code || appliedCoupon?.coupon?.code;
+      const orderData = await paymentService.createOrder(course._id, couponCode);
 
       // 2. Load official Razorpay Checkout SDK
       const sdkLoaded = await loadRazorpayScript();
@@ -140,12 +173,31 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
             });
 
             await refreshData();
-            navigate(`/courses/${course._id}/learn`, { replace: true });
+
+            const successPayload: EnrollmentSuccessData = {
+              courseId: course._id,
+              courseTitle: course.title,
+              courseThumbnail: course.thumbnail,
+              orderId: orderData.orderId || response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              receipt: response.razorpay_order_id,
+              isFree: false,
+              couponCode: couponCode,
+              amount: appliedCoupon ? appliedCoupon.finalPrice : course.price,
+              userEmail: user?.email,
+            };
+
+            if (onEnrollmentSuccess) {
+              onEnrollmentSuccess(successPayload);
+            } else {
+              setModalData(successPayload);
+            }
           } catch (verifyErr: any) {
             console.error("Signature verification error:", verifyErr);
             setErrorMessage(
               verifyErr?.message || "Payment verification failed. Please contact support."
             );
+          } finally {
             setIsProcessing(false);
           }
         },
@@ -212,7 +264,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
               {appliedCoupon ? (
                 <>
-                  Coupon code <strong className="font-mono text-emerald-900 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">{appliedCoupon.code}</strong> grants you full free access to <strong className="text-stone-900">{course.title}</strong>. No payment card or UPI transaction is required.
+                  Coupon code <strong className="font-mono text-emerald-900 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">{appliedCoupon.code || appliedCoupon.coupon?.code}</strong> grants you full free access to <strong className="text-stone-900">{course.title}</strong>. No payment card or UPI transaction is required.
                 </>
               ) : (
                 <>
@@ -777,6 +829,14 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ course, appliedC
           </span>
         </div>
       </div>
+
+      {modalData && (
+        <EnrollmentSuccessModal
+          isOpen={Boolean(modalData)}
+          data={modalData}
+          onClose={() => setModalData(null)}
+        />
+      )}
     </div>
   );
 };
